@@ -1,0 +1,60 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-image: linear-gradient(45deg,  #8b7e52, #3279a5);
+    /* background-image: linear-gradient(45deg, #3279a5, #8b7e52); */
+}
+
+#main {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+}
+
+#game {
+    width: 75vw;
+    background-image: url(../images/abba-transparent.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-right: 2px solid black;
+}
+
+#game-tint {
+    width: 100%;
+    height: 100%;
+    background-color: #3092cf4b;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#game-board {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.cell {
+    width: 48px;
+    height: 48px;
+    margin: 2px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 12px 12px, #525252e0, #4b4b4be0);
+    /* background: radial-gradient(circle at 12px 12px, #fffffff1, #e7e6e6f1, #8d8d8df1, #505050f1); WHITE */
+    /* background: radial-gradient(circle at 16px 16px, #a5a5a5f1, #000000f1, #000000f1); BLACK */
+    /* background: radial-gradient(circle at 12px 12px, #ff0000f1, #1b0000f1); RED */
+    /* background: radial-gradient(circle at 12px 12px, #1100fff1, #06001bf1); BLUE */
+}
+
+.cell:hover {
+    cursor: pointer;
+}

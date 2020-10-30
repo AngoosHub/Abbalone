@@ -2,15 +2,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/game.css?v=1.0">
+    <link rel="stylesheet" href="../css/game-board.css?v=1.0">
+    <link rel="stylesheet" href="../css/game-sidebar.css?v=1.0">
+    <script type="text/javascript" src='../js/game.js?v=1.0'></script>
+    <script type="text/javascript" src='../js/strings.js?v=1.0'></script>
     <title>ABBA-Lone</title>
 </head>
 <body>
-    <div id="game-board">
-
-    </div>
-    <div id="side-bar">
-
+    <div id="main">
+        <div id="game">
+            <div id="game-tint">
+                <div id="game-board">
+                    <div class="row" id="i">
+                        <div class="cell i" id="i5"></div>
+                        <div class="cell i" id="i6"></div>
+                        <div class="cell i" id="i7"></div>
+                        <div class="cell i" id="i8"></div>
+                        <div class="cell i" id="i9"></div>
+                    </div>
+                    <div class="row" id="h">
+                        <div class="cell h" id="h4"></div>
+                        <div class="cell h" id="h5"></div>
+                        <div class="cell h" id="h6"></div>
+                        <div class="cell h" id="h7"></div>
+                        <div class="cell h" id="h8"></div>
+                        <div class="cell h" id="h9"></div>
+                    </div>
+                    <div class="row" id="g">
+                        <div class="cell g" id="g3"></div>
+                        <div class="cell g" id="g4"></div>
+                        <div class="cell g" id="g5"></div>
+                        <div class="cell g" id="g6"></div>
+                        <div class="cell g" id="g7"></div>
+                        <div class="cell g" id="g8"></div>
+                        <div class="cell g" id="g9"></div>
+                    </div>
+                    <div class="row" id="f">
+                        <div class="cell f" id="f2"></div>
+                        <div class="cell f" id="f3"></div>
+                        <div class="cell f" id="f4"></div>
+                        <div class="cell f" id="f5"></div>
+                        <div class="cell f" id="f6"></div>
+                        <div class="cell f" id="f7"></div>
+                        <div class="cell f" id="f8"></div>
+                        <div class="cell f" id="f9"></div>
+                    </div>
+                    <div class="row" id="e">
+                        <div class="cell e" id="e1"></div>
+                        <div class="cell e" id="e2"></div>
+                        <div class="cell e" id="e3"></div>
+                        <div class="cell e" id="e4"></div>
+                        <div class="cell e" id="e5"></div>
+                        <div class="cell e" id="e6"></div>
+                        <div class="cell e" id="e7"></div>
+                        <div class="cell e" id="e8"></div>
+                        <div class="cell e" id="e9"></div>
+                    </div>
+                    <div class="row" id="d">
+                        <div class="cell d" id="d1"></div>
+                        <div class="cell d" id="d2"></div>
+                        <div class="cell d" id="d3"></div>
+                        <div class="cell d" id="d4"></div>
+                        <div class="cell d" id="d5"></div>
+                        <div class="cell d" id="d6"></div>
+                        <div class="cell d" id="d7"></div>
+                        <div class="cell d" id="d8"></div>
+                    </div>
+                    <div class="row" id="c">
+                        <div class="cell c" id="c1"></div>
+                        <div class="cell c" id="c2"></div>
+                        <div class="cell c" id="c3"></div>
+                        <div class="cell c" id="c4"></div>
+                        <div class="cell c" id="c5"></div>
+                        <div class="cell c" id="c6"></div>
+                        <div class="cell c" id="c7"></div>
+                    </div>
+                    <div class="row" id="b">
+                        <div class="cell b" id="b1"></div>
+                        <div class="cell b" id="b2"></div>
+                        <div class="cell b" id="b3"></div>
+                        <div class="cell b" id="b4"></div>
+                        <div class="cell b" id="b5"></div>
+                        <div class="cell b" id="b6"></div>
+                    </div>
+                    <div class="row" id="a">
+                        <div class="cell a" id="a1"></div>
+                        <div class="cell a" id="a2"></div>
+                        <div class="cell a" id="a3"></div>
+                        <div class="cell a" id="a4"></div>
+                        <div class="cell a" id="a5"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="side-bar">
+            <div id="sb-container">
+                <h1 id="game-title" onclick="changeTheme()">ABBA-Lone</h1>
+                <div id="game-info">
+                    <h3>Player</h3>
+                    <div id="player-captures">
+                        <div class="capture" id="pc-1"></div>
+                        <div class="capture" id="pc-2"></div>
+                        <div class="capture" id="pc-3"></div>
+                        <div class="capture" id="pc-4"></div>
+                        <div class="capture" id="pc-5"></div>
+                        <div class="capture" id="pc-6"></div>
+                    </div>
+                    <h4>Moves left: <span id="p-moves">50</span></h4>
+                    <h4>Time left: <span id="p-time">10:00</span></h4>
+                    <h3>Computer</h3>
+                    <div id="AI-captures">
+                        <div class="capture" id="aic-1"></div>
+                        <div class="capture" id="aic-2"></div>
+                        <div class="capture" id="aic-3"></div>
+                        <div class="capture" id="aic-4"></div>
+                        <div class="capture" id="aic-5"></div>
+                        <div class="capture" id="aic-6"></div>
+                    </div>
+                    <h4>Moves left: <span id="ai-moves">50</span></h4>
+                    <h4>Time left: <span id="p-time">10:00</span></h4>
+                    <h4>Next Move: </h4>
+                </div>
+                <hr/>
+                <div id="game-controls">
+                    <div class="gc-btnset">
+                        <div class="gc-btn" id="play-btn">PLAY!</div>
+                    </div>
+                    <div class="gc-btnset">
+                        <div class="gc-btn" id="pause-btn">Pause</div>
+                        <div class="gc-btn" id="stop-btn">Stop</div>
+                    </div>
+                    <div class="gc-btnset">
+                        <div class="gc-btn" id="undo-btn">Undo</div>
+                        <div class="gc-btn" id="reset-btn">Reset</div>
+                    </div>
+                </div>
+                <hr/>
+                <div id="game-history"> 
+                    <div id="gh-tabs">
+                        these are just temporary buttons to display the layouts lul
+                        refresh the page to see a different layout (didnt implement a reset yet)
+                        <h5 onclick="initBoard()" style="margin: 0;">Default Layout</h5>
+                        <h5 onclick="initBoard(1)" style="margin: 0;">Belgium Daisy</h5>
+                        <h5 onclick="initBoard(2)" style="margin: 0;">German Daisy</h5>
+                    </div>
+                    <div id="gh-container">
+                        <div id="gh-ai-time">
+                            AI--time taken per move (decision making)
+                        </div>
+                        <div id="gh-full">
+                            PLAYER -- moved X marbles (side step or the inline)
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+            </div>
+        </div>
     </div>
 </body>
 </html>
