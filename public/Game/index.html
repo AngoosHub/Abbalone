@@ -13,6 +13,11 @@
         <div id="game">
             <div id="game-tint">
                 <div id="game-board">
+                    these are just temporary buttons to display the layouts
+                    refresh the page to see a different layout (didnt implement a reset yet)
+                    <h5 onclick="initBoard()" style="margin: 0;">Default Layout</h5>
+                    <h5 onclick="initBoard(1)" style="margin: 0;">Belgium Daisy</h5>
+                    <h5 onclick="initBoard(2)" style="margin: 0;">German Daisy</h5>
                     <div class="row" id="i">
                         <div class="cell i" id="i5"></div>
                         <div class="cell i" id="i6"></div>
@@ -140,18 +145,44 @@
                 <hr/>
                 <div id="game-history"> 
                     <div id="gh-tabs">
-                        these are just temporary buttons to display the layouts lul
-                        refresh the page to see a different layout (didnt implement a reset yet)
-                        <h5 onclick="initBoard()" style="margin: 0;">Default Layout</h5>
-                        <h5 onclick="initBoard(1)" style="margin: 0;">Belgium Daisy</h5>
-                        <h5 onclick="initBoard(2)" style="margin: 0;">German Daisy</h5>
+                        <button id="gh-tabs-fh" class="selected-btn" onclick="toggleHistory(0)">Full History</button>
+                        <button id="gh-tabs-ai" onclick="toggleHistory(1)">AI Time</button>
                     </div>
                     <div id="gh-container">
-                        <div id="gh-ai-time">
-                            AI--time taken per move (decision making)
-                        </div>
                         <div id="gh-full">
-                            PLAYER -- moved X marbles (side step or the inline)
+                            <h4>Full History</h4>
+                            <div>
+                                <p id="fh-text"></p>
+                                PLAYER -- moved X marbles (side step or the inline)
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                            </div>
+                        </div>
+                        <div id="gh-ai-time">
+                            <h4>AI Time</h4>
+                            <div>
+                                <p id="ai-time-text"></p>
+                                AI--time taken per move (decision making)
+                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                            </div>
                         </div>
                     </div>
                 </div>
