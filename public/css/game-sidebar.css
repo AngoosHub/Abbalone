@@ -1,21 +1,20 @@
 * {
     scrollbar-width: thin;
     scrollbar-color: #546f80 #3d505c;
-  }
-  
-  /* Works on Chrome/Edge/Safari */
-  *::-webkit-scrollbar {
+}
+
+*::-webkit-scrollbar {
     width: 8px;
-  }
-  *::-webkit-scrollbar-track {
+}
+*::-webkit-scrollbar-track {
     background: #3d505c;
     border-radius: 20px;
-  }
-  *::-webkit-scrollbar-thumb {
+}
+*::-webkit-scrollbar-thumb {
     background-color: #546f80;
     border-radius: 20px;
     border: 2px solid #3d505c;
-  }
+}
 
 #side-bar {
     width: 25vw;

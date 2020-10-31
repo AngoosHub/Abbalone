@@ -19,6 +19,16 @@ let marblesP1 = [],
 //     initBoard();
 // }
 
+function createMarble(startCoord, player) {
+    // startCoord is just the id of the initial location
+    // player -> 1 for player 1, 2 for player 2
+    return marble = {
+        coordinate: startCoord,
+        player: player,
+        dropped: false
+    }
+}
+
 function initBoard(startStyle) {
     // 0 or undefined = default
     // 1 = Belgium Daisy
@@ -42,8 +52,10 @@ function initBoard(startStyle) {
     for (i = 0; i < startCoordsP1.length; i++) {
         document.getElementById(startCoordsP1[i]).style.background = blackMarbleColour;
         // create a black marble object then add to marblesP1 array
+        marblesP1.push(createMarble(startCoordsP1[i], 1))
         document.getElementById(startCoordsP2[i]).style.background = whiteMarbleColour;
         // create a white marble object then add to marblesP2 array
+        marblesP2.push(createMarble(startCoordsP2[i], 2))
     }
 }
 
