@@ -79,6 +79,7 @@
 }
 .gc-btn:hover {
     cursor: pointer;
+    background-image: linear-gradient(0deg, #71527a, #3279a5);
 }
 .gc-btnset {
     display: flex;
