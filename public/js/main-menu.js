@@ -1,7 +1,7 @@
 
 $( document ).ready(function() {
+    localStorage.setItem('layout', 0);
     setup_radio_selection_clicks();
-
 });
 
 function setup_radio_selection_clicks() {
