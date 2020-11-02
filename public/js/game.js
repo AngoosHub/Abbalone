@@ -13,9 +13,11 @@ const   defStartP1 = ["a1", "a2", "a3", "a4", "a5", "b1", "b2",
 
 let marblesP1 = [],
     marblesP2 = [],
-    themeNo = 0;  
+    themeNo = 0,
+    mammaMia = null;  
 
 window.onload = function() {
+    mammaMia = new Audio("../audio/mammamia.mp3");
     let layoutInt = localStorage.getItem('layout');
     console.log(layoutInt);
     initBoard(layoutInt);
@@ -59,6 +61,11 @@ function initBoard(startStyle) {
         // create a white marble object then add to marblesP2 array
         marblesP2.push(createMarble(startCoordsP2[i], 2))
     }
+}
+
+function playGame() {
+    mammaMia.currentTime = 0;
+    mammaMia.play();
 }
 
 function changeTheme() {
