@@ -17,6 +17,7 @@ let marblesP1 = [],
 
 window.onload = function() {
     let layoutInt = localStorage.getItem('layout');
+    console.log(layoutInt);
     initBoard(layoutInt);
 }
 
@@ -36,7 +37,7 @@ function initBoard(startStyle) {
     // 2 = German Daisy
     let startCoordsP1 = [],
         startCoordsP2 = [];
-    if (!startStyle) {
+    if (!startStyle || startStyle == 0) {
         console.log("Default layout")
         startCoordsP1 = defStartP1;
         startCoordsP2 = defStartP2;
