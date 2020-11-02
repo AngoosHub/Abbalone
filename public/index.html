@@ -3,13 +3,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/main-menu.css?v=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript" src='js/main-menu.js?v=1.0'></script>
     <title>ABBA-Lone Menu</title>
 </head>
 <body>
     <div id="main">
-        <h1>ABBA-Lone</h1>
-        <h2><a href="Game/index.html">PLAY!</a></h2>
+        <h1 class="title">ABBA-Lone</h1>
+        <div class="selection-layout layout-selection-flex">
+            <div class="layout-column-flex">
+                <div>
+                    <h3>Board Layout</h3>
+                    <div>
+                        <input type="radio" id="layout-standard" name="layout" value="0"
+                                checked>
+                        <label for="layout-standard">Standard</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="layout-german" name="layout" value="1">
+                        <label for="layout-german">German Daisy</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="layout-belgium" name="layout" value="2">
+                        <label for="layout-belgium">Belgium Daisy</label>
+                    </div>
+                </div>
+                <div>
+                    <h3>Color</h3>
+                    <div>
+                        <input type="radio" id="color-black" name="color" value="0"
+                                checked>
+                        <label for="color-black">Black</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="color-white" name="color" value="1">
+                        <label for="color-white">White</label>
+                    </div>
+                </div>
+            </div>
+            <div class="layout-preview">
+                <img class="img-layout-select" id="img-layout-select-standard" src="images/Abalone_standard.svg" alt="Abalone_standard">
+                <img class="img-layout-select" id="img-layout-select-german" style="display: none" src="images/Abalone_german.svg" alt="Abalone_german">
+                <img class="img-layout-select" id="img-layout-select-belgium" style="display: none" src="images/Abalone_belgian.svg" alt="Abalone_belgium">
+            </div>
+            <div class="layout-column-flex">
+                <div>
+                    <h3>Game Mode</h3>
+                    <div>
+                        <input type="radio" id="game-mode-player-cpu" name="game-mode" value="0"
+                                checked>
+                        <label for="game-mode-player-cpu">Player VS CPU</label>
+                    </div>
+                </div>
+                <div>
+                    <h3>Turn Limit</h3>
+                    <div>
+                        <input type="number" id="turn-limit" name="turn-limit" min="1" max="9999" value=50
+                                checked>
+                        <!-- <label for="turn-limit">50</label> -->
+                    </div>
+                </div>
+                <div>
+                    <h3>Time Limit</h3>
+                    <div>
+                        <input type="number" id="time-limit-player" name="time-limit" min="1" max="9999" 
+                        value=10 checked>
+                        <label for="turn-limit">Player</label>
+                    </div>
+                    <div>
+                        <input type="number" id="time-limit-computer" name="time-limit" min="1" max="9999" 
+                        value=10 checked>
+                        <label for="time-limit-computer">CPU</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <h2 class="play-button"><a href="Game/index.html">PLAY!</a></h2>
     </div>
 </body>
 </html>
