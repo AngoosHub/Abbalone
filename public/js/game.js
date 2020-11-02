@@ -15,9 +15,10 @@ let marblesP1 = [],
     marblesP2 = [],
     themeNo = 0;  
 
-// window.onload = function() {
-//     initBoard();
-// }
+window.onload = function() {
+    let layoutInt = localStorage.getItem('layout');
+    initBoard(layoutInt);
+}
 
 function createMarble(startCoord, player) {
     // startCoord is just the id of the initial location

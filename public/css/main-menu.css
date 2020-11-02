@@ -93,6 +93,7 @@ html, body {
 }
 
 body {
+    overflow: hidden;
     background-image: url("../images/bw-abba.png");
     background-repeat: no-repeat;
     background-position: center center;
