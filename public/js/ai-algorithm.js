@@ -74,10 +74,15 @@ function stateGenerator() {
         next =getAdjacent(oppositeMarbles[i]);
 
     }
+    for(let i =0; i<emptyLocation.length;i++) {
 
+        next =getAdjacent(emptyLocation[i]);
+
+    }
     move(cur, next);
-    console.log(resultsInline);
-
+    // console.log(resultsInline);
+    // console.log(adjacentInfo)
+    
 } 
 
 
@@ -89,40 +94,45 @@ function move(cur, next) {
     for(let i =0; i<currentMarbles.length;i++) {
         resultsInline.push("This is " + currentMarbles[i]); 
         resultsSideStep.push("This is "+currentMarbles[i]);
-        console.log(currentMarbles[i]);
+
         emptyArray=[];
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             if(emptyLocation.includes(cur[currentMarbles[i]][j])) {
                 emptyArray.push(j);
             }
         }
-        console.log(emptyArray);
         
     
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             temp = (cur[currentMarbles[i]])[j];
-            // result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0); 
+            
+            result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0); 
 
-            // if(result!=null && result!=undefined) {
+            if(result!=null && result!=undefined) {
                 
-            //     resultsInline.push("i"+"-"+currentMarbles[i]+"-"+result);
-            // }
+                resultsInline.push("i"+"-"+currentMarbles[i]+"-"+result);
+            }
             // results = sideStep();    
-            sideStep(cur, next, currentMarbles[i], temp, j, emptyArray);
+            
+
+        }
+          
+        for(let j=0;j<cur[currentMarbles[i]].length;j++) {
+            temp = (cur[currentMarbles[i]])[j];
+            
+            sideStep(cur, currentMarbles[i], temp, j, emptyArray);
         }
 
-
+        
+        // console.log(resultsSideStep)
 
     }
+    console.log(resultsInline)
 }
 
-// 1 -> || !1 !7
-// 3 -> || !3 !9
-// 5 -> ||!5 !11
-// 7 -> ||!7 !1
-// 9 -> ||!9 !3
-// 11 -> ||!11 !5
-function sideStep(cur, next, marble, adjacentMarble, direction, emptyArray) {
+
+function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
+    
     let tempResult = [];
     if(marble.substring(0,1)=='x') {
         return null;
@@ -136,27 +146,149 @@ function sideStep(cur, next, marble, adjacentMarble, direction, emptyArray) {
     if(!currentMarbles.includes(adjacentMarble)) {
         return null;
     }
-
-
+    
+    // console.log("This is " +marble);
+    // console.log(adjacentMarble);
     //check whether 4 directions empty
-    for(let i=0; i<6;i++) {
-        if(i==5-direction||i==direction) {
-            continue;
-        }
-        if(emptyArray.includes(i)) {
-            console.log("YES "+i);
-        }
-        
-    }
-    // if(emptyLocation.contains)
-    // if(marble's 4 direction's empty && marble's adjacent's 4 directions empty ) {
-    //     resultsInline.push("s-asdf");
-    // }
 
-    // if(marble's 4 direction's empty && marble's adjacent's 4 directions empty ) {
-    //     resultsInline.push("s-asdf");
-    // }
-        
+    let target1;
+    let target2;
+    if(direction==0) {
+        tempNo= 7;
+        target1= 1;
+        target2= 2;
+    }else if(direction ==1) {
+        tempNo= 5;
+        target1= 3;
+        target2= 0;
+    }else if(direction ==2) {
+        tempNo= 9;
+        target1= 0;
+        target2= 4;
+    }else if(direction ==3) {
+        tempNo= 3;
+        target1= 5;
+        target2= 1;
+
+    }else if(direction ==4) {
+        tempNo= 11;
+        target1= 2;
+        target2= 5;
+    }else if(direction ==5) {
+        tempNo= 1;
+        target1= 4;
+        target2= 3;
+    }
+    
+    // console.log("target1"+target1) //5
+    // console.log("target2"+target2) //1
+    if(emptyArray.includes(target1)) {    
+        // console.log((cur[marble])[target1]);//a2
+        // console.log((cur[(cur[marble])[target1]])[direction]) //b2            
+        // console.log(adjacentInfo[(cur[marble])[target1]][direction]); //b2
+        // console.log(emptyLocation.includes(adjacentInfo[(cur[marble])[i]][direction])) //false
+        // console.log(adjacentInfo[(cur[marble])[target1]]);
+        // console.log(adjacentInfo[(cur[marble])[target1]][direction]);
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][direction])) {
+            tempResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][direction])
+            // console.log("guess!")
+            // console.log(cur[marble]);
+            let n = target1
+            // console.log(n);
+
+            let realNo;
+            if(n==0) {
+                realNo= 7;
+            }else if(n ==1) {
+                realNo= 5;
+            }else if(n ==2) {
+                realNo= 9;
+            }else if(n ==3) {
+                realNo= 3;
+            }else if(n ==4) {
+                realNo= 11;
+            }else if(n ==5) {
+                realNo= 1;
+            }
+            console.log("This is "+ marble+" with "+adjacentMarble + "direction to "+realNo)
+        }
+        // console.log(adjacentInfo[(cur[marble])[target1]][5-direction]);
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][5-direction])) {
+            tempResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][5-direction])
+            let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target1]);
+            let realNo;
+            if(n==0) {
+                realNo= 7;
+            }else if(n ==1) {
+                realNo= 5;
+            }else if(n ==2) {
+                realNo= 9;
+            }else if(n ==3) {
+                realNo= 3;
+            }else if(n ==4) {
+                realNo= 11;
+            }else if(n ==5) {
+                realNo= 1;
+            }
+            console.log("This is "+ marble+" with "+adjacentMarble + "direction to "+realNo)
+            
+        }   
+    }
+    if(emptyArray.includes(target2)) {    
+
+        // console.log(adjacentInfo[(cur[marble])[target2]][direction]) //b1
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][direction])) {
+            tempResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][direction])
+            // console.log("this should be all correct????")
+            let n = target2
+            let realNo;
+            if(n==0) {
+                realNo= 7;
+            }else if(n ==1) {
+                realNo= 5;
+            }else if(n ==2) {
+                realNo= 9;
+            }else if(n ==3) {
+                realNo= 3;
+            }else if(n ==4) {
+                realNo= 11;
+            }else if(n ==5) {
+                realNo= 1;
+            }
+            console.log("This is "+ marble+" with "+adjacentMarble + "direction to "+realNo)
+        }
+        // console.log(adjacentInfo[(cur[marble])[target2]][5-direction]);
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][5-direction])) {
+            tempResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][5-direction])
+            // console.log(cur[marble])
+            // console.log(direction)
+            // console.log(((cur[marble])[3])) //b3
+            // console.log((cur[marble])[target2]); //a2
+            // console.log((adjacentInfo[(cur[marble])[3]]))
+            // console.log(adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target2]))
+            // console.log("this should be all correct")
+            let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target2]);
+            // console.log(n);
+            let realNo;
+            if(n==0) {
+                realNo= 7;
+            }else if(n ==1) {
+                realNo= 5;
+            }else if(n ==2) {
+                realNo= 9;
+            }else if(n ==3) {
+                realNo= 3;
+            }else if(n ==4) {
+                realNo= 11;
+            }else if(n ==5) {
+                realNo= 1;
+            }
+            console.log("This is "+ marble+" with "+adjacentMarble + "direction to "+realNo)
+            
+        }   
+    }
+    
+    
 }
 
 
