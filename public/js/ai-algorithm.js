@@ -1,3 +1,5 @@
+// const fs = require('fs');
+
 const allBoard = 
 ["a1", "a2", "a3", "a4", "a5", 
 "b1", "b2", "b3", "b4", "b5", "b6",
@@ -12,8 +14,20 @@ const allBoard =
 
 //To do..
 //This should be imported through "input.board"
-const inputFile = ["A3b","B2b","B3b","C3b","C4b","G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
-const nextTurn = 'w';
+// const inputFile = ["A3b","B2b","B3b","C3b","C4b","G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
+// const nextTurn = 'w';
+
+const fileData = JSON.parse(localStorage.getItem("input"));
+
+const inputFile = fileData["positions"];
+const nextTurn = fileData["turn"];
+const fileName = fileData["fName"];
+
+console.log(inputFile);
+console.log(nextTurn);
+console.log(fileName);
+
+
 
 let newMarblesP1 = []; // contains user's marble(all black)
 let newMarblesP2 = []; // contains computer's marble(all white)
@@ -101,13 +115,13 @@ function move(cur, next) {
     
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             temp = (cur[currentMarbles[i]])[j];
-            // result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0); 
+            result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0); 
 
-            // if(result!=null && result!=undefined) {
+            if(result!=null && result!=undefined) {
                 
-            //     resultsInline.push("i"+"-"+currentMarbles[i]+"-"+result);
-            // }
-            // results = sideStep();    
+                resultsInline.push("i"+"-"+currentMarbles[i]+"-"+result);
+            }
+            results = sideStep();    
             sideStep(cur, next, currentMarbles[i], temp, j, emptyArray);
         }
 
