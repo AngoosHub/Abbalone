@@ -21,6 +21,7 @@ window.onload = function() {
     let layoutInt = localStorage.getItem('layout');
     console.log(layoutInt);
     initBoard(layoutInt);
+   
 }
 
 function createMarble(startCoord, player) {
@@ -65,7 +66,8 @@ function initBoard(startStyle) {
 
 function playGame() {
     mammaMia.currentTime = 0;
-    mammaMia.play();
+    // mammaMia.play();
+    turn();
 }
 
 function changeTheme() {
