@@ -68,6 +68,7 @@ function playGame() {
     mammaMia.currentTime = 0;
     // mammaMia.play();
     turn();
+    boardOutput();
 }
 
 function changeTheme() {
