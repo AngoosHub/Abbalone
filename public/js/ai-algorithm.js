@@ -19,7 +19,6 @@ const allBoard =
 // const inputFile = ["I5b", "H5b", "G5b"];
 //const inputFile = ["D3b", "D4b", "D5b"];
 //const nextTurn = 'w';
-=======
 // const inputFile = ["A3b","B2b","B3b","C3b","C4b","G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
 // const nextTurn = 'w';
 
