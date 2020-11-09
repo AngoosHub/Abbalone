@@ -142,7 +142,7 @@ function transformBoardToOutputLine(board) {
     let sortedResults = [];
 
     resultString.forEach(result => {
-        sortedResults.push(result.substring(1) + result.substring(0,1));
+        sortedResults.push(result.substring(1).toUpperCase() + result.substring(0,1));
     });
 
     return sortedResults.join(",");
