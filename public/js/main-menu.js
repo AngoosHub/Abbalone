@@ -15,13 +15,13 @@ function setup_radio_selection_clicks() {
         $( "#img-layout-select-standard" ).hide( "fast" );
         $( "#img-layout-select-german" ).show( "fast" );
         $( "#img-layout-select-belgium" ).hide( "fast" );
-        localStorage.setItem('layout', 1);
+        localStorage.setItem('layout', 2);
     });
     $("#layout-belgium").click(function() {
         $( "#img-layout-select-standard" ).hide( "fast" );
         $( "#img-layout-select-german" ).hide( "fast" );
         $( "#img-layout-select-belgium" ).show( "fast" );
-        localStorage.setItem('layout', 2);
+        localStorage.setItem('layout', 1);
     });
 
     $("#color-black").click(function() {
