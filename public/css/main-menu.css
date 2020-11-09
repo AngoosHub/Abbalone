@@ -48,6 +48,13 @@ input[type="radio"]:checked:after {
     text-align: center;
 }
 
+input[type="file"] {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 10%;
+}
+
 .title {
     font-size: 6.5em;
     color: antiquewhite;
