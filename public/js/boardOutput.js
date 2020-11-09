@@ -39,7 +39,23 @@ function boardOutput() {
     console.log(boardConfigOutputFile);
     console.log("---- END OF BOARD OUTPUT ----");
 
+    downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
+    downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
+
     return [moveConfigOutputFile, boardConfigOutputFile];
+}
+
+function downloadFile(filename, text) {
+    let downloader = document.createElement('a');
+    downloader.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    downloader.setAttribute('download', filename);
+
+    downloader.style.display = 'none';
+    document.body.appendChild(downloader);
+
+    downloader.click();
+
+    document.body.removeChild(downloader);
 }
 
 /* Generate the current board from input file */
