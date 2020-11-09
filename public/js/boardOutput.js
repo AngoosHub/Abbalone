@@ -102,19 +102,23 @@ function generateBoardConfigurationFromMove(board, inputMove) {
 
 
 /* Takes a board array and writes it into string of marbles for output file. */
-function transformBoardToOutputLine(board) {
-    let resultString = "";
+function transformBoardToOutputLine(board) {   
+    let resultString = [];
     for (const [marble_id, color] of Object.entries(board)) {
         if (color != "") {
-            resultString += "," + marble_id + color;
+            resultString.push(color + marble_id);
         }
     }
 
-    if (resultString.length > 0) {
-        resultString = resultString.substring(1);
-    }
-    
-    return resultString;
+    resultString.sort();
+
+    let sortedResults = [];
+
+    resultString.forEach(result => {
+        sortedResults.push(result.substring(1) + result.substring(0,1));
+    });
+
+    return sortedResults.join(",");
 }
 
 
