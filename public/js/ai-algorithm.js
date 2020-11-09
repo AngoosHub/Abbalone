@@ -19,16 +19,18 @@ const allBoard =
 // const inputFile = ["I5b", "H5b", "G5b"];
 //const inputFile = ["D3b", "D4b", "D5b"];
 //const nextTurn = 'w';
-=======
+
 // const inputFile = ["A3b","B2b","B3b","C3b","C4b","G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
 // const nextTurn = 'w';
 
 const fileData = JSON.parse(localStorage.getItem("input"));
 
-const inputFile = fileData["positions"];
-const nextTurn = fileData["turn"];
+// const inputFile = fileData["positions"];
+// const nextTurn = fileData["turn"];
 const fileName = fileData["fName"];
 
+const inputFile = ["E1b", "D1w", "C1w"];
+const nextTurn = 'b';
 console.log(inputFile);
 console.log(nextTurn);
 console.log(fileName);
@@ -75,6 +77,7 @@ function generateBoardWInput() {
         }
     }
 
+    emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     stateGenerator()
 }
 
@@ -387,20 +390,43 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
 //direction can be known through index of array
 
 function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble) {
-
+    
     if(marble.substring(0,1)=='x') {
         return null;
     }
-    if(adjacentMarble.substring(0,1)=='x') {
-        return null;
-    }
+    // if(adjacentMarble.substring(0,1)=='x') {
+    //     return null;
+    // }
+    
     if(cntCurMarble>3) {
         return null;
     }
     
-    if(emptyLocation.includes(adjacentMarble)) {
+    if(adjacentMarble.substring(0,1)=='x'||adjacentMarble.substring(1,2)=='0') {
+        
+        if(cntCurMarble==1&&cntOpMarble==0) {
+            return null;
+        } 
+        if(direction==0) {
+            return 7;
+        }else if(direction ==1) {
+            return 5;
+        }else if(direction ==2) {
+            return 9;
+        }else if(direction ==3) {
+            return 3;
+        }else if(direction ==4) {
+            return 11;
+        }else if(direction ==5) {
+            return 1;
+        }
+        return direction;
+    }
+        
+    
+    if(emptyLocation.includes(adjacentMarble)||adjacentMarble.substring(0,1)=='x'||adjacentMarble.substring(1,2)=='0') {
         if(cntCurMarble>cntOpMarble) {
-
+        
             if(direction==0) {
                 return 7;
             }else if(direction ==1) {
