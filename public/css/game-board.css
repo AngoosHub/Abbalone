@@ -55,6 +55,23 @@ body {
     /* background: radial-gradient(circle at 12px 12px, #1100fff1, #06001bf1); BLUE */
 }
 
+.current-turn {
+    color: white;
+}
+.test {
+    box-sizing: border-box;
+    border: 3px solid yellow;
+}
+
+.clickable {
+    box-sizing: border-box;
+    border: 3px solid hotpink;
+}
+
+.clicked {
+    box-sizing: border-box;
+    border: 3px solid red;
+}
 .cell:hover {
     cursor: pointer;
 }

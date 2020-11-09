@@ -1,5 +1,4 @@
 // const fs = require('fs');
-
 const allBoard = 
 ["a1", "a2", "a3", "a4", "a5", 
 "b1", "b2", "b3", "b4", "b5", "b6",
@@ -14,7 +13,6 @@ const allBoard =
 
 //To do..
 //This should be imported through "input.board"
-
 // const inputFile = ["A3b","B2b","B3b","C1b", "C2b", "C3b","C4b", "D4b", "G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
 // const inputFile = ["I5b", "H5b", "G5b"];
 //const inputFile = ["D3b", "D4b", "D5b"];
@@ -31,7 +29,6 @@ const fileName = fileData["fName"];
 console.log(inputFile);
 console.log(nextTurn);
 console.log(fileName);
-
 
 let newMarblesP1 = []; // contains user's marble(all black)
 let newMarblesP2 = []; // contains computer's marble(all white)
@@ -60,9 +57,15 @@ function generateBoardWInput() {
         if(marbleColor==='b') {
             document.getElementById(location).style.background=blackMarbleColour;
             newMarblesP1.push(location);
+            document.getElementById(location).classList.add(hasMarbleClass);
+            // create a black marble object then add to marblesP1 array
+            marblesP1.push(createMarble(location, 'b', blackMarbleColour))
         }else {
             document.getElementById(location).style.background=whiteMarbleColour;
             newMarblesP2.push(location);
+            document.getElementById(location).classList.add(hasMarbleClass);
+            // create a black marble object then add to marblesP1 array
+            marblesP2.push(createMarble(location, 'w', whiteMarbleColour))
         }
      
         
