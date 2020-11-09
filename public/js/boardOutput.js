@@ -9,12 +9,17 @@
 This function will generate an array of resulting board configurations for output file. */
 function boardOutput() {
     let currentBoard = generateCurrentBoardLayout();
+    let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
     resultsInline.forEach(inline_move => {
         if (inline_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, inline_move);
             let resultString = transformBoardToOutputLine(newBoard);
-            boardConfigOutputFile.push(resultString);
+
+            if (boardConfigOutputFile.indexOf(resultString) == -1) {
+                boardConfigOutputFile.push(resultString);
+                moveConfigOutputFile.push(inline_move);
+            }
         }
     });
 
@@ -22,13 +27,35 @@ function boardOutput() {
         if (sidestep_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, sidestep_move);
             let resultString = transformBoardToOutputLine(newBoard);
-            boardConfigOutputFile.push(resultString);
+            if (boardConfigOutputFile.indexOf(resultString) == -1) {
+                boardConfigOutputFile.push(resultString);
+                moveConfigOutputFile.push(sidestep_move);
+            }
         }
     });
 
     console.log("---- START OF BOARD OUTPUT ----");
+    console.log(moveConfigOutputFile);
     console.log(boardConfigOutputFile);
     console.log("---- END OF BOARD OUTPUT ----");
+
+    downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
+    downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
+
+    return [moveConfigOutputFile, boardConfigOutputFile];
+}
+
+function downloadFile(filename, text) {
+    let downloader = document.createElement('a');
+    downloader.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    downloader.setAttribute('download', filename);
+
+    downloader.style.display = 'none';
+    document.body.appendChild(downloader);
+
+    downloader.click();
+
+    document.body.removeChild(downloader);
 }
 
 /* Generate the current board from input file */
@@ -102,19 +129,23 @@ function generateBoardConfigurationFromMove(board, inputMove) {
 
 
 /* Takes a board array and writes it into string of marbles for output file. */
-function transformBoardToOutputLine(board) {
-    let resultString = "";
+function transformBoardToOutputLine(board) {   
+    let resultString = [];
     for (const [marble_id, color] of Object.entries(board)) {
         if (color != "") {
-            resultString += "," + marble_id + color;
+            resultString.push(color + marble_id);
         }
     }
 
-    if (resultString.length > 0) {
-        resultString = resultString.substring(1);
-    }
-    
-    return resultString;
+    resultString.sort();
+
+    let sortedResults = [];
+
+    resultString.forEach(result => {
+        sortedResults.push(result.substring(1).toUpperCase() + result.substring(0,1));
+    });
+
+    return sortedResults.join(",");
 }
 
 
