@@ -12,7 +12,9 @@ const allBoard =
 
 //To do..
 //This should be imported through "input.board"
-const inputFile = ["A3b","B2b","B3b","C3b","C4b","G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
+// const inputFile = ["A3b","B2b","B3b","C1b", "C2b", "C3b","C4b", "D4b", "G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
+// const inputFile = ["I5b", "H5b", "G5b"];
+const inputFile = ["D3b", "D4b", "D5b"];
 const nextTurn = 'w';
 
 let newMarblesP1 = []; // contains user's marble(all black)
@@ -79,6 +81,7 @@ function stateGenerator() {
         next =getAdjacent(emptyLocation[i]);
 
     }
+   
     move(cur, next);
     // console.log(resultsInline);
     // console.log(adjacentInfo)
@@ -133,7 +136,7 @@ function move(cur, next) {
 
 function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
     
-    let tempResult = [];
+    let sideStepResult = [];
     if(marble.substring(0,1)=='x') {
         return null;
     }
@@ -146,55 +149,44 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
     if(!currentMarbles.includes(adjacentMarble)) {
         return null;
     }
-    
-    // console.log("This is " +marble);
-    // console.log(adjacentMarble);
-    //check whether 4 directions empty
 
+    //target1 and target 2 are two adjacent marble between current Marble and adjacentMarble
+    // for example, current marble is "B3", adjacentMarble is "C4"
+    //target 1 and 2 will be "C3", and "B4"
+    
     let target1;
     let target2;
+    let booleanChecking = 0;
+
+    //direction is the index of the adjacent marble. 
+    //target1 and 2 set to adjacent index marble
     if(direction==0) {
-        tempNo= 7;
         target1= 1;
         target2= 2;
     }else if(direction ==1) {
-        tempNo= 5;
         target1= 3;
         target2= 0;
     }else if(direction ==2) {
-        tempNo= 9;
         target1= 0;
         target2= 4;
     }else if(direction ==3) {
-        tempNo= 3;
         target1= 5;
         target2= 1;
-
     }else if(direction ==4) {
-        tempNo= 11;
         target1= 2;
         target2= 5;
     }else if(direction ==5) {
-        tempNo= 1;
         target1= 4;
         target2= 3;
     }
-    
-    // console.log("target1"+target1) //5
-    // console.log("target2"+target2) //1
+    //This is to check target1 are empty or not
+    //if not empty, it cannot move to sidestep. 
+    //if empty, it checks adjacent marbles of target1 on the same direction and opposite direction 
     if(emptyArray.includes(target1)) {    
-        // console.log((cur[marble])[target1]);//a2
-        // console.log((cur[(cur[marble])[target1]])[direction]) //b2            
-        // console.log(adjacentInfo[(cur[marble])[target1]][direction]); //b2
-        // console.log(emptyLocation.includes(adjacentInfo[(cur[marble])[i]][direction])) //false
-        // console.log(adjacentInfo[(cur[marble])[target1]]);
-        // console.log(adjacentInfo[(cur[marble])[target1]][direction]);
         if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][direction])) {
-            tempResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][direction])
-            // console.log("guess!")
-            // console.log(cur[marble]);
+            sideStepResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][direction])
+            booleanChecking+=1;
             let n = target1
-            // console.log(n);
 
             let realNo;
             if(n==0) {
@@ -210,11 +202,11 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is "+ marble+" with "+adjacentMarble + "direction to "+realNo)
+            console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
         }
-        // console.log(adjacentInfo[(cur[marble])[target1]][5-direction]);
         if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][5-direction])) {
-            tempResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][5-direction])
+            sideStepResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][5-direction])
+            booleanChecking+=1;
             let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target1]);
             let realNo;
             if(n==0) {
@@ -230,16 +222,61 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is "+ marble+" with "+adjacentMarble + "direction to "+realNo)
+            console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
             
         }   
+        // console.log(marble)
+        // console.log(adjacentMarble)
+        // console.log(target1)
+        // console.log(cur[adjacentMarble][direction])
+        // console.log(adjacentInfo[(cur[marble])[target1]][direction])
+        if(booleanChecking==2 && currentMarbles.includes(cur[adjacentMarble][direction])) {
+            let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target1]);
+            if(n==0) {
+                realNo= 7;
+            }else if(n ==1) {
+                realNo= 5;
+            }else if(n ==2) {
+                realNo= 9;
+            }else if(n ==3) {
+                realNo= 3;
+            }else if(n ==4) {
+                realNo= 11;
+            }else if(n ==5) {
+                realNo= 1;
+            }
+            console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+
+            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])) {
+                let n = adjacentInfo[cur[adjacentMarble][direction]].indexOf(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])
+                if(n==0) {
+                    realNo= 7;
+                }else if(n ==1) {
+                    realNo= 5;
+                }else if(n ==2) {
+                    realNo= 9;
+                }else if(n ==3) {
+                    realNo= 3;
+                }else if(n ==4) {
+                    realNo= 11;
+                }else if(n ==5) {
+                    realNo= 1;
+                }
+                // console.log(n)
+                console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+            }
+        }
+        booleanChecking=0;
+
     }
+    //This is to check target2 are empty or not
+    //if not empty, it cannot move to sidestep. 
+    //if empty, it checks adjacent marbles of target2 on the same direction and opposite direction 
     if(emptyArray.includes(target2)) {    
 
-        // console.log(adjacentInfo[(cur[marble])[target2]][direction]) //b1
         if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][direction])) {
-            tempResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][direction])
-            // console.log("this should be all correct????")
+            sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][direction])
+            booleanChecking+=1;
             let n = target2
             let realNo;
             if(n==0) {
@@ -255,20 +292,13 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is "+ marble+" with "+adjacentMarble + "direction to "+realNo)
+            console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
         }
-        // console.log(adjacentInfo[(cur[marble])[target2]][5-direction]);
         if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][5-direction])) {
-            tempResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][5-direction])
-            // console.log(cur[marble])
-            // console.log(direction)
-            // console.log(((cur[marble])[3])) //b3
-            // console.log((cur[marble])[target2]); //a2
-            // console.log((adjacentInfo[(cur[marble])[3]]))
-            // console.log(adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target2]))
-            // console.log("this should be all correct")
+            sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][5-direction])
+            booleanChecking+=1;
             let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target2]);
-            // console.log(n);
+
             let realNo;
             if(n==0) {
                 realNo= 7;
@@ -283,12 +313,48 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is "+ marble+" with "+adjacentMarble + "direction to "+realNo)
+            console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
             
         }   
+        if(booleanChecking==2 && currentMarbles.includes(cur[adjacentMarble][direction])) {
+            let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target2]);
+            if(n==0) {
+                realNo= 7;
+            }else if(n ==1) {
+                realNo= 5;
+            }else if(n ==2) {
+                realNo= 9;
+            }else if(n ==3) {
+                realNo= 3;
+            }else if(n ==4) {
+                realNo= 11;
+            }else if(n ==5) {
+                realNo= 1;
+            }
+            console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+
+            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])) {
+                let n = adjacentInfo[cur[adjacentMarble][direction]].indexOf(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])
+                if(n==0) {
+                    realNo= 7;
+                }else if(n ==1) {
+                    realNo= 5;
+                }else if(n ==2) {
+                    realNo= 9;
+                }else if(n ==3) {
+                    realNo= 3;
+                }else if(n ==4) {
+                    realNo= 11;
+                }else if(n ==5) {
+                    realNo= 1;
+                }
+                // console.log(n)
+                console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+            }
+        }
+
     }
-    
-    
+
 }
 
 
