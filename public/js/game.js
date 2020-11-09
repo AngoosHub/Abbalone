@@ -24,9 +24,7 @@ let marblesP1 = [],
 let currentTurn = 'b',              // b (black) or w (white)
     currentClickSequence = [],      // The marbles clicked for this turn
     currentClickDirections = [],
-    clickableCells = [],
-    moveType = 0; // AN INTEGER representing the move type chosen (0 - inline; 1 - sidestep)
-    // "i"+"-"+currentMarbles[i]+"-"+ direction
+    clickableCells = [];
 
 window.onload = function() {
     mammaMia = new Audio("../audio/mammamia.mp3");
@@ -55,6 +53,14 @@ function clearClickables() {
         oldClickables[c].classList.remove(clickableClass);
     }
     clickableCells = []
+}
+
+function addClickable(id) {
+    if (!clickableCells.includes(id)) {
+        let adjCell = document.getElementById(id);
+        clickableCells.push(id);
+        adjCell.classList.add(clickableClass);
+    }
 }
 
 function setClickables(id) {
@@ -102,26 +108,17 @@ function setClickables(id) {
                                 firstDir = adjOppositesHigh[adjOppositesLow.indexOf(firstDir)];
                             }
                         }
-                        
                         if (movDir == firstDir) {
-                            if (!clickableCells.includes(adjacentArr[i])) {
-                                clickableCells.push(adjacentArr[i]);
-                                adjCell.classList.add(clickableClass);
-                            }
+                            addClickable(adjacentArr[i]);
                         }
                     }
                 } else if (currentClickSequence.length == 0) {
-                    if (!clickableCells.includes(adjacentArr[i])) {
-                        clickableCells.push(adjacentArr[i]);
-                        adjCell.classList.add(clickableClass);
-                    }
+                    addClickable(adjacentArr[i])
                 }
             }
         }
     }
-    
     // check the previously clicked ones
-    // look for side steps
     for (let z = 0; z < currentClickSequence.length; z++) {
         let adjArr = (z === 0) ? firstAdjArr : secondAdjArr;
         if (adjArr) {
@@ -136,16 +133,12 @@ function setClickables(id) {
                         adjDir = adjOppositesHigh[adjOppositesLow.indexOf(movDir)];
                     }
                     if (adjDir == firstDir || movDir == firstDir) {
-                        if (!clickableCells.includes(adjArr[j])) {
-                            clickableCells.push(adjArr[j]);
-                            adjCell.classList.add(clickableClass);
-                        }
+                        addClickable(adjArr[j])
                     }
                 }
             }
         }
     }
-
     // SIDE STEPS
     if (currentClickSequence.length > 0) {
         let clickedButtons = currentClickSequence.slice();
@@ -163,24 +156,22 @@ function setClickables(id) {
         for (let q = 0; q < 4; q++) {
             let dir = sidestepDirections[q];
             let sideStepNotation = sideStepMoveNot.slice() + "-" + dir;
-            console.log(sideStepNotation)
             if (resultsSideStep.includes(sideStepNotation)) {
                 // loop thru adjacents and find the adjacent cell of each cell in that direction
                 // then add it to the array
-                for (let e = 0; e < clickedButtons.length; e++) {
-                    let adj =  adjacentInfo[clickedButtons[e].coordinate],
-                        ssAdd = adj[adjacentDirections.indexOf(dir)];
-                    if (!clickableCells.includes(ssAdd)) {
-                        clickableCells.push(ssAdd);
-                        document.getElementById(ssAdd).classList.add(clickableClass)
-                    }
+                let adj =  adjacentInfo[clickedButtons[0].coordinate],
+                    ssAdd = adj[adjacentDirections.indexOf(dir)];
+                if (!clickableCells.includes(ssAdd)) {
+                    let adjCell = document.getElementById(ssAdd);
+                    clickableCells.push(ssAdd);
+                    adjCell.classList.add(clickableClass);
                 }
             }
         }
     }
 }
 
-function selectCell(id, cell) {
+function selectCell(id, cell) { // selects the actual marble
     setClickables(id) 
 
     let marble = getPlayerMarble(currentTurn, id);
@@ -200,9 +191,71 @@ function cellClicked(id) {
     } else { // Empty space clicked
         if (currentClickSequence.length > 0) { // Move the marbles!
             if (cell.classList.contains(clickableClass)) {
+                let marble = currentClickSequence[0],
+                    dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
+                if (dirIndex == -1) {
+                    marble = currentClickSequence[1];
+                    dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
+                    if (dirIndex == -1) {
+                        marble = currentClickSequence[2];
+                        dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
+                    }
+                }
+
+                let rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+                let toMoveRowValue = rowOrder.indexOf(id[0]), moveDir = 0;
+                let rowValues = [], colValues = [];
                 for (let i = 0; i < currentClickSequence.length; i++) {
-                    console.log(marble);
-                    currentClickSequence[i].move(id); // needa change the id we're moving to
+                    let marble = currentClickSequence[i];
+                    rowValues.push(rowOrder.indexOf(marble.coordinate[0]));
+                    colValues.push(marble.coordinate[1]);
+                }
+                if (rowValues.length > 0 && rowValues[1] == rowValues[0]) {
+                    // horizontal selection
+                    if (toMoveRowValue == rowValues[0]) {
+                        // inline horizontal move
+                        moveDir = toMoveRowValue > colValues[0] ? "right" : "left"
+                    } else {
+                        moveDir = 0
+                    }
+                } else {
+                    // vertical selection
+                    moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
+                }
+                let length = currentClickSequence.length
+                for (let i = 0; i < length; i++) {
+                    let moveMarble, topID, values, inline = true;
+                    switch (moveDir) {
+                        case "up":
+                            values = rowValues;
+                            topID = values.indexOf(Math.max.apply(Math, values));
+                            moveMarble = currentClickSequence[topID];
+                            break;
+                        case "down":
+                            values = rowValues;
+                            topID = values.indexOf(Math.min.apply(Math, values));
+                            moveMarble = currentClickSequence[topID];
+                            break;
+                        case "left":
+                            values = colValues;
+                            topID = values.indexOf(Math.min.apply(Math, values));
+                            moveMarble = currentClickSequence[topID];
+                            break;
+                        case "right":
+                            values = colValues;
+                            topID = values.indexOf(Math.max.apply(Math, values));
+                            moveMarble = currentClickSequence[topID];
+                            break;
+                        default:
+                            inline = false;
+                            moveMarble = currentClickSequence[i]
+                            moveMarble.move(adjacentInfo[moveMarble.coordinate][dirIndex])
+                    }
+                    if (inline) {
+                        values.splice(topID, 1);
+                        currentClickSequence.splice(topID, 1);
+                        moveMarble.move(adjacentInfo[moveMarble.coordinate][dirIndex]);
+                    }
                 }
                 endTurn()
             } else {

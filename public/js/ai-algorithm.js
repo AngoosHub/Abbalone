@@ -12,9 +12,12 @@ const allBoard =
 
 //To do..
 //This should be imported through "input.board"
-const inputFile = ["A3b","B2b","B3b","C1b", "C2b", "C3b","C4b", "D4b", "G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
+// const inputFile = ["A3b","B2b","B3b","C1b", "C2b", "C3b","C4b", "D4b", "G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
 // const inputFile = ["I5b", "H5b", "G5b"];
 // const inputFile = ["D3b", "D4b", "D5b"];
+// const inputFile = ['E3b','E4b','E5b','F4b','F5b','E6w','E7w','F6w','F7w','F8w']
+const inputFile = ['A3b','B2b','B3b','C3b','C4b','G7b','G8b','H7b','H8b','H9b','I8b'
+                    ,'I9b','A4w','A5w','B4w','B5w','B6w','C5w','C6w','G4w','G5w','H4w','H5w','H6w','I5w','I6w']
 const nextTurn = 'w';
 
 let newMarblesP1 = []; // contains user's marble(all black)
