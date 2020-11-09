@@ -9,12 +9,17 @@
 This function will generate an array of resulting board configurations for output file. */
 function boardOutput() {
     let currentBoard = generateCurrentBoardLayout();
+    let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
     resultsInline.forEach(inline_move => {
         if (inline_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, inline_move);
             let resultString = transformBoardToOutputLine(newBoard);
-            boardConfigOutputFile.push(resultString);
+
+            if (boardConfigOutputFile.indexOf(resultString) == -1) {
+                boardConfigOutputFile.push(resultString);
+                moveConfigOutputFile.push(inline_move);
+            }
         }
     });
 
@@ -22,13 +27,19 @@ function boardOutput() {
         if (sidestep_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, sidestep_move);
             let resultString = transformBoardToOutputLine(newBoard);
-            boardConfigOutputFile.push(resultString);
+            if (boardConfigOutputFile.indexOf(resultString) == -1) {
+                boardConfigOutputFile.push(resultString);
+                moveConfigOutputFile.push(sidestep_move);
+            }
         }
     });
 
     console.log("---- START OF BOARD OUTPUT ----");
+    console.log(moveConfigOutputFile);
     console.log(boardConfigOutputFile);
     console.log("---- END OF BOARD OUTPUT ----");
+
+    return [moveConfigOutputFile, boardConfigOutputFile];
 }
 
 /* Generate the current board from input file */
