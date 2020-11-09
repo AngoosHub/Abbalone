@@ -124,13 +124,12 @@ function move(cur, next) {
             temp = (cur[currentMarbles[i]])[j];
             
             sideStep(cur, currentMarbles[i], temp, j, emptyArray);
+            
         }
-
-        
-        // console.log(resultsSideStep)
 
     }
     console.log(resultsInline)
+    console.log(resultsSideStep)
 }
 
 
@@ -184,7 +183,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
     //if empty, it checks adjacent marbles of target1 on the same direction and opposite direction 
     if(emptyArray.includes(target1)) {    
         if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][direction])) {
-            sideStepResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][direction])
+            
             booleanChecking+=1;
             let n = target1
 
@@ -202,10 +201,11 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
+            // console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
+            resultsSideStep.push("s-"+ marble+"-"+adjacentMarble + "-"+realNo)
         }
         if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][5-direction])) {
-            sideStepResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][5-direction])
+            // sideStepResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][5-direction])
             booleanChecking+=1;
             let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target1]);
             let realNo;
@@ -222,14 +222,11 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
+            // console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
+            resultsSideStep.push("s-"+ marble+"-"+adjacentMarble + "-"+realNo)
             
         }   
-        // console.log(marble)
-        // console.log(adjacentMarble)
-        // console.log(target1)
-        // console.log(cur[adjacentMarble][direction])
-        // console.log(adjacentInfo[(cur[marble])[target1]][direction])
+     
         if(booleanChecking==2 && currentMarbles.includes(cur[adjacentMarble][direction])) {
             let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target1]);
             if(n==0) {
@@ -245,7 +242,8 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+            // console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+            resultsSideStep.push("s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
 
             if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])) {
                 let n = adjacentInfo[cur[adjacentMarble][direction]].indexOf(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])
@@ -263,7 +261,8 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
                     realNo= 1;
                 }
                 // console.log(n)
-                console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+                // console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+                resultsSideStep.push("s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
             }
         }
         booleanChecking=0;
@@ -275,7 +274,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
     if(emptyArray.includes(target2)) {    
 
         if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][direction])) {
-            sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][direction])
+            // sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][direction])
             booleanChecking+=1;
             let n = target2
             let realNo;
@@ -292,10 +291,11 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
+            // console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
+            resultsSideStep.push("s-"+ marble+"-"+adjacentMarble + "-"+realNo)
         }
         if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][5-direction])) {
-            sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][5-direction])
+            // sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][5-direction])
             booleanChecking+=1;
             let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target2]);
 
@@ -313,7 +313,8 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
+            // console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
+            resultsSideStep.push("s-"+ marble+"-"+adjacentMarble + "-"+realNo)
             
         }   
         if(booleanChecking==2 && currentMarbles.includes(cur[adjacentMarble][direction])) {
@@ -331,7 +332,8 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
             }else if(n ==5) {
                 realNo= 1;
             }
-            console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+            // console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+            resultsSideStep.push("s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
 
             if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])) {
                 let n = adjacentInfo[cur[adjacentMarble][direction]].indexOf(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])
@@ -349,12 +351,15 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray) {
                     realNo= 1;
                 }
                 // console.log(n)
-                console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+                // console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
+                resultsSideStep.push("s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
             }
         }
+        
+        booleanChecking=0;
 
     }
-
+    
 }
 
 
