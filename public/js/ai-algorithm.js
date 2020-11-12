@@ -23,12 +23,12 @@ const allBoard =
 
 const fileData = JSON.parse(localStorage.getItem("input"));
 
-// const inputFile = fileData["positions"];
-// const nextTurn = fileData["turn"];
+const inputFile = fileData["positions"];
+const nextTurn = fileData["turn"];
 const fileName = fileData["fName"];
 
-const inputFile = ["E1b", "D1w", "C1w"];
-const nextTurn = 'b';
+// const inputFile = ["E1b", "D1w", "C1w"];
+// const nextTurn = 'b';
 console.log(inputFile);
 console.log(nextTurn);
 console.log(fileName);
@@ -410,20 +410,26 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
         if(cntCurMarble==1&&cntOpMarble==0) {
             return null;
         } 
-        if(direction==0) {
-            return 7;
-        }else if(direction ==1) {
-            return 5;
-        }else if(direction ==2) {
-            return 9;
-        }else if(direction ==3) {
-            return 3;
-        }else if(direction ==4) {
-            return 11;
-        }else if(direction ==5) {
-            return 1;
-        }
-        return direction;
+        if(cntOpMarble==0) {
+            return null;
+        } 
+        if(cntCurMarble>cntOpMarble) {
+            if(direction==0) {
+                return 7;
+            }else if(direction ==1) {
+                return 5;
+            }else if(direction ==2) {
+                return 9;
+            }else if(direction ==3) {
+                return 3;
+            }else if(direction ==4) {
+                return 11;
+            }else if(direction ==5) {
+                return 1;
+            }
+            return direction;
+        } 
+        
     }
         
     
