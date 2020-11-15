@@ -75,6 +75,16 @@ function getPlayerMarble(player, id) {
         }
     }
 }
+function getPlayerMarblePreviousLoc(player, id) {
+    let marbles;
+    if (player) marbles = (player === 'b') ? marblesP1 : marblesP2;
+    else marbles = marblesP1.concat(marblesP2)
+    for (let i = 0; i < marbles.length; i++) {
+        if (marbles[i].prevCoord == id) {
+            return marbles[i]
+        }
+    }
+}
 
 function clearClickables() {
     let oldClickables = document.querySelectorAll("." + clickableClass);
@@ -306,9 +316,9 @@ function deselectClicks() {
 }
 
 function endTurn() {
-    let board = getCurrentBoard().toString();
+    let board = getCurrentBoard();
     fullHistory.push(board);
-    board = board.replaceAll(',', ', ');
+    board = board.toString().replaceAll(',', ', ');
     let newText = document.createElement("p");
     newText.innerHTML = board.toString();
     if (currentTurn == 'b') {
@@ -404,6 +414,7 @@ function initBoard(startStyle) {
             emptyLocation.push(allBoard[i]);
         }
     }
+    fullHistory.push(getCurrentBoard());
     stateGenerator();
 }
 
@@ -412,6 +423,62 @@ function playGame() {
     mammaMia.play();
     // turn();
     // boardOutput();
+}
+
+function undo() {
+    if (fullHistory.length > 1) {
+        fullHistory.pop();
+        let prevMove = fullHistory[fullHistory.length - 1]
+        if (currentTurn == 'b') {
+            nextTurn = 'b'
+            currentTurn = 'w';
+        } else {
+            nextTurn = 'w'
+            currentTurn = 'b';
+        }
+        if (currentTurnINT == 1) {
+            currentTurnINT = 2
+            let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
+            turnsLeft++;
+            document.getElementById("p1-moves").innerHTML = turnsLeft
+        } else {
+            currentTurnINT = 1
+            let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
+            turnsLeft++;
+            document.getElementById("p2-moves").innerHTML = turnsLeft
+        }
+        deselectClicks();
+        clearClickables();
+        drawBoard(prevMove);
+    } else {
+        window.alert("This is the farthest you can go!")
+    }
+}
+
+function drawBoard(board) {
+    emptyBoard();
+    board.forEach(marbleID => {
+        let id = marbleID.substring(0, 2);
+        let team = marbleID.substring(2,3);
+        let marble = getPlayerMarble(team, id);
+        let newMarblesARR = team == 'b' ? newMarblesP1 : newMarblesP2;
+
+        if (!marble) {
+            marble = getPlayerMarblePreviousLoc(team, id);
+            marble.move(id);
+        }
+        if (marble && !marble.dropped) {
+            newMarblesARR.push(marble.coordinate);
+            marble.draw();
+            marble.fixClasses();
+        }
+    });
+    for(let i =0; i<allBoard.length;i++) {
+        if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {
+            emptyLocation.push(allBoard[i]);
+        }
+    }
+    stateGenerator()
 }
 
 function changeTheme() {
