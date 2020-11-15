@@ -75,3 +75,8 @@ body {
 .cell:hover {
     cursor: pointer;
 }
+
+#fh-div p {
+    font-size: 10pt;
+    margin: 0;
+}

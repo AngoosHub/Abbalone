@@ -21,31 +21,45 @@ const allBoard =
 // const inputFile = ["A3b","B2b","B3b","C3b","C4b","G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
 // const nextTurn = 'w';
 
-const fileData = JSON.parse(localStorage.getItem("input"));
+// const fileData = JSON.parse(localStorage.getItem("input"));
 
 // const inputFile = fileData["positions"];
 // const nextTurn = fileData["turn"];
-const fileName = fileData["fName"];
+// const fileName = fileData["fName"];
 
-const inputFile = ["E1b", "D1w", "C1w"];
-const nextTurn = 'b';
-console.log(inputFile);
-console.log(nextTurn);
-console.log(fileName);
+// const inputFile = ["E1b", "D1w", "C1w"];
+// const nextTurn = 'b';
+// console.log(inputFile);
+// console.log(nextTurn);
+// console.log(fileName);
 
 let newMarblesP1 = []; // contains user's marble(all black)
 let newMarblesP2 = []; // contains computer's marble(all white)
-let emptyLocation =[]; // contains empty location;
+let emptyLocation =["a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9"]; 
+                    // contains empty location;
 let resultsInline = [];
 let resultsSideStep = [];
 let adjacentInfo = {}; // key : marble, value : marble's adjacent
 let currentMarbles; // depends on turn // logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
 let oppositeMarbles; // depends on turn //logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
+let nextTurn
 
-
-function turn() {    
+function turn() {
     generateBoardWInput();
 }
+
+
+//make board to all empty
+function emptyBoard() {
+    newMarblesP1 = [];
+    newMarblesP2 = [];
+    resultsInline = [];
+    resultsSideStep = [];
+    adjacentInfo = {}
+    for(let i =0; i<allBoard.length;i++) {
+        document.getElementById(allBoard[i]).style.background=null;
+    }
+}  
 
 //this is to show board based on "input.board"
 function generateBoardWInput() {
@@ -53,34 +67,45 @@ function generateBoardWInput() {
 
     //read "input.board" (ex, "A3b", "B2b"..) and set background to marble and 
     //push it to newMarblesP1, newMarblesP2
-    for(let i =0; i<inputFile.length;i++) {
-        let location = (inputFile[i].substring(0, 1)).toLowerCase()+inputFile[i].substring(1, 2);
-        let marbleColor = inputFile[i].substring(2, 3);
+    // for(let i =0; i< marblesP1.length;i++) {
+    //     let location = (inputFile[i].substring(0, 1)).toLowerCase()+inputFile[i].substring(1, 2);
+    //     let marbleColor = inputFile[i].substring(2, 3);
         
-        if(marbleColor==='b') {
-            document.getElementById(location).style.background=blackMarbleColour;
-            newMarblesP1.push(location);
-            document.getElementById(location).classList.add(hasMarbleClass);
-            // create a black marble object then add to marblesP1 array
-            marblesP1.push(createMarble(location, 'b', blackMarbleColour))
-        }else {
-            document.getElementById(location).style.background=whiteMarbleColour;
-            newMarblesP2.push(location);
-            document.getElementById(location).classList.add(hasMarbleClass);
-            // create a black marble object then add to marblesP1 array
-            marblesP2.push(createMarble(location, 'w', whiteMarbleColour))
+    //     if(marbleColor==='b') {
+    //         document.getElementById(location).style.background = blackMarbleColour;
+    //         newMarblesP1.push(location);
+    //         document.getElementById(location).classList.add(hasMarbleClass);
+    //         // create a black marble object then add to marblesP1 array
+    //         marblesP1.push(createMarble(location, 'b', blackMarbleColour));
+    //     }else {
+    //         document.getElementById(location).style.background=whiteMarbleColour;
+    //         newMarblesP2.push(location);
+    //         document.getElementById(location).classList.add(hasMarbleClass);
+    //         // create a black marble object then add to marblesP1 array
+    //         marblesP2.push(createMarble(location, 'w', whiteMarbleColour))
+    //     }
+    // }
+    for (let i = 0; i < marblesP1.length; i++) {
+        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+            let marble = marblesP1[i];
+            newMarblesP1.push(marble.coordinate);
+            marble.draw();
+            marble.fixClasses();
         }
-     
-        
+        if (!marblesP2[i].dropped) {
+            let marble = marblesP2[i];
+            newMarblesP2.push(marble.coordinate);
+            marble.draw();
+            marble.fixClasses();
+        }
     }
+
     // set empty location
     for(let i =0; i<allBoard.length;i++) {
         if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {
             emptyLocation.push(allBoard[i]);
         }
     }
-
-    emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     stateGenerator()
 }
 
@@ -458,18 +483,11 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
 
 
 
-//make board to all empty
-function emptyBoard() {
-    for(let i =0; i<allBoard.length;i++) {
-        document.getElementById(allBoard[i]).style.background=null;
-    }
-}  
-
 // This is to get adjacent 
 // to make it easy to figure out direction(==array's index)
 // added "x" for null value
-function getAdjacent(marble) {
-    let alphabet = marble.substring(0, 1)
+function getAdjacent(marble, justAdjacent) {
+    let alphabet = (marble.substring(0, 1))
     let number = marble.substring(1, 2)
     
     let adjacent = [];
@@ -535,6 +553,9 @@ function getAdjacent(marble) {
             
         }
         adjacentInfo[marble] = adjacent
+    }
+    if (justAdjacent) {
+        return adjacent;
     }
    
     return adjacentInfo

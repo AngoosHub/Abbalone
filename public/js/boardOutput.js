@@ -7,8 +7,14 @@
         - inputFile
 
 This function will generate an array of resulting board configurations for output file. */
-function boardOutput() {
-    let currentBoard = generateCurrentBoardLayout();
+function boardOutput(inputBoard) {
+    let currentBoard;
+    if (!inputBoard) {
+        currentBoard = generateBoardWInput();
+    } else {
+        currentBoard = inputBoard
+        // maybe also change resultsInline
+    }
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
     resultsInline.forEach(inline_move => {
@@ -39,8 +45,8 @@ function boardOutput() {
     console.log(boardConfigOutputFile);
     console.log("---- END OF BOARD OUTPUT ----");
 
-    downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
-    downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
+    // downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
+    // downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
 
     return [moveConfigOutputFile, boardConfigOutputFile];
 }
@@ -59,22 +65,40 @@ function downloadFile(filename, text) {
 }
 
 /* Generate the current board from input file */
-function generateCurrentBoardLayout() {
+function generateCurrentBoardLayout(boardInput) {
     // make empty board.
     let currentBoard = {};
     allBoard.forEach(element => currentBoard[element] = "");
 
     // add in marbles from input file.
-    const inputFileLowercase = inputFile.map(item => item.toLowerCase());
-    inputFileLowercase.forEach(element => {
+    const boardInputLowercase = boardInput.map(item => item.toLowerCase());
+    boardInputLowercase.forEach(element => {
         let id = element.substring(0, 2);
         let color = element.substring(2);
         currentBoard[id] = color;
     });
-    
+
     return currentBoard;
 }
 
+function getCurrentBoard() {
+    let currentBoard = []
+    for (let i = 0; i < marblesP1.length; i++) {
+        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+            let marble = marblesP1[i];
+            let cellID = marble.coordinate;
+            let team = marble.player;
+            currentBoard.push(cellID + team);
+        }
+        if (!marblesP2[i].dropped) {
+            let marble = marblesP2[i];
+            let cellID = marble.coordinate;
+            let team = marble.player;
+            currentBoard.push(cellID + team);
+        }
+    }
+    return currentBoard;
+}
 
 /* Generate a resulting board after performing given move on current board. */
 /* IMPORTANT - This function assumes given move is legal. */
