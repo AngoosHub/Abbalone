@@ -33,6 +33,7 @@ const allBoard =
 // console.log(nextTurn);
 // console.log(fileName);
 
+
 let newMarblesP1 = []; // contains user's marble(all black)
 let newMarblesP2 = []; // contains computer's marble(all white)
 let emptyLocation =["a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9"]; 
@@ -426,20 +427,26 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
         if(cntCurMarble==1&&cntOpMarble==0) {
             return null;
         } 
-        if(direction==0) {
-            return 7;
-        }else if(direction ==1) {
-            return 5;
-        }else if(direction ==2) {
-            return 9;
-        }else if(direction ==3) {
-            return 3;
-        }else if(direction ==4) {
-            return 11;
-        }else if(direction ==5) {
-            return 1;
-        }
-        return direction;
+        if(cntOpMarble==0) {
+            return null;
+        } 
+        if(cntCurMarble>cntOpMarble) {
+            if(direction==0) {
+                return 7;
+            }else if(direction ==1) {
+                return 5;
+            }else if(direction ==2) {
+                return 9;
+            }else if(direction ==3) {
+                return 3;
+            }else if(direction ==4) {
+                return 11;
+            }else if(direction ==5) {
+                return 1;
+            }
+            return direction;
+        } 
+        
     }
     
     
