@@ -106,51 +106,63 @@ function futureStateGenerator(gameBoard, maxPlayer) {
     return move(cur, next, true);
 }
 
+let bestBoard;
+
 function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
     let gameOver = testEndGame(gameBoard);
-    console.log(gameOver)
     if (depth == 0 || gameOver) {
-        // return heuristicHandler(gameBoard);
-        return gameBoard;
+        let v = heuristicHandler(gameBoard)
+        return v;
     }
     let value;
     let resultingMoves = futureStateGenerator(gameBoard, maxPlayer);
-    // console.log(resultingMoves)
     let resultingBoards = boardOutput(resultingMoves[0], resultingMoves[1], gameBoard)[1];
+    console.log(resultingBoards)
     if (maxPlayer) {
-        value = Number.NEGATIVE_INFINITY;
+        value = Number.MIN_SAFE_INTEGER;
         for (let i = 0; i < resultingBoards.length; i++) {
             let board = resultingBoards[i];
-            value = Math.max(value, alphaBetaMiniMax(board, depth - 1, alpha, beta, false));
+            let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, false)
+            console.log(t_val);
+            if (value < t_val[0]) {
+                value = t_val[0]
+            }
+            if (value > alpha) {
+                alpha = value;
+                bestBoard = board;
+            }
             alpha = Math.max(alpha, value);
             if (alpha >= beta) {
                 break;
             };
         }
-        // resultingBoards.forEach(board => {
-            
-        // });
-        return value;
+        console.log(value);
+        return [value, bestBoard];
     } else {
-        value = Number.POSITIVE_INFINITY;
+        value = Number.MAX_SAFE_INTEGER;
         for (let i = 0; i < resultingBoards.length; i++) {
             let board = resultingBoards[i];
-            value = Math.min(value, alphaBetaMiniMax(board, depth - 1, alpha, beta, true));
+            let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
+            console.log(t_val);
+            if (value > t_val[0]) {
+                console.log("we in")
+                value = t_val[0]
+            }
+            if (value < beta) {
+                beta = value
+                bestBoard = board
+            }
             beta = Math.min(beta, value);
             if (beta <= alpha) {
                 break;
             };
         }
-        // resultingBoards.forEach(board => {
-            
-        // });
-        return value;
+        console.log(value);
+        return [value, bestBoard];
     };
 };
 
 function testEndGame(gameBoard) {
-    // console.log(gameBoard);
-    // let gamePieces = gameBoard.split(",");
     let blackPieces = 0;
     let whitePieces = 0;
     gameBoard.forEach(piece => {
@@ -184,7 +196,7 @@ function boardScore(board) {
         // Heuristic 2: 2/3 in a row (horizontal)
         let h_count = 0;
         if (team == 'b') {
-            nodeScore += positionValues[cell];
+            nodeScore += positionValues[cell.toUpperCase()];
 
             if (h_count < 0) h_count = 0;
             h_count++;
@@ -192,7 +204,7 @@ function boardScore(board) {
             else if (h_count > 1) { nodeScore += 1; }
         }
         else {
-            nodeScore -= positionValues[cell];
+            nodeScore -= positionValues[cell.toUpperCase()];
             if (h_count > 0) h_count = 0;
             h_count--;
             if (h_count < -2) { nodeScore -= 1; } 

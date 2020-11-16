@@ -20,10 +20,10 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     resultsI.forEach(inline_move => {
         if (inline_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, inline_move);
-            let resultString = transformBoardToOutputLine(newBoard);
+            // let resultString = transformBoardToOutputLine(newBoard);
 
-            if (boardConfigOutputFile.indexOf(resultString) == -1) {
-                boardConfigOutputFile.push(resultString);
+            if (boardConfigOutputFile.indexOf(newBoard) == -1) {
+                boardConfigOutputFile.push(newBoard);
                 moveConfigOutputFile.push(inline_move);
             }
         }
@@ -32,9 +32,9 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     resultsSS.forEach(sidestep_move => {
         if (sidestep_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, sidestep_move);
-            let resultString = transformBoardToOutputLine(newBoard);
-            if (boardConfigOutputFile.indexOf(resultString) == -1) {
-                boardConfigOutputFile.push(resultString);
+            // let resultString = transformBoardToOutputLine(newBoard);
+            if (boardConfigOutputFile.indexOf(newBoard) == -1) {
+                boardConfigOutputFile.push(newBoard);
                 moveConfigOutputFile.push(sidestep_move);
             }
         }
@@ -47,7 +47,7 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
 
     // downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
     // downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
-
+    
     return [moveConfigOutputFile, boardConfigOutputFile];
 }
 
@@ -155,6 +155,8 @@ function generateBoardConfigurationFromMove(board, inputMove) {
 /* Takes a board array and writes it into string of marbles for output file. */
 function transformBoardToOutputLine(board) {   
     let resultString = [];
+    console.log(board);
+    console.log(Object.entries(board))
     for (const [marble_id, color] of Object.entries(board)) {
         if (color != "") {
             resultString.push(color + marble_id);

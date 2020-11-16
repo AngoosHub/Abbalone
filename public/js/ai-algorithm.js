@@ -152,8 +152,8 @@ function move(cur, next, global) {
         }
 
     }
-    console.log(inlineArr)
-    console.log(sidestepArr)
+    // console.log(inlineArr)
+    // console.log(sidestepArr)
     if (global) {
         return [inlineArr, sidestepArr]
     } else {

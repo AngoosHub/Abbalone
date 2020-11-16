@@ -317,44 +317,52 @@ function deselectClicks() {
 }
 
 function endTurn() {
-    let board = getCurrentBoard();
-    fullHistory.push(board);
-    board = board.toString().replaceAll(',', ', ');
-    let newText = document.createElement("p");
-    newText.innerHTML = board.toString();
-    if (currentTurn == 'b') {
-        nextTurn = 'b'
-        currentTurn = 'w';
-        newText.style.background = "#3f3f4066"
-    } else {
-        newText.style.background = "#ebebeb66"
-        nextTurn = 'w'
-        currentTurn = 'b';
-    }
-    document.getElementById("fh-div").prepend(newText);
-    if (currentTurnINT == 1) {
-        currentTurnINT = 2
-        let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
-        document.getElementById("p1-tab-span").innerHTML = "";
-        document.getElementById("p2-tab-span").innerHTML = "<<<<";
-        turnsLeft--;
-        document.getElementById("p1-moves").innerHTML = turnsLeft
-    } else {
-        currentTurnINT = 1
-        let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
-        document.getElementById("p1-tab-span").innerHTML = "<<<<";
-        document.getElementById("p2-tab-span").innerHTML = "";
-        turnsLeft--;
-        document.getElementById("p2-moves").innerHTML = turnsLeft
-    }
-    deselectClicks();
-    clearClickables();
-    generateBoardWInput();
-    if (gameMode == 1 && currentTurnINT == 2) {
-        console.log("----------MOVING AI!!")
-        drawBoard(alphaBetaMiniMax(getCurrentBoard(), 10,  Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, false));
-        console.log("ai moved")
-    }
+    let promise = new Promise((resolve, reject) => {
+        let board = getCurrentBoard();
+        fullHistory.push(board);
+        board = board.toString().replaceAll(',', ', ');
+        let newText = document.createElement("p");
+        newText.innerHTML = board.toString();
+        if (currentTurn == 'b') {
+            nextTurn = 'b'
+            currentTurn = 'w';
+            newText.style.background = "#3f3f4066"
+        } else {
+            newText.style.background = "#ebebeb66"
+            nextTurn = 'w'
+            currentTurn = 'b';
+        }
+        document.getElementById("fh-div").prepend(newText);
+        if (currentTurnINT == 1) {
+            currentTurnINT = 2
+            let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
+            document.getElementById("p1-tab-span").innerHTML = "";
+            document.getElementById("p2-tab-span").innerHTML = "<<<<";
+            turnsLeft--;
+            document.getElementById("p1-moves").innerHTML = turnsLeft
+        } else {
+            currentTurnINT = 1
+            let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
+            document.getElementById("p1-tab-span").innerHTML = "<<<<";
+            document.getElementById("p2-tab-span").innerHTML = "";
+            turnsLeft--;
+            document.getElementById("p2-moves").innerHTML = turnsLeft
+        }
+        deselectClicks();
+        clearClickables();
+        generateBoardWInput();
+        resolve()
+    })
+    promise.then(res => {
+        if (gameMode == 1 && currentTurnINT == 2) {
+            console.log("----------MOVING AI!!")
+            let alphaBeta = alphaBetaMiniMax(getCurrentBoard(), 1,  Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, false)
+            drawBoard(alphaBeta[1]);
+            endTurn();
+            console.log("ai moved")
+        }
+    })
+    
 }
 
 function createMarble(startCoord, player, mbcolour) {
