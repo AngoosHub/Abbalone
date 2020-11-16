@@ -278,12 +278,12 @@ function cellClicked(id) {
                             break;
                         case "left":
                             values = colValues;
-                            topID = values.indexOf(Math.min.apply(Math, values));
+                            topID = values.indexOf("" + Math.min.apply(Math, values));
                             moveMarble = currentClickSequence[topID];
                             break;
                         case "right":
                             values = colValues;
-                            topID = values.indexOf(Math.max.apply(Math, values));
+                            topID = values.indexOf("" + Math.max.apply(Math, values));
                             moveMarble = currentClickSequence[topID];
                             break;
                         default:
@@ -489,24 +489,31 @@ function undo() {
     }
 }
 
+function clearHasMarble() {
+    let marbles = document.querySelectorAll(".hasMarble");
+    for (let i = 0; i < marbles.length; i++) {
+        marbles[i].classList.remove(hasMarbleClass);
+    }
+}
+
 function drawBoard(board) {
     console.log(board);
     emptyBoard();
+    marblesP1 = []
+    marblesP2 = []
+    clearHasMarble();
     board.forEach(marbleID => {
         let id = marbleID.substring(0, 2);
         let team = marbleID.substring(2,3);
-        let marble = getPlayerMarble(team, id);
         let newMarblesARR = team == 'b' ? newMarblesP1 : newMarblesP2;
+        let marbleArr = team == 'b' ? marblesP1 : marblesP2;
+        let marbleColour = team == 'b' ? blackMarbleColour : whiteMarbleColour;
+        let marble = createMarble(id, team, marbleColour)
 
-        if (!marble) {
-            marble = getPlayerMarblePreviousLoc(team, id);
-            if (marble) marble.move(id);
-        }
-        if (marble && !marble.dropped) {
-            newMarblesARR.push(marble.coordinate);
-            marble.draw();
-            marble.fixClasses();
-        }
+        marbleArr.push(marble);
+        newMarblesARR.push(id);
+        marble.draw();
+        marble.fixClasses();
     });
     for(let i =0; i<allBoard.length;i++) {
         if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {

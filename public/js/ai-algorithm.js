@@ -435,7 +435,7 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
         }
         return direction;
     }
-        
+    
     
     if(emptyLocation.includes(adjacentMarble)||adjacentMarble.substring(0,1)=='x'||adjacentMarble.substring(1,2)=='0') {
         if(cntCurMarble>cntOpMarble) {

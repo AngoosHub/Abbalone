@@ -111,8 +111,7 @@ let bestBoard;
 function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
     let gameOver = testEndGame(gameBoard);
     if (depth == 0 || gameOver) {
-        let v = heuristicHandler(gameBoard)
-        return v;
+        return [heuristicHandler(gameBoard), gameBoard];
     }
     let resultingMoves = futureStateGenerator(gameBoard, maxPlayer);
     let resultingBoards = boardOutput(resultingMoves[0], resultingMoves[1], gameBoard)[1];
@@ -123,11 +122,9 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
             let board = resultingBoards[i];
             let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, false)
             if (value < t_val[0]) {
-                console.log("we in")
                 value = t_val[0]
             }
             if (value > alpha) {
-                console.log("ffff")
                 alpha = value;
                 bestBoard = board;
             }
@@ -142,16 +139,10 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
         for (let i = 0; i < resultingBoards.length; i++) {
             let board = resultingBoards[i];
             let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
-            console.log(value);
-            console.log(t_val);
-            console.log(value > t_val[0]);
-            console.log("----")
             if (value > t_val[0]) {
-                console.log("we in")
                 value = t_val[0];
             }
             if (value < beta) {
-                console.log("2fasdfdas")
                 beta = value
                 bestBoard = board
             }
