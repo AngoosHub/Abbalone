@@ -7,17 +7,17 @@
         - inputFile
 
 This function will generate an array of resulting board configurations for output file. */
-function boardOutput(inputBoard) {
+function boardOutput(resultsI, resultsSS, inputBoard) {
     let currentBoard;
     if (!inputBoard) {
-        currentBoard = generateBoardWInput();
+        currentBoard = getCurrentBoard();
     } else {
         currentBoard = inputBoard
         // maybe also change resultsInline
     }
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
-    resultsInline.forEach(inline_move => {
+    resultsI.forEach(inline_move => {
         if (inline_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, inline_move);
             let resultString = transformBoardToOutputLine(newBoard);
@@ -29,7 +29,7 @@ function boardOutput(inputBoard) {
         }
     });
 
-    resultsSideStep.forEach(sidestep_move => {
+    resultsSS.forEach(sidestep_move => {
         if (sidestep_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, sidestep_move);
             let resultString = transformBoardToOutputLine(newBoard);
@@ -40,10 +40,10 @@ function boardOutput(inputBoard) {
         }
     });
 
-    console.log("---- START OF BOARD OUTPUT ----");
-    console.log(moveConfigOutputFile);
-    console.log(boardConfigOutputFile);
-    console.log("---- END OF BOARD OUTPUT ----");
+    // console.log("---- START OF BOARD OUTPUT ----");
+    // console.log(moveConfigOutputFile);
+    // console.log(boardConfigOutputFile);
+    // console.log("---- END OF BOARD OUTPUT ----");
 
     // downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
     // downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));

@@ -36,56 +36,140 @@ function aiDecisionStart() {
     let bestMove = alphaBetaSearch(currBoard);
 }
 
-function alphaBetaSearch(currBoard) {
-    let v = maxValue(currBoard, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
-}
+// function alphaBetaSearch(currBoard) {
+//     let v = maxValue(currBoard, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+// }
 
-function maxValue(v, node, alpha, beta, depth) {
-    if (checkTerminal()) {
-        // return node; maybe v aswell
-        return v;
-    }
+// function maxValue(v, node, alpha, beta, depth) {
+//     if (checkTerminal()) {
+//         // return node; maybe v aswell
+//         return v;
+//     }
 
-    let children = boardOutput(node);
-    let childScores = [];
+//     let children = boardOutput(node);
+//     let childScores = [];
 
-    for (let i = 0; i < children.length; i++) { // loop thru all nodes of parent node, terminate if worse
-        // get the score of all potential board layouts
-        childScores.push(heuristicHandler(children[i]));
-    }
-    if (depth < 4) {
-        // sort the nodes according to childScores
+//     for (let i = 0; i < children.length; i++) { // loop thru all nodes of parent node, terminate if worse
+//         // get the score of all potential board layouts
+//         childScores.push(heuristicHandler(children[i]));
+//     }
+//     if (depth < 4) {
+//         // sort the nodes according to childScores
 
-    }
+//     }
 
 
-    // HOW DO I RETURN THE SCORE? lol
-    let maxIndex = 0;
-    for (let i = 0; i < children.length; i++) {
-        let childNodeScore = minValue(children[i], alpha, beta, depth + 1);
-        if (v > childNodeScore) {
-            v = childNodeScore;
+//     // HOW DO I RETURN THE SCORE? lol
+//     let maxIndex = 0;
+//     for (let i = 0; i < children.length; i++) {
+//         let childNodeScore = minValue(children[i], alpha, beta, depth + 1);
+//         if (v > childNodeScore) {
+//             v = childNodeScore;
+//         }
+//     }
+//     return v;
+// }
+
+// function minValue(node, alpha, beta, depth) {
+//     if (checkTerminal()) {
+//         return node;
+//     }
+
+// }
+
+function futureStateGenerator(gameBoard, maxPlayer) {
+    let cur = [];
+    let next = [];
+    let bMarbles = [], wMarbles = [];
+    let turn = maxPlayer ? 'b' : 'w';
+    for (let i = 0; i < gameBoard.length; i++) {
+        let cellID = gameBoard[i].substring(0,2);
+        let team = gameBoard[i].substring(2, 3);
+        if (team == 'b') {
+            bMarbles.push(cellID)
+        } else {
+            wMarbles.push(cellID)
         }
     }
-    return v;
-}
-
-function minValue(node, alpha, beta, depth) {
-    if (checkTerminal()) {
-        return node;
+    currentMarbles = turn==='b'? bMarbles:wMarbles;
+    oppositeMarbles = turn ==='b'? wMarbles:bMarbles;
+    
+    for(let i =0; i<currentMarbles.length;i++) {
+        cur =getAdjacent(currentMarbles[i]);
     }
-
+    for(let i =0; i<oppositeMarbles.length;i++) {
+        next =getAdjacent(oppositeMarbles[i]);
+    }
+    for(let i =0; i<emptyLocation.length;i++) {
+        next =getAdjacent(emptyLocation[i]);
+    }
+    return move(cur, next, true);
 }
 
-function checkTerminal(node) {
-    let boardArr = node.split(",");
+function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
+    let gameOver = testEndGame(gameBoard);
+    console.log(gameOver)
+    if (depth == 0 || gameOver) {
+        // return heuristicHandler(gameBoard);
+        return gameBoard;
+    }
+    let value;
+    let resultingMoves = futureStateGenerator(gameBoard, maxPlayer);
+    // console.log(resultingMoves)
+    let resultingBoards = boardOutput(resultingMoves[0], resultingMoves[1], gameBoard)[1];
+    if (maxPlayer) {
+        value = Number.NEGATIVE_INFINITY;
+        for (let i = 0; i < resultingBoards.length; i++) {
+            let board = resultingBoards[i];
+            value = Math.max(value, alphaBetaMiniMax(board, depth - 1, alpha, beta, false));
+            alpha = Math.max(alpha, value);
+            if (alpha >= beta) {
+                break;
+            };
+        }
+        // resultingBoards.forEach(board => {
+            
+        // });
+        return value;
+    } else {
+        value = Number.POSITIVE_INFINITY;
+        for (let i = 0; i < resultingBoards.length; i++) {
+            let board = resultingBoards[i];
+            value = Math.min(value, alphaBetaMiniMax(board, depth - 1, alpha, beta, true));
+            beta = Math.min(beta, value);
+            if (beta <= alpha) {
+                break;
+            };
+        }
+        // resultingBoards.forEach(board => {
+            
+        // });
+        return value;
+    };
+};
 
-    return false
+function testEndGame(gameBoard) {
+    // console.log(gameBoard);
+    // let gamePieces = gameBoard.split(",");
+    let blackPieces = 0;
+    let whitePieces = 0;
+    gameBoard.forEach(piece => {
+        let pieceColour = piece.substring(2, 3);
+        if (pieceColour == "b") {
+            blackPieces++;
+        } else {
+            whitePieces++;
+        }
+    })
+    if (blackPieces <= 8 || whitePieces <= 8) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
-function heuristicHandler(node) {
-    let boardArr = node.split(",");
-    return boardScore(boardArr);
+function heuristicHandler(board) {
+    return boardScore(board);
 }
 
 
@@ -100,7 +184,7 @@ function boardScore(board) {
         // Heuristic 2: 2/3 in a row (horizontal)
         let h_count = 0;
         if (team == 'b') {
-            nodeScore += positionValues(cell);
+            nodeScore += positionValues[cell];
 
             if (h_count < 0) h_count = 0;
             h_count++;
@@ -108,7 +192,7 @@ function boardScore(board) {
             else if (h_count > 1) { nodeScore += 1; }
         }
         else {
-            nodeScore -= positionValues(cell);
+            nodeScore -= positionValues[cell];
             if (h_count > 0) h_count = 0;
             h_count--;
             if (h_count < -2) { nodeScore -= 1; } 

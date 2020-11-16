@@ -7,6 +7,8 @@ $( document ).ready(function() {
     localStorage.setItem('p2TimeLimit', 5);
     localStorage.setItem('blackPlayer', 1);
     setup_radio_selection_clicks();
+    gameModeSetup();
+    setBlackPlayer();
 });
 
 function setup_radio_selection_clicks() {
@@ -43,6 +45,7 @@ function gameModeSetup() {
     });
     $('#game-mode-player-cpu').click(function() {
         localStorage.setItem('gameMode', 1)
+        console.log(localStorage.getItem('gameMode'))
     });
     $('#game-mode-cpu-cpu').click(function() {
         localStorage.setItem('gameMode', 2)

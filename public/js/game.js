@@ -32,7 +32,7 @@ let layoutInt = 0,
 
 // TURN-BASED VARIABLES
 let currentTurn = 'b',              // b (black) or w (white)
-    currentTurnINT = 0,             // Integer representing which players turn it is (1 or 2)
+    currentTurnINT = 1,             // Integer representing which players turn it is (1 or 2)
     currentClickSequence = [],      // The marbles clicked for this turn
     currentClickDirections = [],
     clickableCells = [];
@@ -41,13 +41,15 @@ window.onload = function() {
     mammaMia = new Audio("../audio/mammamia.mp3");
     layoutInt = localStorage.getItem('layout');
     gameMode = localStorage.getItem('gameMode');
+    console.log(gameMode)
     turnLimit = localStorage.getItem('turnLimit');
     p1TimeLimit = localStorage.getItem('p1TimeLimit');
     p2TimeLimit = localStorage.getItem('p2TimeLimit');
     blackPlayer = localStorage.getItem('blackPlayer');
 
     if (blackPlayer == 1) currentTurnINT = 1;
-    else currentTurnINT = 2;
+    else if (blackPlayer == 2) currentTurnINT = 2;
+    else currentTurnINT = 1;
 
     let moveLimits = document.getElementsByClassName("move-limit");
     moveLimits[0].innerHTML = turnLimit;
@@ -130,7 +132,6 @@ function setClickables(id) {
                 inlineAdjMove = "i-" + adjacentArr[i] + "-" + adjDir;
             } 
             if (resultsInline.includes(inlineMove) || resultsInline.includes(inlineAdjMove)) {
-                console.log(getPlayerMarble(currentTurn, adjacentArr[i]))
                 if (adjCell.classList.contains(hasMarbleClass) && getPlayerMarble(currentTurn, adjacentArr[i]) == undefined) {
                     // check for sumito, otherwise do the other check
                     console.log("maybe sumito?")
@@ -334,17 +335,26 @@ function endTurn() {
     if (currentTurnINT == 1) {
         currentTurnINT = 2
         let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
+        document.getElementById("p1-tab-span").innerHTML = "";
+        document.getElementById("p2-tab-span").innerHTML = "<<<<";
         turnsLeft--;
         document.getElementById("p1-moves").innerHTML = turnsLeft
     } else {
         currentTurnINT = 1
         let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
+        document.getElementById("p1-tab-span").innerHTML = "<<<<";
+        document.getElementById("p2-tab-span").innerHTML = "";
         turnsLeft--;
         document.getElementById("p2-moves").innerHTML = turnsLeft
     }
     deselectClicks();
     clearClickables();
     generateBoardWInput();
+    if (gameMode == 1 && currentTurnINT == 2) {
+        console.log("----------MOVING AI!!")
+        drawBoard(alphaBetaMiniMax(getCurrentBoard(), 10,  Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, false));
+        console.log("ai moved")
+    }
 }
 
 function createMarble(startCoord, player, mbcolour) {
@@ -378,6 +388,8 @@ function initBoard(startStyle) {
     // 0 or undefined = default
     // 1 = Belgium Daisy
     // 2 = German Daisy
+    emptyBoard();
+    document.getElementById("p1-tab-span").innerHTML = "<<<<"; // change to whoever is black
     let startCoordsP1 = [],
         startCoordsP2 = [];
     if (!startStyle || startStyle == 0) {
@@ -399,15 +411,17 @@ function initBoard(startStyle) {
         cellP1.style.background = blackMarbleColour;
         cellP1.classList.add(hasMarbleClass);
         // create a black marble object then add to marblesP1 array
-        marblesP1.push(createMarble(startCoordsP1[i], 'b', blackMarbleColour))
-        newMarblesP1.push(marblesP1[i].coordinate);
+        let marble1 = createMarble(startCoordsP1[i], 'b', blackMarbleColour);
+        marblesP1.push(marble1)
+        newMarblesP1.push(marble1.coordinate);
 
         let cellP2 = document.getElementById(startCoordsP2[i])
         cellP2.style.background = whiteMarbleColour;
         cellP2.classList.add(hasMarbleClass);
         // create a white marble object then add to marblesP2 array
-        marblesP2.push(createMarble(startCoordsP2[i], 'w', whiteMarbleColour))
-        newMarblesP2.push(marblesP1[i].coordinate);
+        let marble2 = createMarble(startCoordsP2[i], 'w', whiteMarbleColour)
+        marblesP2.push(marble2)
+        newMarblesP2.push(marble2.coordinate);
     }
     for(let i =0; i<allBoard.length;i++) {
         if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {
@@ -416,6 +430,14 @@ function initBoard(startStyle) {
     }
     fullHistory.push(getCurrentBoard());
     stateGenerator();
+    if (gameMode == 1) { // player vs computer
+        document.getElementById("player2-tab").innerHTML = "Computer  <span id='p2-tab-span'></span>";
+        if (blackPlayer == 1) { // player moves first
+
+        } else { // computer moves first
+
+        }
+    }
 }
 
 function playGame() {
@@ -439,11 +461,15 @@ function undo() {
         if (currentTurnINT == 1) {
             currentTurnINT = 2
             let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
+            document.getElementById("p1-tab-span").innerHTML = "";
+            document.getElementById("p2-tab-span").innerHTML = "<<<<";
             turnsLeft++;
             document.getElementById("p1-moves").innerHTML = turnsLeft
         } else {
             currentTurnINT = 1
             let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
+            document.getElementById("p1-tab-span").innerHTML = "<<<<";
+            document.getElementById("p2-tab-span").innerHTML = "";
             turnsLeft++;
             document.getElementById("p2-moves").innerHTML = turnsLeft
         }
@@ -456,6 +482,7 @@ function undo() {
 }
 
 function drawBoard(board) {
+    console.log(board);
     emptyBoard();
     board.forEach(marbleID => {
         let id = marbleID.substring(0, 2);
