@@ -46,7 +46,7 @@
     margin: 0;
     padding: 0;
 }
-#player-captures, #ai-captures {
+#P1-captures, #P2-captures {
     display: flex;
     flex-direction: row;
 }

@@ -2,8 +2,8 @@
 let play = document.getElementById("playButton");
 play.onclick = function() {
     const selectedFile = document.getElementById('input').files[0];
-    console.log(selectedFile.name);
     if (selectedFile) {
+        console.log(selectedFile.name);
         let reader = new FileReader();
         reader.readAsText(selectedFile, "UTF-8");
         reader.onload = function (evt) {
@@ -18,5 +18,7 @@ play.onclick = function() {
         reader.onerror = function (evt) {
             console.log("error reading file");
         }
+    } else {
+        window.location = 'Game/index.html';
     }
 };

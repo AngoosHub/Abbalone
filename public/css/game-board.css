@@ -75,3 +75,12 @@ body {
 .cell:hover {
     cursor: pointer;
 }
+
+#fh-div p {
+    font-size: 10pt;
+    margin: 0;
+}
+
+#p1-tab-span, #p2-tab-span {
+    color: #3f3f3fb6;
+}

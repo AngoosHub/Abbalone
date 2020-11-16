@@ -7,41 +7,50 @@
         - inputFile
 
 This function will generate an array of resulting board configurations for output file. */
-function boardOutput() {
-    let currentBoard = generateCurrentBoardLayout();
+function boardOutput(resultsI, resultsSS, inputBoard) {
+    let currentBoard;
+    if (!inputBoard) {
+        currentBoard = getCurrentBoard2();
+    } else {
+        currentBoard = getCurrentBoard2();
+        // maybe also change resultsInline
+    }
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
-    resultsInline.forEach(inline_move => {
+    resultsI.forEach(inline_move => {
         if (inline_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, inline_move);
-            let resultString = transformBoardToOutputLine(newBoard);
+            // let resultString = transformBoardToOutputLine(newBoard);
+            let resultArray= transformBoardToArray(newBoard);
 
-            if (boardConfigOutputFile.indexOf(resultString) == -1) {
-                boardConfigOutputFile.push(resultString);
+            if (boardConfigOutputFile.indexOf(newBoard) == -1) {
+                boardConfigOutputFile.push(resultArray);
                 moveConfigOutputFile.push(inline_move);
             }
         }
     });
 
-    resultsSideStep.forEach(sidestep_move => {
+    resultsSS.forEach(sidestep_move => {
         if (sidestep_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, sidestep_move);
-            let resultString = transformBoardToOutputLine(newBoard);
-            if (boardConfigOutputFile.indexOf(resultString) == -1) {
-                boardConfigOutputFile.push(resultString);
+            // let resultString = transformBoardToOutputLine(newBoard);
+            let resultArray= transformBoardToArray(newBoard);
+            
+            if (boardConfigOutputFile.indexOf(newBoard) == -1) {
+                boardConfigOutputFile.push(resultArray);
                 moveConfigOutputFile.push(sidestep_move);
             }
         }
     });
 
-    console.log("---- START OF BOARD OUTPUT ----");
-    console.log(moveConfigOutputFile);
-    console.log(boardConfigOutputFile);
-    console.log("---- END OF BOARD OUTPUT ----");
+    // console.log("---- START OF BOARD OUTPUT ----");
+    // console.log(moveConfigOutputFile);
+    // console.log(boardConfigOutputFile);
+    // console.log("---- END OF BOARD OUTPUT ----");
 
-    downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
-    downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
-
+    // downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
+    // downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
+    
     return [moveConfigOutputFile, boardConfigOutputFile];
 }
 
@@ -59,22 +68,71 @@ function downloadFile(filename, text) {
 }
 
 /* Generate the current board from input file */
-function generateCurrentBoardLayout() {
+function generateCurrentBoardLayout(boardInput) {
     // make empty board.
     let currentBoard = {};
     allBoard.forEach(element => currentBoard[element] = "");
 
     // add in marbles from input file.
-    const inputFileLowercase = inputFile.map(item => item.toLowerCase());
-    inputFileLowercase.forEach(element => {
+    const boardInputLowercase = boardInput.map(item => item.toLowerCase());
+    boardInputLowercase.forEach(element => {
         let id = element.substring(0, 2);
         let color = element.substring(2);
         currentBoard[id] = color;
     });
-    
+
     return currentBoard;
 }
 
+function getCurrentBoard() {
+    let currentBoard = []
+    for (let i = 0; i < marblesP1.length; i++) {
+        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+            let marble = marblesP1[i];
+            let cellID = marble.coordinate;
+            let team = marble.player;
+            currentBoard.push(cellID + team);
+        }
+        if (!marblesP2[i].dropped) {
+            let marble = marblesP2[i];
+            let cellID = marble.coordinate;
+            let team = marble.player;
+            currentBoard.push(cellID + team);
+        }
+    }
+    return currentBoard;
+}
+
+function getCurrentBoard2() {
+    // make empty board.
+    let currentBoard = {};
+    allBoard.forEach(element => currentBoard[element] = "");
+
+    // add in marbles from input file.
+    // const boardInputLowercase = boardInput.map(item => item.toLowerCase());
+    // boardInputLowercase.forEach(element => {
+    //     let id = element.substring(0, 2);
+    //     let color = element.substring(2);
+    //     currentBoard[id] = color;
+    // });
+
+    for (let i = 0; i < marblesP1.length; i++) {
+        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+            let marble = marblesP1[i];
+            let cellID = marble.coordinate;
+            let team = marble.player;
+            currentBoard[cellID] = team;
+        }
+        if (!marblesP2[i].dropped) {
+            let marble = marblesP2[i];
+            let cellID = marble.coordinate;
+            let team = marble.player;
+            currentBoard[cellID] = team;
+        }
+    }
+
+    return currentBoard;
+}
 
 /* Generate a resulting board after performing given move on current board. */
 /* IMPORTANT - This function assumes given move is legal. */
@@ -131,6 +189,8 @@ function generateBoardConfigurationFromMove(board, inputMove) {
 /* Takes a board array and writes it into string of marbles for output file. */
 function transformBoardToOutputLine(board) {   
     let resultString = [];
+    // console.log(board);
+    // console.log(Object.entries(board))
     for (const [marble_id, color] of Object.entries(board)) {
         if (color != "") {
             resultString.push(color + marble_id);
@@ -146,6 +206,29 @@ function transformBoardToOutputLine(board) {
     });
 
     return sortedResults.join(",");
+}
+
+
+function transformBoardToArray(board) {   
+    let resultString = [];
+    // console.log(board);
+    // console.log(Object.entries(board))
+    for (const [marble_id, color] of Object.entries(board)) {
+        if (color != "") {
+            resultString.push(color + marble_id);
+        }
+    }
+
+    resultString.sort();
+
+    let sortedResults = [];
+
+    resultString.forEach(result => {
+        sortedResults.push(result.substring(1) + result.substring(0,1));
+    });
+
+    // console.log(sortedResults);
+    return sortedResults;
 }
 
 

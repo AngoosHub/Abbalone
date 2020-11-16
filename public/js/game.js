@@ -18,19 +18,48 @@ const   defStartP1 = ["a1", "a2", "a3", "a4", "a5", "b1", "b2",
 let marblesP1 = [],
     marblesP2 = [],
     themeNo = 0,
-    mammaMia = null;  
+    mammaMia = null,
+    player1Score = 0,
+    player2Score = 0,
+    fullHistory = [];  
+
+let layoutInt = 0,
+    gameMode = 0,
+    turnLimit = 50,
+    p1TimeLimit = 5,
+    p2TimeLimit = 5,
+    blackPlayer = 1;
 
 // TURN-BASED VARIABLES
 let currentTurn = 'b',              // b (black) or w (white)
+    currentTurnINT = 1,             // Integer representing which players turn it is (1 or 2)
     currentClickSequence = [],      // The marbles clicked for this turn
     currentClickDirections = [],
     clickableCells = [];
 
 window.onload = function() {
     mammaMia = new Audio("../audio/mammamia.mp3");
-    let layoutInt = localStorage.getItem('layout');
-    // initBoard(layoutInt);
-    turn();
+    layoutInt = localStorage.getItem('layout');
+    gameMode = localStorage.getItem('gameMode');
+    console.log(gameMode)
+    turnLimit = localStorage.getItem('turnLimit');
+    p1TimeLimit = localStorage.getItem('p1TimeLimit');
+    p2TimeLimit = localStorage.getItem('p2TimeLimit');
+    blackPlayer = localStorage.getItem('blackPlayer');
+
+    if (blackPlayer == 1) currentTurnINT = 1;
+    else if (blackPlayer == 2) currentTurnINT = 2;
+    else currentTurnINT = 1;
+
+    let moveLimits = document.getElementsByClassName("move-limit");
+    moveLimits[0].innerHTML = turnLimit;
+    moveLimits[1].innerHTML = turnLimit;
+    document.getElementById("p1-time").innerHTML = p1TimeLimit;
+    document.getElementById("p2-time").innerHTML = p2TimeLimit;
+
+    initBoard(layoutInt);
+    // turn();
+    // emptyBoard()
     let cells = document.getElementsByClassName("cell");
     for (i = 0; i < cells.length; i++) {
         let cellID = cells[i].id;
@@ -39,9 +68,21 @@ window.onload = function() {
 }
 
 function getPlayerMarble(player, id) { 
-    let marbles = player === 'b' ? marblesP1 : marblesP2;
+    let marbles;
+    if (player) marbles = (player === 'b') ? marblesP1 : marblesP2;
+    else marbles = marblesP1.concat(marblesP2)
     for (let i = 0; i < marbles.length; i++) {
         if (marbles[i].coordinate == id) {
+            return marbles[i]
+        }
+    }
+}
+function getPlayerMarblePreviousLoc(player, id) {
+    let marbles;
+    if (player) marbles = (player === 'b') ? marblesP1 : marblesP2;
+    else marbles = marblesP1.concat(marblesP2)
+    for (let i = 0; i < marbles.length; i++) {
+        if (marbles[i].prevCoord == id) {
             return marbles[i]
         }
     }
@@ -91,8 +132,10 @@ function setClickables(id) {
                 inlineAdjMove = "i-" + adjacentArr[i] + "-" + adjDir;
             } 
             if (resultsInline.includes(inlineMove) || resultsInline.includes(inlineAdjMove)) {
-                if (adjCell.classList.contains(hasMarbleClass) && !getPlayerMarble(currentTurn, adjacentArr[i])) {
+                if (adjCell.classList.contains(hasMarbleClass) && getPlayerMarble(currentTurn, adjacentArr[i]) == undefined) {
                     // check for sumito, otherwise do the other check
+                    console.log("maybe sumito?")
+                    console.log(!getPlayerMarble(currentTurn, adjacentArr[i]))
                 }
                 if (currentClickSequence.length > 0) {
                     for (let x = 0; x < currentClickSequence.length; x++) {
@@ -210,16 +253,13 @@ function cellClicked(id) {
                     rowValues.push(rowOrder.indexOf(marble.coordinate[0]));
                     colValues.push(marble.coordinate[1]);
                 }
-                if (rowValues.length > 0 && rowValues[1] == rowValues[0]) {
-                    // horizontal selection
-                    if (toMoveRowValue == rowValues[0]) {
-                        // inline horizontal move
+                if (rowValues.length > 0 && rowValues[1] == rowValues[0]) { // horizontal selection
+                    if (toMoveRowValue == rowValues[0]) { // inline horizontal move
                         moveDir = toMoveRowValue > colValues[0] ? "right" : "left"
-                    } else {
+                    } else { // side step horizontal move
                         moveDir = 0
                     }
-                } else {
-                    // vertical selection
+                } else {  // vertical selection
                     moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
                 }
                 let length = currentClickSequence.length
@@ -238,12 +278,12 @@ function cellClicked(id) {
                             break;
                         case "left":
                             values = colValues;
-                            topID = values.indexOf(Math.min.apply(Math, values));
+                            topID = values.indexOf("" + Math.min.apply(Math, values));
                             moveMarble = currentClickSequence[topID];
                             break;
                         case "right":
                             values = colValues;
-                            topID = values.indexOf(Math.max.apply(Math, values));
+                            topID = values.indexOf("" + Math.max.apply(Math, values));
                             moveMarble = currentClickSequence[topID];
                             break;
                         default:
@@ -277,13 +317,58 @@ function deselectClicks() {
 }
 
 function endTurn() {
-    if (currentTurn == 'b') {
-        currentTurn = 'w';
-    } else {
-        currentTurn = 'b';
-    }
-    deselectClicks();
-    clearClickables();
+    let promise = new Promise((resolve, reject) => {
+        let board = getCurrentBoard();
+        fullHistory.push(board);
+        board = board.toString().replaceAll(',', ', ');
+        let newText = document.createElement("p");
+        newText.innerHTML = board.toString();
+        if (currentTurn == 'b') {
+            nextTurn = 'b'
+            currentTurn = 'w';
+            newText.style.background = "#3f3f4066"
+        } else {
+            newText.style.background = "#ebebeb66"
+            nextTurn = 'w'
+            currentTurn = 'b';
+        }
+        document.getElementById("fh-div").prepend(newText);
+        if (currentTurnINT == 1) {
+            currentTurnINT = 2
+            let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
+            document.getElementById("p1-tab-span").innerHTML = "";
+            document.getElementById("p2-tab-span").innerHTML = "<<<<";
+            turnsLeft--;
+            document.getElementById("p1-moves").innerHTML = turnsLeft
+        } else {
+            currentTurnINT = 1
+            let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
+            document.getElementById("p1-tab-span").innerHTML = "<<<<";
+            document.getElementById("p2-tab-span").innerHTML = "";
+            turnsLeft--;
+            document.getElementById("p2-moves").innerHTML = turnsLeft
+        }
+        deselectClicks();
+        clearClickables();
+        generateBoardWInput();
+        resolve()
+    })
+    promise.then(res => {
+        if (gameMode == 1 && currentTurnINT == 2) {
+            console.log("----------MOVING AI!!")
+            let maxDepth = 6;
+            let alphaBeta;
+            // alphaBeta = alphaBetaMiniMax(getCurrentBoard(), 6,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false)
+            for(let depth = 0; depth < maxDepth; depth++) {
+                alphaBeta = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+                // console.log(alphaBeta);
+            }
+            drawBoard(alphaBeta[1]);
+            endTurn();
+            console.log("ai moved")
+        }
+    })
+    
 }
 
 function createMarble(startCoord, player, mbcolour) {
@@ -295,18 +380,20 @@ function createMarble(startCoord, player, mbcolour) {
         player: player,
         marbleColour: mbcolour,
         dropped: false,
+        draw: function() {
+            document.getElementById(this.coordinate).style.background = this.marbleColour;
+        },
         move: function(newCoord) {
             this.prevCoord = this.coordinate;
             this.coordinate = newCoord;
-            this.redraw();
+            if (!allBoard.includes(newCoord)) this.dropped = true;
         },
-        redraw: function() {
-            let cellOriginal = document.getElementById(this.prevCoord),
-                cellNew = document.getElementById(this.coordinate);
-            cellOriginal.style.background = emptyCellColour;
-            cellOriginal.classList.remove(hasMarbleClass)
-            cellNew.style.background = this.marbleColour;
-            cellNew.classList.add(hasMarbleClass);
+        fixClasses: function() {
+            document.getElementById(this.prevCoord).classList.remove(hasMarbleClass)
+            if (!this.dropped) {
+                document.getElementById(this.coordinate).classList.add(hasMarbleClass)
+
+            }
         }
     }
 }
@@ -315,6 +402,8 @@ function initBoard(startStyle) {
     // 0 or undefined = default
     // 1 = Belgium Daisy
     // 2 = German Daisy
+    emptyBoard();
+    document.getElementById("p1-tab-span").innerHTML = "<<<<"; // change to whoever is black
     let startCoordsP1 = [],
         startCoordsP2 = [];
     if (!startStyle || startStyle == 0) {
@@ -336,21 +425,108 @@ function initBoard(startStyle) {
         cellP1.style.background = blackMarbleColour;
         cellP1.classList.add(hasMarbleClass);
         // create a black marble object then add to marblesP1 array
-        marblesP1.push(createMarble(startCoordsP1[i], 'b', blackMarbleColour))
+        let marble1 = createMarble(startCoordsP1[i], 'b', blackMarbleColour);
+        marblesP1.push(marble1)
+        newMarblesP1.push(marble1.coordinate);
 
         let cellP2 = document.getElementById(startCoordsP2[i])
         cellP2.style.background = whiteMarbleColour;
         cellP2.classList.add(hasMarbleClass);
         // create a white marble object then add to marblesP2 array
-        marblesP2.push(createMarble(startCoordsP2[i], 'w', whiteMarbleColour))
+        let marble2 = createMarble(startCoordsP2[i], 'w', whiteMarbleColour)
+        marblesP2.push(marble2)
+        newMarblesP2.push(marble2.coordinate);
+    }
+    for(let i =0; i<allBoard.length;i++) {
+        if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {
+            emptyLocation.push(allBoard[i]);
+        }
+    }
+    fullHistory.push(getCurrentBoard());
+    stateGenerator();
+    if (gameMode == 1) { // player vs computer
+        document.getElementById("player2-tab").innerHTML = "Computer  <span id='p2-tab-span'></span>";
+        if (blackPlayer == 1) { // player moves first
+
+        } else { // computer moves first
+
+        }
     }
 }
 
 function playGame() {
     mammaMia.currentTime = 0;
-    // mammaMia.play();
-    turn();
-    boardOutput();
+    mammaMia.play();
+    // turn();
+    // boardOutput();
+}
+
+function undo() {
+    if (fullHistory.length > 1) {
+        fullHistory.pop();
+        let prevMove = fullHistory[fullHistory.length - 1]
+        if (currentTurn == 'b') {
+            nextTurn = 'b'
+            currentTurn = 'w';
+        } else {
+            nextTurn = 'w'
+            currentTurn = 'b';
+        }
+        if (currentTurnINT == 1) {
+            currentTurnINT = 2
+            let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
+            document.getElementById("p1-tab-span").innerHTML = "";
+            document.getElementById("p2-tab-span").innerHTML = "<<<<";
+            turnsLeft++;
+            document.getElementById("p1-moves").innerHTML = turnsLeft
+        } else {
+            currentTurnINT = 1
+            let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
+            document.getElementById("p1-tab-span").innerHTML = "<<<<";
+            document.getElementById("p2-tab-span").innerHTML = "";
+            turnsLeft++;
+            document.getElementById("p2-moves").innerHTML = turnsLeft
+        }
+        deselectClicks();
+        clearClickables();
+        drawBoard(prevMove);
+    } else {
+        window.alert("This is the farthest you can go!")
+    }
+}
+
+function clearHasMarble() {
+    let marbles = document.querySelectorAll(".hasMarble");
+    for (let i = 0; i < marbles.length; i++) {
+        marbles[i].classList.remove(hasMarbleClass);
+    }
+}
+
+function drawBoard(board) {
+    console.log(board);
+    emptyBoard();
+    marblesP1 = []
+    marblesP2 = []
+    clearHasMarble();
+    board.forEach(marbleID => {
+        let id = marbleID.substring(0, 2);
+        let team = marbleID.substring(2,3);
+        let newMarblesARR = team == 'b' ? newMarblesP1 : newMarblesP2;
+        let marbleArr = team == 'b' ? marblesP1 : marblesP2;
+        let marbleColour = team == 'b' ? blackMarbleColour : whiteMarbleColour;
+        let marble = createMarble(id, team, marbleColour)
+
+        marbleArr.push(marble);
+        newMarblesARR.push(id);
+        marble.draw();
+        marble.fixClasses();
+    });
+    for(let i =0; i<allBoard.length;i++) {
+        if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {
+            emptyLocation.push(allBoard[i]);
+        }
+    }
+    stateGenerator()
 }
 
 function changeTheme() {

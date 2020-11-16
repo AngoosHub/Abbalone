@@ -8,6 +8,7 @@
     <script type="text/javascript" src='../js/ai-algorithm.js'></script>
     <script type="text/javascript" src='../js/strings.js?v=1.0'></script>
     <script type="text/javascript" src='../js/boardOutput.js'></script>
+    <script type="text/javascript" src='../js/ai-Phil.js'></script>
     <title>ABBA-Lone</title>
 </head>
 <body>
@@ -101,28 +102,28 @@
             <div id="sb-container">
                 <h1 id="game-title" onclick="changeTheme()">ABBA-Lone</h1>
                 <div id="game-info">
-                    <h3>Player</h3>
-                    <div id="player-captures">
-                        <div class="capture" id="pc-1"></div>
-                        <div class="capture" id="pc-2"></div>
-                        <div class="capture" id="pc-3"></div>
-                        <div class="capture" id="pc-4"></div>
-                        <div class="capture" id="pc-5"></div>
-                        <div class="capture" id="pc-6"></div>
+                    <h3 id="player1-tab">Player 1 <span id="p1-tab-span"></span></h3>
+                    <div id="P1-captures">
+                        <div class="capture" id="p1c-1"></div>
+                        <div class="capture" id="p1c-2"></div>
+                        <div class="capture" id="p1c-3"></div>
+                        <div class="capture" id="p1c-4"></div>
+                        <div class="capture" id="p1c-5"></div>
+                        <div class="capture" id="p1c-6"></div>
                     </div>
-                    <h4>Moves left: <span id="p-moves">50</span></h4>
-                    <h4>Time left: <span id="p-time">10:00</span></h4>
-                    <h3>Computer</h3>
-                    <div id="AI-captures">
-                        <div class="capture" id="aic-1"></div>
-                        <div class="capture" id="aic-2"></div>
-                        <div class="capture" id="aic-3"></div>
-                        <div class="capture" id="aic-4"></div>
-                        <div class="capture" id="aic-5"></div>
-                        <div class="capture" id="aic-6"></div>
+                    <h4>Moves left: <span class="move-limit" id="p1-moves"></span></h4>
+                    <h4>Time left: <span id="p1-time"></span></h4>
+                    <h3 id="player2-tab">Player 2 <span id="p2-tab-span"></span></h3>
+                    <div id="P2-captures">
+                        <div class="capture" id="p2c-1"></div>
+                        <div class="capture" id="p2c-2"></div>
+                        <div class="capture" id="p2c-3"></div>
+                        <div class="capture" id="p2c-4"></div>
+                        <div class="capture" id="p2c-5"></div>
+                        <div class="capture" id="p2c-6"></div>
                     </div>
-                    <h4>Moves left: <span id="ai-moves">50</span></h4>
-                    <h4>Time left: <span id="p-time">10:00</span></h4>
+                    <h4>Moves left: <span class="move-limit" id="p2-moves"></span></h4>
+                    <h4>Time left: <span id="p2-time"></span></h4>
                     <h4>Next Move: </h4>
                 </div>
                 <hr/>
@@ -135,7 +136,7 @@
                         <div class="gc-btn" id="stop-btn">Stop</div>
                     </div>
                     <div class="gc-btnset">
-                        <div class="gc-btn" id="undo-btn">Undo</div>
+                        <div class="gc-btn" id="undo-btn" onclick="undo()">Undo</div>
                         <div class="gc-btn" id="reset-btn">Reset</div>
                     </div>
                 </div>
@@ -148,37 +149,13 @@
                     <div id="gh-container">
                         <div id="gh-full">
                             <h4>Full History</h4>
-                            <div>
-                                <p id="fh-text"></p>
-                                PLAYER -- moved X marbles (side step or the inline)
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
+                            <div id="fh-div">
                             </div>
                         </div>
                         <div id="gh-ai-time">
                             <h4>AI Time</h4>
                             <div>
                                 <p id="ai-time-text"></p>
-                                AI--time taken per move (decision making)
-                                dsgdsfgjdkfgskdjfgdfjksghkdjfsghdksjghdfkjsghjkdsghkdjfsghkjdfhgsdg
                             </div>
                         </div>
                     </div>
