@@ -171,7 +171,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
 
     let resultingBoards = sortBoards.map(item => item.board);
     // End Dynamic Move Ordering.
-    console.log(resultingBoards)
+    // console.log(resultingBoards)
 
     let value;
     if (maxPlayer) {
@@ -185,6 +185,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
             if (value > alpha) {
                 alpha = value;
                 bestBoard_MAX = board;
+                console.log("bestBoard_MAX Changed: " + value);
             }
             alpha = Math.max(alpha, value);
             if (alpha >= beta) {
@@ -202,6 +203,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
             if (value < beta) {
                 beta = value
                 bestBoard_MIN = board
+                console.log("bestBoard_MIN Changed: " + value);
             }
             beta = Math.min(beta, value);
             if (beta <= alpha) {
