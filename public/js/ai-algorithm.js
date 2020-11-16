@@ -21,11 +21,11 @@ const allBoard =
 // const inputFile = ["A3b","B2b","B3b","C3b","C4b","G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
 // const nextTurn = 'w';
 
-// const fileData = JSON.parse(localStorage.getItem("input"));
+const fileData = JSON.parse(localStorage.getItem("input"));
 
-// const inputFile = fileData["positions"];
-// const nextTurn = fileData["turn"];
-// const fileName = fileData["fName"];
+const inputFile = fileData["positions"];
+const nextTurn = fileData["turn"];
+const fileName = fileData["fName"];
 
 // const inputFile = ["E1b", "D1w", "C1w"];
 // const nextTurn = 'b';
@@ -42,7 +42,7 @@ let resultsSideStep = [];
 let adjacentInfo = {}; // key : marble, value : marble's adjacent
 let currentMarbles; // depends on turn // logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
 let oppositeMarbles; // depends on turn //logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
-let nextTurn = 'w';
+// let nextTurn = 'w';
 
 function turn() {
     generateBoardWInput();
@@ -64,19 +64,28 @@ function emptyBoard() {
 //this is to show board based on "input.board"
 function generateBoardWInput() {
     emptyBoard();
-    for (let i = 0; i < marblesP1.length; i++) {
-        if (!marblesP1[i].dropped) { // if the marble has not been dropped
-            let marble = marblesP1[i];
-            newMarblesP1.push(marble.coordinate);
-            marble.draw();
-            marble.fixClasses();
+
+    //read "input.board" (ex, "A3b", "B2b"..) and set background to marble and 
+    //push it to newMarblesP1, newMarblesP2
+    for(let i =0; i<inputFile.length;i++) {
+        let location = (inputFile[i].substring(0, 1)).toLowerCase()+inputFile[i].substring(1, 2);
+        let marbleColor = inputFile[i].substring(2, 3);
+        
+        if(marbleColor==='b') {
+            document.getElementById(location).style.background=blackMarbleColour;
+            newMarblesP1.push(location);
+            document.getElementById(location).classList.add(hasMarbleClass);
+            // create a black marble object then add to marblesP1 array
+            marblesP1.push(createMarble(location, 'b', blackMarbleColour))
+        }else {
+            document.getElementById(location).style.background=whiteMarbleColour;
+            newMarblesP2.push(location);
+            document.getElementById(location).classList.add(hasMarbleClass);
+            // create a black marble object then add to marblesP1 array
+            marblesP2.push(createMarble(location, 'w', whiteMarbleColour))
         }
-        if (!marblesP2[i].dropped) {
-            let marble = marblesP2[i];
-            newMarblesP2.push(marble.coordinate);
-            marble.draw();
-            marble.fixClasses();
-        }
+     
+        
     }
     // set empty location
     for(let i =0; i<allBoard.length;i++) {
@@ -84,6 +93,8 @@ function generateBoardWInput() {
             emptyLocation.push(allBoard[i]);
         }
     }
+
+    emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     stateGenerator()
 }
 

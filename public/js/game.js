@@ -456,9 +456,9 @@ function initBoard(startStyle) {
 
 function playGame() {
     mammaMia.currentTime = 0;
-    mammaMia.play();
+    // mammaMia.play();
     // turn();
-    // boardOutput();
+    boardOutput(resultsInline, resultsSideStep);
 }
 
 function undo() {

@@ -48,8 +48,8 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     // console.log(boardConfigOutputFile);
     // console.log("---- END OF BOARD OUTPUT ----");
 
-    // downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
-    // downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
+    downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
+    downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
     
     return [moveConfigOutputFile, boardConfigOutputFile];
 }
