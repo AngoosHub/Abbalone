@@ -10,9 +10,9 @@ This function will generate an array of resulting board configurations for outpu
 function boardOutput(resultsI, resultsSS, inputBoard) {
     let currentBoard;
     if (!inputBoard) {
-        currentBoard = getCurrentBoard();
+        currentBoard = getCurrentBoard2();
     } else {
-        currentBoard = inputBoard
+        currentBoard = getCurrentBoard2();
         // maybe also change resultsInline
     }
     let moveConfigOutputFile = [];
@@ -21,9 +21,10 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
         if (inline_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, inline_move);
             // let resultString = transformBoardToOutputLine(newBoard);
+            let resultArray= transformBoardToArray(newBoard);
 
             if (boardConfigOutputFile.indexOf(newBoard) == -1) {
-                boardConfigOutputFile.push(newBoard);
+                boardConfigOutputFile.push(resultArray);
                 moveConfigOutputFile.push(inline_move);
             }
         }
@@ -33,8 +34,10 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
         if (sidestep_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, sidestep_move);
             // let resultString = transformBoardToOutputLine(newBoard);
+            let resultArray= transformBoardToArray(newBoard);
+            
             if (boardConfigOutputFile.indexOf(newBoard) == -1) {
-                boardConfigOutputFile.push(newBoard);
+                boardConfigOutputFile.push(resultArray);
                 moveConfigOutputFile.push(sidestep_move);
             }
         }
@@ -97,6 +100,37 @@ function getCurrentBoard() {
             currentBoard.push(cellID + team);
         }
     }
+    return currentBoard;
+}
+
+function getCurrentBoard2() {
+    // make empty board.
+    let currentBoard = {};
+    allBoard.forEach(element => currentBoard[element] = "");
+
+    // add in marbles from input file.
+    // const boardInputLowercase = boardInput.map(item => item.toLowerCase());
+    // boardInputLowercase.forEach(element => {
+    //     let id = element.substring(0, 2);
+    //     let color = element.substring(2);
+    //     currentBoard[id] = color;
+    // });
+
+    for (let i = 0; i < marblesP1.length; i++) {
+        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+            let marble = marblesP1[i];
+            let cellID = marble.coordinate;
+            let team = marble.player;
+            currentBoard[cellID] = team;
+        }
+        if (!marblesP2[i].dropped) {
+            let marble = marblesP2[i];
+            let cellID = marble.coordinate;
+            let team = marble.player;
+            currentBoard[cellID] = team;
+        }
+    }
+
     return currentBoard;
 }
 
@@ -172,6 +206,29 @@ function transformBoardToOutputLine(board) {
     });
 
     return sortedResults.join(",");
+}
+
+
+function transformBoardToArray(board) {   
+    let resultString = [];
+    // console.log(board);
+    // console.log(Object.entries(board))
+    for (const [marble_id, color] of Object.entries(board)) {
+        if (color != "") {
+            resultString.push(color + marble_id);
+        }
+    }
+
+    resultString.sort();
+
+    let sortedResults = [];
+
+    resultString.forEach(result => {
+        sortedResults.push(result.substring(1) + result.substring(0,1));
+    });
+
+    console.log(sortedResults);
+    return sortedResults;
 }
 
 
