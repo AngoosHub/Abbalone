@@ -356,7 +356,13 @@ function endTurn() {
     promise.then(res => {
         if (gameMode == 1 && currentTurnINT == 2) {
             console.log("----------MOVING AI!!")
-            let alphaBeta = alphaBetaMiniMax(getCurrentBoard(), 1,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false)
+            let maxDepth = 3;
+            let alphaBeta;
+            // alphaBeta = alphaBetaMiniMax(getCurrentBoard(), 6,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false)
+            for(let depth = 0; depth < maxDepth; depth++) {
+                alphaBeta = alphaBetaMiniMax(getCurrentBoard(), maxDepth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+                console.log(alphaBeta);
+            }
             drawBoard(alphaBeta[1]);
             endTurn();
             console.log("ai moved")

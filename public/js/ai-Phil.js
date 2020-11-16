@@ -106,18 +106,76 @@ function futureStateGenerator(gameBoard, maxPlayer) {
     return move(cur, next, true);
 }
 
-let bestBoard;
+let bestBoard_MIN;
+let bestBoard_MAX;
+transpositionTable = {};
+const UPPERBOUND = "UPPERBOUND";
+const LOWERBOUND = "LOWERBOUND";
+const EXACT = "EXACT";
 
 function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
+    // Start Retrieve from transposition table.
+    let TTKey = gameBoard.join(","); // assuming gameBoard in format: ["A4w","A3w", ...]
+    if (transpositionTable.hasOwnProperty(TTKey) && transpositionTable[TTKey].depth >= depth) {
+        let TTEntry = transpositionTable[TTKey];
+        if (TTEntry.flag == EXACT) {
+            return [TTEntry.value, gameBoard];
+        }
+        else if (TTEntry.flag == LOWERBOUND) {
+            alpha = Math.max(alpha, TTEntry.value);
+        }
+        else if (TTEntry.flag = UPPERBOUND) {
+            beta = Math.min(beta, TTEntry.value);
+        }
+
+        if (alpha >= beta) {
+            return [TTEntry.value, gameBoard];
+        }
+    }
+    // End Retrieve.
+
     let gameOver = testEndGame(gameBoard);
     if (depth == 0 || gameOver) {
-        return [heuristicHandler(gameBoard), gameBoard];
+        let value = heuristicHandler(gameBoard);
+        // Start Store into transposition table.
+        let TTEntry = {value: value, depth: depth};
+        if (value <= alpha) {
+            TTEntry.flag = UPPERBOUND;
+        }
+        else if (value >= beta) {
+            TTEntry.flag = LOWERBOUND;
+        }
+        else
+            TTEntry.flag = EXACT;
+        transpositionTable[TTKey] = TTEntry;
+        // End Store.
+        return [value, gameBoard];
     }
+
     let resultingMoves = futureStateGenerator(gameBoard, maxPlayer);
-    let resultingBoards = boardOutput(resultingMoves[0], resultingMoves[1], gameBoard)[1];
-    console.log(resultingBoards)
+    let resultingBoardsUnordered = boardOutput(resultingMoves[0], resultingMoves[1], gameBoard)[1];
+    // console.log(resultingBoardsUnordered)
+    // Start Dynamic Move Ordering (Attempt).
+    let sortBoards = []
+    resultingBoardsUnordered.forEach(board => {
+        let score = alphaBetaMiniMax(board, 0, alpha, beta, maxPlayer);
+        sortBoards.push({board: score[1], score: score[0]});
+    });
+    // console.log(sortBoards)
     if (maxPlayer) {
-        let value = Number.MIN_SAFE_INTEGER;
+        sortBoards.sort(compareMax);
+    }
+    else {
+        sortBoards.sort(compareMin);
+    }
+
+    let resultingBoards = sortBoards.map(item => item.board);
+    // End Dynamic Move Ordering.
+    console.log(resultingBoards)
+
+    let value;
+    if (maxPlayer) {
+        value = Number.MIN_SAFE_INTEGER;
         for (let i = 0; i < resultingBoards.length; i++) {
             let board = resultingBoards[i];
             let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, false)
@@ -126,16 +184,15 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
             }
             if (value > alpha) {
                 alpha = value;
-                bestBoard = board;
+                bestBoard_MAX = board;
             }
             alpha = Math.max(alpha, value);
             if (alpha >= beta) {
                 break;
             };
         }
-        return [value, bestBoard];
     } else {
-        let value = Number.MAX_SAFE_INTEGER;
+        value = Number.MAX_SAFE_INTEGER;
         for (let i = 0; i < resultingBoards.length; i++) {
             let board = resultingBoards[i];
             let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
@@ -144,16 +201,29 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
             }
             if (value < beta) {
                 beta = value
-                bestBoard = board
+                bestBoard_MIN = board
             }
             beta = Math.min(beta, value);
             if (beta <= alpha) {
                 break;
             };
         }
-        console.log(value);
-        return [value, bestBoard];
+        // console.log(value);
     };
+
+    // Start Store into transposition table.
+    let TTEntry = {value: value, depth: depth};
+    if (value <= alpha) {
+        TTEntry.flag = UPPERBOUND;
+    }
+    else if (value >= beta) {
+        TTEntry.flag = LOWERBOUND;
+    }
+    else
+        TTEntry.flag = EXACT;
+    transpositionTable[TTKey] = TTEntry;
+    // End Store.
+    return [value, (maxPlayer)?bestBoard_MAX:bestBoard_MIN];
 };
 
 function testEndGame(gameBoard) {
@@ -215,4 +285,26 @@ function boardScore(board) {
         }
     }
     return nodeScore
+}
+
+// Orders ascending for Min player
+function compareMin(a, b) {
+    if (a.score < b.score){
+      return -1;
+    }
+    if (a.score > b.score){
+      return 1;
+    }
+    return 0;
+}
+
+// Orders descending for Max player
+function compareMax(a, b) {
+    if (a.score < b.score){
+      return 1;
+    }
+    if (a.score > b.score){
+      return -1;
+    }
+    return 0;
 }

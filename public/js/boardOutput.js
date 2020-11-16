@@ -189,8 +189,8 @@ function generateBoardConfigurationFromMove(board, inputMove) {
 /* Takes a board array and writes it into string of marbles for output file. */
 function transformBoardToOutputLine(board) {   
     let resultString = [];
-    console.log(board);
-    console.log(Object.entries(board))
+    // console.log(board);
+    // console.log(Object.entries(board))
     for (const [marble_id, color] of Object.entries(board)) {
         if (color != "") {
             resultString.push(color + marble_id);
@@ -227,7 +227,7 @@ function transformBoardToArray(board) {
         sortedResults.push(result.substring(1) + result.substring(0,1));
     });
 
-    console.log(sortedResults);
+    // console.log(sortedResults);
     return sortedResults;
 }
 
