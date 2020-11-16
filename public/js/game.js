@@ -356,7 +356,7 @@ function endTurn() {
     promise.then(res => {
         if (gameMode == 1 && currentTurnINT == 2) {
             console.log("----------MOVING AI!!")
-            let alphaBeta = alphaBetaMiniMax(getCurrentBoard(), 1,  Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, false)
+            let alphaBeta = alphaBetaMiniMax(getCurrentBoard(), 1,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false)
             drawBoard(alphaBeta[1]);
             endTurn();
             console.log("ai moved")
@@ -500,7 +500,7 @@ function drawBoard(board) {
 
         if (!marble) {
             marble = getPlayerMarblePreviousLoc(team, id);
-            marble.move(id);
+            if (marble) marble.move(id);
         }
         if (marble && !marble.dropped) {
             newMarblesARR.push(marble.coordinate);
