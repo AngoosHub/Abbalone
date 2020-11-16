@@ -403,7 +403,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
 //direction can be known through index of array
 
 function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble) {
-    
+    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0']
     if(marble.substring(0,1)=='x') {
         return null;
     }
@@ -414,7 +414,13 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
     if(cntCurMarble>3) {
         return null;
     }
-    
+    if(dummy.includes(adjacentMarble) && cntOpMarble==0) {
+        return null;
+    }
+    if(cntCurMarble==1 && cntOpMarble==1 && currentMarbles.includes(adjacentMarble)) {
+        return null;
+    }
+
     if(adjacentMarble.substring(0,1)=='x'||adjacentMarble.substring(1,2)=='0') {
         
         if(cntCurMarble==1&&cntOpMarble==0) {
