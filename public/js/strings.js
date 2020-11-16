@@ -5,3 +5,5 @@ const   emptyCellColour = "radial-gradient(circle at 12px 12px, #525252e0, #4b4b
         hasMarbleClass = "hasMarble",
         clickedClass = "clicked",
         clickableClass = "clickable";
+        clickableClass2 = "clickable2";
+        emptyClass = "emptyClass";

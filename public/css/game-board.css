@@ -67,7 +67,15 @@ body {
     box-sizing: border-box;
     border: 3px solid hotpink;
 }
+.clickable2 {
+    box-sizing: border-box;
+    border: 3px solid green;
+}
 
+.emptyClass {
+    box-sizing: border-box;
+    border: 3px solid blue;
+}
 .clicked {
     box-sizing: border-box;
     border: 3px solid red;
