@@ -458,7 +458,7 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
     if(cntCurMarble>3) {
         return null;
     }
-    if(cntOpMarble>5) {
+    if(cntOpMarble>4) {
         return null;
     }
     if(dummy.includes(adjacentMarble) && cntOpMarble==0) {
@@ -470,6 +470,7 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
     if(cntCurMarble==1 && cntOpMarble==1 && currentMarbles.includes(adjacentMarble)) {
         return null;
     }
+
 
     if(adjacentMarble.substring(0,1)=='x'||adjacentMarble.substring(1,2)=='0') {
         
@@ -515,6 +516,10 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
     }else if(oppositeMarbles.includes(adjacentMarble)){ 
         return findingInlineSideStep(cur, next, adjacentMarble, (next[adjacentMarble])[direction],direction, cntCurMarble, cntOpMarble+=1);
     }else if(currentMarbles.includes(adjacentMarble)) {
+        console.log(marble+"marble"+adjacentMarble+"ASDF"+cntOpMarble);
+        if(cntOpMarble >0) {
+            return null;
+        }
         return findingInlineSideStep(cur, next, adjacentMarble, (cur[adjacentMarble])[direction],direction, cntCurMarble+=1, cntOpMarble);
     }
     
