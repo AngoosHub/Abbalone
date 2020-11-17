@@ -36,47 +36,6 @@ function aiDecisionStart() {
     let bestMove = alphaBetaSearch(currBoard);
 }
 
-// function alphaBetaSearch(currBoard) {
-//     let v = maxValue(currBoard, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
-// }
-
-// function maxValue(v, node, alpha, beta, depth) {
-//     if (checkTerminal()) {
-//         // return node; maybe v aswell
-//         return v;
-//     }
-
-//     let children = boardOutput(node);
-//     let childScores = [];
-
-//     for (let i = 0; i < children.length; i++) { // loop thru all nodes of parent node, terminate if worse
-//         // get the score of all potential board layouts
-//         childScores.push(heuristicHandler(children[i]));
-//     }
-//     if (depth < 4) {
-//         // sort the nodes according to childScores
-
-//     }
-
-
-//     // HOW DO I RETURN THE SCORE? lol
-//     let maxIndex = 0;
-//     for (let i = 0; i < children.length; i++) {
-//         let childNodeScore = minValue(children[i], alpha, beta, depth + 1);
-//         if (v > childNodeScore) {
-//             v = childNodeScore;
-//         }
-//     }
-//     return v;
-// }
-
-// function minValue(node, alpha, beta, depth) {
-//     if (checkTerminal()) {
-//         return node;
-//     }
-
-// }
-
 function futureStateGenerator(gameBoard, maxPlayer) {
     let cur = [];
     let next = [];
@@ -178,46 +137,49 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
 
         let value;
         if (maxPlayer) {
-            value = Number.MIN_SAFE_INTEGER;
-            for (let i = 0; i < resultingBoards.length; i++) {
-                let board = resultingBoards[i];
-                if (new Date().getTime() > timeStampEnd) break;
-                let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, false)
-                if (new Date().getTime() < timeStampEnd) {
-                    if (value < t_val[0]) {
-                        value = t_val[0];
+            // if (new Date().getTime() < timeStampEnd) {
+                value = Number.MIN_SAFE_INTEGER;
+                for (let i = 0; i < resultingBoards.length; i++) {
+                    if (new Date().getTime() > timeStampEnd) break;
+                    let board = resultingBoards[i];
+                    let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, false)
+                    if (new Date().getTime() < timeStampEnd) {
+                        if (value < t_val[0]) {
+                            value = t_val[0];
+                        }
+                        if (value > alpha) {
+                            alpha = value;
+                            bestBoard_MAX = board;
+                        }
+                        // alpha = Math.max(alpha, value);
+                        if (alpha >= beta) {
+                            break;
+                        };
                     }
-                    if (value > alpha) {
-                        alpha = value;
-                        bestBoard_MAX = board;
-                    }
-                    alpha = Math.max(alpha, value);
-                    if (alpha >= beta) {
-                        break;
-                    };
                 }
-            }
+            // }
         } else {
-            value = Number.MAX_SAFE_INTEGER;
-            for (let i = 0; i < resultingBoards.length; i++) {
-                let board = resultingBoards[i];
-                if (new Date().getTime() > timeStampEnd) break;
-                let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
-                if (new Date().getTime() < timeStampEnd) {
-                    if (value > t_val[0]) {
-                        value = t_val[0];
+            // if (new Date().getTime() < timeStampEnd) {
+                value = Number.MAX_SAFE_INTEGER;
+                for (let i = 0; i < resultingBoards.length; i++) {
+                    if (new Date().getTime() > timeStampEnd) break;
+                    let board = resultingBoards[i];
+                    let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
+                    if (new Date().getTime() < timeStampEnd) {
+                        if (value > t_val[0]) {
+                            value = t_val[0];
+                        }
+                        if (value < beta) {
+                            beta = value;
+                            bestBoard_MIN = board;
+                        }
+                        // beta = Math.min(beta, value);
+                        if (beta <= alpha) {
+                            break;
+                        };
                     }
-                    if (value < beta) {
-                        beta = value;
-                        bestBoard_MIN = board;
-                    }
-                    beta = Math.min(beta, value);
-                    if (beta <= alpha) {
-                        break;
-                    };
                 }
-            }
-            // console.log(value);
+            // }
         };
 
         // Start Store into transposition table.
@@ -234,7 +196,6 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
         // End Store.
         return [value, (maxPlayer)?bestBoard_MAX:bestBoard_MIN];
     }
-    
 };
 
 function testEndGame(gameBoard) {

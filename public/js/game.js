@@ -397,10 +397,6 @@ function handleGameAgent(maxPlayer) {
     console.log("ai moved");
 }
 
-function timerPlayer(time) {
-    let 
-}
-
 function createMarble(startCoord, player, mbcolour) {
     // startCoord is just the id of the initial location
     // player -> 1 for player 1, 2 for player 2
@@ -479,6 +475,12 @@ function initBoard(startStyle) {
         document.getElementById("player2-tab").innerHTML = "Computer  <span id='p2-tab-span'></span>";
         if (blackPlayer == 1) { // player moves first
             console.log("PLAYER MOVE")
+            playerTurnRunning = true;
+            playerTurnTimeout = setTimeout(() => {
+                if (playerTurnRunning) {
+                    window.alert("Out of time!");
+                }
+            }, p1TimeLimit * 1000);
         } else { // computer moves first
             randomFirstTurn();
             console.log("COMPUTER MOVE")
@@ -542,6 +544,7 @@ function clearHasMarble() {
 }
 
 function drawBoard(board) {
+    console.log(board)
     emptyBoard();
     marblesP1 = []
     marblesP2 = []
