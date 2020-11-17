@@ -71,6 +71,7 @@ function generateBoardWInput() {
     marblesP2=[];
     newMarblesP1=[];
     newMarblesP2=[];
+    emptyLocation=[];
     //read "input.board" (ex, "A3b", "B2b"..) and set background to marble and 
     //push it to newMarblesP1, newMarblesP2
     for(let i =0; i<inputFile.length;i++) {
@@ -90,7 +91,7 @@ function generateBoardWInput() {
             // create a black marble object then add to marblesP1 array
             marblesP2.push(createMarble(location, 'w', whiteMarbleColour))
         }
-     
+        
         
     }
     // set empty location
@@ -185,8 +186,13 @@ function move(cur, next, global) {
 
 function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepArr) {
     
+    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
+
     let sideStepResult = [];
     if(marble.substring(0,1)=='x') {
+        return null;
+    }
+    if(dummy.includes(adjacentMarble)) {
         return null;
     }
     if(adjacentMarble.substring(0,1)=='x') {
@@ -228,11 +234,21 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
         target1= 4;
         target2= 3;
     }
+    console.log("marble: ", marble)
+    console.log("adjacent: ", adjacentMarble)
+    console.log("target1: ", target1)
+    console.log("target2: ", target2)
+    console.log("target1 empty: ", dummy.includes(adjacentInfo[marble][target1]))
+    console.log("target2 empty: ", dummy.includes(adjacentInfo[marble][target1]))
+    console.log(emptyLocation);
     //This is to check target1 are empty or not
     //if not empty, it cannot move to sidestep. 
     //if empty, it checks adjacent marbles of target1 on the same direction and opposite direction 
-    if(emptyArray.includes(target1)) {    
-        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][direction])) {
+    if(emptyArray.includes(target1)) {  
+        if(dummy.includes(adjacentInfo[marble][target1])) {
+            return null;
+        }  
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][direction])&& !dummy.includes(adjacentInfo[(cur[marble])[target1]][direction])) {
             
             booleanChecking+=1;
             let n = target1
@@ -254,7 +270,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
             // console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
             sidestepArr.push("s-"+ marble+"-"+adjacentMarble + "-"+realNo)
         }
-        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][5-direction])) {
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][5-direction])&& !dummy.includes(adjacentInfo[(cur[marble])[target1]][5-direction])) {
             // sideStepResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][5-direction])
             booleanChecking+=1;
             let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target1]);
@@ -322,8 +338,10 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
     //if not empty, it cannot move to sidestep. 
     //if empty, it checks adjacent marbles of target2 on the same direction and opposite direction 
     if(emptyArray.includes(target2)) {    
-
-        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][direction])) {
+        if(dummy.includes(adjacentInfo[marble][target2])) {
+            return null;
+        }  
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][direction]) && !dummy.includes(adjacentInfo[(cur[marble])[target2]][direction])) {
             // sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][direction])
             booleanChecking+=1;
             let n = target2
@@ -344,7 +362,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
             // console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
             resultsSideStep.push("s-"+ marble+"-"+adjacentMarble + "-"+realNo)
         }
-        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][5-direction])) {
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][5-direction])&& !dummy.includes(adjacentInfo[(cur[marble])[target2]][5-direction])) {
             // sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][5-direction])
             booleanChecking+=1;
             let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target2]);
@@ -422,14 +440,14 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
 // adjacentMarble is the marble's adjacent
 //direction can be known through index of array
 
-function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble) {
-    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0']
+function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble) {    
+    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
 
-    console.log(marble);
-    console.log(adjacentMarble);
-    console.log(adjacentInfo);
-    console.log(cntCurMarble);
-    console.log(cntOpMarble);
+    // console.log(marble);
+    // console.log(adjacentMarble);
+    // console.log(adjacentInfo);
+    // console.log(cntCurMarble);
+    // console.log(cntOpMarble);
     if(marble.substring(0,1)=='x') {
         return null;
     }
@@ -444,6 +462,9 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
         return null;
     }
     if(dummy.includes(adjacentMarble) && cntOpMarble==0) {
+        return null;
+    }
+    if(dummy.includes(adjacentMarble) && cntOpMarble==cntCurMarble) {
         return null;
     }
     if(cntCurMarble==1 && cntOpMarble==1 && currentMarbles.includes(adjacentMarble)) {

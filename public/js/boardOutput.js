@@ -35,6 +35,7 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
         if (sidestep_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, sidestep_move);
             // let resultString = transformBoardToOutputLine(newBoard);
+            console.log(newBoard);
             let resultArray= transformBoardToArray(newBoard);
             
             if (boardConfigOutputFile.indexOf(newBoard) == -1) {
@@ -134,7 +135,7 @@ function getCurrentBoard2() {
             currentBoard[cellID] = team;
         }
     }
-
+    console.log(currentBoard)
     return currentBoard;
 }
 
@@ -144,8 +145,8 @@ function generateBoardConfigurationFromMove(board, inputMove) {
     const sidestep = "s";
     const inline = "i";
     const drop = "DROP";
-
     let currentBoard = JSON.parse(JSON.stringify(board));
+    console.log(currentBoard);
     let moveInfo = inputMove.split("-");
     let moveType = moveInfo[0];
     let direction = moveInfo[moveInfo.length-1];
@@ -168,9 +169,9 @@ function generateBoardConfigurationFromMove(board, inputMove) {
         console.log(inputMove);
         console.log(adjacentInfo)
         let marble_id = moveInfo[1]; //a3
-        console.log(moveInfo);
-        console.log(moveInfo.length);
-        console.log(currentBoard);
+        // console.log(moveInfo);
+        // console.log(moveInfo.length);
+        // console.log(currentBoard);
         if (direction == 5 || direction == 7 || direction == 9) {
             marble_id == moveInfo[moveInfo.length - 2];
         }

@@ -461,13 +461,14 @@ function playGame() {
     
     testResultsInline = [];
     testResultsSideStep =[];
+    testResultsInline.push(resultsInline[0])
     testResultsInline.push(resultsInline[1])
-    testResultsInline.push(resultsInline[2])
-    testResultsSideStep.push(resultsSideStep[2])
-    testResultsSideStep.push(resultsSideStep[3])
+    testResultsSideStep.push(resultsSideStep[4])
+    testResultsSideStep.push(resultsSideStep[6])
     console.log(resultsInline)
     console.log(resultsSideStep)
-    boardOutput(testResultsInline, testResultsSideStep);
+    // boardOutput(testResultsInline, testResultsSideStep);
+    boardOutput(resultsInline, resultsSideStep);
 }
 
 function undo() {
