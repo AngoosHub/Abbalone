@@ -57,8 +57,8 @@ window.onload = function() {
     document.getElementById("p2-time").innerHTML = p2TimeLimit;
 
     initBoard(layoutInt);
-    // turn();
-    // emptyBoard()
+    turn();
+    emptyBoard()
     let cells = document.getElementsByClassName("cell");
     for (i = 0; i < cells.length; i++) {
         let cellID = cells[i].id;
@@ -497,9 +497,37 @@ function randomFirstTurn() {
 
 function playGame() {
     mammaMia.currentTime = 0;
-    mammaMia.play();
-    // turn();
-    // boardOutput();
+    // mammaMia.play();
+    turn();
+    
+    testResultsInline = [];
+    testResultsSideStep =[];
+    testResultsInline.push(resultsInline[0])
+    testResultsInline.push(resultsInline[1])
+    testResultsSideStep.push(resultsSideStep[4])
+    testResultsSideStep.push(resultsSideStep[6])
+    console.log(resultsInline)
+    console.log(resultsSideStep)
+
+    resultsSideStep = removeDuplicateMoveNotation(resultsSideStep);
+    // boardOutput(testResultsInline, testResultsSideStep);
+    boardOutput(resultsInline, resultsSideStep);
+}
+function removeDuplicateMoveNotation(sideStepRes) {
+    let idxArray = [];
+    for(let i =0; i<sideStepRes.length;i++) {
+        if(sideStepRes[i].substring(0,1)=="T") {
+            continue;
+        }
+        let startingNode = sideStepRes[i].substring(2,4);
+        let finishingNode = sideStepRes[i].substring(5,7);
+        let newNode = 's-'+finishingNode+"-"+startingNode+sideStepRes[i].substring(7, sideStepRes.length);
+        console.log(newNode);
+        if(!idxArray.includes(newNode)) {
+            idxArray.push(sideStepRes[i]);
+        }
+    }
+    return idxArray;
 }
 
 function undo() {

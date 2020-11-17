@@ -17,6 +17,7 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     }
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
+    console.log(currentBoard);
     resultsI.forEach(inline_move => {
         if (inline_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, inline_move);
@@ -34,6 +35,7 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
         if (sidestep_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, sidestep_move);
             // let resultString = transformBoardToOutputLine(newBoard);
+            console.log(newBoard);
             let resultArray= transformBoardToArray(newBoard);
             
             if (boardConfigOutputFile.indexOf(newBoard) == -1) {
@@ -48,8 +50,8 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     // console.log(boardConfigOutputFile);
     // console.log("---- END OF BOARD OUTPUT ----");
 
-    // downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
-    // downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
+    downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
+    downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
     
     return [moveConfigOutputFile, boardConfigOutputFile];
 }
@@ -123,14 +125,17 @@ function getCurrentBoard2() {
             let team = marble.player;
             currentBoard[cellID] = team;
         }
-        if (marblesP2[i] && !marblesP2[i].dropped) {
+        
+    }
+    for(let i =0; i<marblesP2.length;i++) {
+        if (!marblesP2[i].dropped) {
             let marble = marblesP2[i];
             let cellID = marble.coordinate;
             let team = marble.player;
             currentBoard[cellID] = team;
         }
     }
-
+    console.log(currentBoard)
     return currentBoard;
 }
 
@@ -157,16 +162,17 @@ function generateBoardConfigurationFromMove(board, inputMove) {
     const sidestep = "s";
     const inline = "i";
     const drop = "DROP";
-
     let currentBoard = JSON.parse(JSON.stringify(board));
+    console.log(currentBoard);
     let moveInfo = inputMove.split("-");
     let moveType = moveInfo[0];
     let direction = moveInfo[moveInfo.length-1];
     
+    console.log(adjacentInfo);
     // Side step loop will move each marble towards direction.
     if (moveType == sidestep) {
-        for (let i = 1; i < moveInfo.length - 1; i++) {
-            let marble_id = moveInfo[i];
+     if (moveInfo.length == 3) {
+            let marble_id = moveInfo[1];
             let result = calculateDirectionResultId(marble_id, direction);
 
             if (result != drop) {
@@ -174,12 +180,45 @@ function generateBoardConfigurationFromMove(board, inputMove) {
             }
             currentBoard[marble_id] = "";
         }
+        else {
+            let marble_id_first = moveInfo[1];
+            let marble_id_third = moveInfo[2];
+            
+            let result1 = calculateDirectionResultId(marble_id_first, direction);
+            let result3 = calculateDirectionResultId(marble_id_third, direction);
+
+            if (result1 != drop) {
+                currentBoard[result1] = currentBoard[marble_id_first];
+            }
+            if (result3 != drop) {
+                currentBoard[result3] = currentBoard[marble_id_third];
+            }
+            currentBoard[marble_id_first] = "";
+            currentBoard[marble_id_third] = "";    
+           
+            if (!adjacentInfo[marble_id_first].includes(marble_id_third)) {
+                let marble_id_second = findMiddleMarble(marble_id_first, marble_id_third);
+                console.log("!!!!"+marble_id_first);
+                console.log("!!!!"+marble_id_third);
+                console.log("!!!!"+marble_id_second);
+                let result2 = calculateDirectionResultId(marble_id_second, direction);
+                if (result2 != drop) {
+                    currentBoard[result2] = currentBoard[marble_id_second];
+                }
+                currentBoard[marble_id_second] = "";
+            }
+           
+        }
     }
     // Inline loop starts at marble furthest back in the group of the direction moving, 
     // and recursively push all marbles infront of it forward.
     else if (moveType == inline) {
-        let marble_id = moveInfo[1];
-
+        console.log(inputMove);
+        console.log(adjacentInfo)
+        let marble_id = moveInfo[1]; //a3
+        // console.log(moveInfo);
+        // console.log(moveInfo.length);
+        // console.log(currentBoard);
         if (direction == 5 || direction == 7 || direction == 9) {
             marble_id == moveInfo[moveInfo.length - 2];
         }
@@ -202,7 +241,14 @@ function generateBoardConfigurationFromMove(board, inputMove) {
     return currentBoard;
 }
 
-
+function findMiddleMarble(firstNode, thirdNode) {
+    
+    for(let i =0; i<6;i++) {
+        if(adjacentInfo[adjacentInfo[firstNode][i]][i]==thirdNode) {
+            return adjacentInfo[firstNode][i];
+        }
+    }
+}
 /* Takes a board array and writes it into string of marbles for output file. */
 function transformBoardToOutputLine(board) {   
     let resultString = [];

@@ -21,15 +21,15 @@ const allBoard =
 // const inputFile = ["A3b","B2b","B3b","C3b","C4b","G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
 // const nextTurn = 'w';
 
-// const fileData = JSON.parse(localStorage.getItem("input"));
+const fileData = JSON.parse(localStorage.getItem("input"));
 
-// const inputFile = fileData["positions"];
-// const nextTurn = fileData["turn"];
-// const fileName = fileData["fName"];
+const inputFile = fileData["positions"];
+const nextTurn = fileData["turn"];
+const fileName = fileData["fName"];
 
 // const inputFile = ["E1b", "D1w", "C1w"];
 // const nextTurn = 'b';
-// console.log(inputFile);
+console.log(inputFile);
 // console.log(nextTurn);
 // console.log(fileName);
 
@@ -43,10 +43,12 @@ let resultsSideStep = [];
 let adjacentInfo = {}; // key : marble, value : marble's adjacent
 let currentMarbles; // depends on turn // logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
 let oppositeMarbles; // depends on turn //logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
-let nextTurn = 'w';
+// let nextTurn = 'w';
 
 function turn() {
     generateBoardWInput();
+    
+    console.log("working")
 }
 
 
@@ -65,19 +67,33 @@ function emptyBoard() {
 //this is to show board based on "input.board"
 function generateBoardWInput() {
     emptyBoard();
-    for (let i = 0; i < marblesP1.length; i++) {
-        if (marblesP1[i] && !marblesP1[i].dropped) { // if the marble has not been dropped
-            let marble = marblesP1[i];
-            newMarblesP1.push(marble.coordinate);
-            marble.draw();
-            marble.fixClasses();
+    marblesP1=[];
+    marblesP2=[];
+    newMarblesP1=[];
+    newMarblesP2=[];
+    emptyLocation=[];
+    //read "input.board" (ex, "A3b", "B2b"..) and set background to marble and 
+    //push it to newMarblesP1, newMarblesP2
+    for(let i =0; i<inputFile.length;i++) {
+        let location = (inputFile[i].substring(0, 1)).toLowerCase()+inputFile[i].substring(1, 2);
+        let marbleColor = inputFile[i].substring(2, 3);
+        
+        if(marbleColor==='b') {
+            document.getElementById(location).style.background=blackMarbleColour;
+            newMarblesP1.push(location);
+            document.getElementById(location).classList.add(hasMarbleClass);
+            // create a black marble object then add to marblesP1 array
+            marblesP1.push(createMarble(location, 'b', blackMarbleColour))
+        }else {
+            document.getElementById(location).style.background=whiteMarbleColour;
+            newMarblesP2.push(location);
+            document.getElementById(location).classList.add(hasMarbleClass);
+            // create a black marble object then add to marblesP1 array
+            marblesP2.push(createMarble(location, 'w', whiteMarbleColour))
+
         }
-        if (marblesP2[i] && !marblesP2[i].dropped) {
-            let marble = marblesP2[i];
-            newMarblesP2.push(marble.coordinate);
-            marble.draw();
-            marble.fixClasses();
-        }
+        
+        
     }
     // set empty location
     for(let i =0; i<allBoard.length;i++) {
@@ -85,6 +101,9 @@ function generateBoardWInput() {
             emptyLocation.push(allBoard[i]);
         }
     }
+    console.log(newMarblesP1)
+    console.log(newMarblesP2)
+    emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     stateGenerator()
 }
 
@@ -92,8 +111,8 @@ function generateBoardWInput() {
 function stateGenerator() {
     let cur = [];
     let next = [];
-    currentMarbles = nextTurn==='w'? newMarblesP1:newMarblesP2;
-    oppositeMarbles = nextTurn ==='w'?newMarblesP2:newMarblesP1;
+    currentMarbles = nextTurn==='b'? newMarblesP1:newMarblesP2;
+    oppositeMarbles = nextTurn ==='b'?newMarblesP2:newMarblesP1;
     
     for(let i =0; i<currentMarbles.length;i++) {
         cur =getAdjacent(currentMarbles[i]);
@@ -112,6 +131,8 @@ function stateGenerator() {
     move(cur, next);
     // console.log(resultsInline);
     // console.log(adjacentInfo)
+    console.log(currentMarbles)
+    console.log(oppositeMarbles)
     
 } 
 
@@ -127,13 +148,13 @@ function move(cur, next, global) {
         sidestepArr.push("This is "+currentMarbles[i]);
 
         emptyArray=[];
+        
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             if(emptyLocation.includes(cur[currentMarbles[i]][j])) {
                 emptyArray.push(j);
             }
         }
         
-    
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             temp = (cur[currentMarbles[i]])[j];
             result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0); 
@@ -166,8 +187,13 @@ function move(cur, next, global) {
 
 function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepArr) {
     
+    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
+
     let sideStepResult = [];
     if(marble.substring(0,1)=='x') {
+        return null;
+    }
+    if(dummy.includes(adjacentMarble)) {
         return null;
     }
     if(adjacentMarble.substring(0,1)=='x') {
@@ -209,11 +235,21 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
         target1= 4;
         target2= 3;
     }
+    // console.log("marble: ", marble)
+    // console.log("adjacent: ", adjacentMarble)
+    // console.log("target1: ", target1)
+    // console.log("target2: ", target2)
+    // console.log("target1 empty: ", dummy.includes(adjacentInfo[marble][target1]))
+    // console.log("target2 empty: ", dummy.includes(adjacentInfo[marble][target1]))
+    // console.log(emptyLocation);
     //This is to check target1 are empty or not
     //if not empty, it cannot move to sidestep. 
     //if empty, it checks adjacent marbles of target1 on the same direction and opposite direction 
-    if(emptyArray.includes(target1)) {    
-        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][direction])) {
+    if(emptyArray.includes(target1)) {  
+        if(dummy.includes(adjacentInfo[marble][target1])) {
+            return null;
+        }  
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][direction])&& !dummy.includes(adjacentInfo[(cur[marble])[target1]][direction])) {
             
             booleanChecking+=1;
             let n = target1
@@ -235,7 +271,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
             // console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
             sidestepArr.push("s-"+ marble+"-"+adjacentMarble + "-"+realNo)
         }
-        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][5-direction])) {
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target1]][5-direction])&& !dummy.includes(adjacentInfo[(cur[marble])[target1]][5-direction])) {
             // sideStepResult.push((cur[marble])[target1]+"damm"+adjacentInfo[(cur[marble])[target1]][5-direction])
             booleanChecking+=1;
             let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target1]);
@@ -276,7 +312,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
             // console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
             sidestepArr.push("s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
 
-            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])) {
+            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])&& !dummy.includes(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])) {
                 let n = adjacentInfo[cur[adjacentMarble][direction]].indexOf(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])
                 if(n==0) {
                     realNo= 7;
@@ -303,8 +339,10 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
     //if not empty, it cannot move to sidestep. 
     //if empty, it checks adjacent marbles of target2 on the same direction and opposite direction 
     if(emptyArray.includes(target2)) {    
-
-        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][direction])) {
+        if(dummy.includes(adjacentInfo[marble][target2])) {
+            return null;
+        }  
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][direction]) && !dummy.includes(adjacentInfo[(cur[marble])[target2]][direction])) {
             // sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][direction])
             booleanChecking+=1;
             let n = target2
@@ -325,7 +363,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
             // console.log("This is 2level s-"+ marble+"-"+adjacentMarble + "-"+realNo)
             resultsSideStep.push("s-"+ marble+"-"+adjacentMarble + "-"+realNo)
         }
-        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][5-direction])) {
+        if(emptyLocation.includes(adjacentInfo[(cur[marble])[target2]][5-direction])&& !dummy.includes(adjacentInfo[(cur[marble])[target2]][5-direction])) {
             // sideStepResult.push((cur[marble])[target2]+"damm"+adjacentInfo[(cur[marble])[target2]][5-direction])
             booleanChecking+=1;
             let n = adjacentInfo[(cur[marble])[direction]].indexOf((cur[marble])[target2]);
@@ -366,7 +404,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
             // console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
             sidestepArr.push("s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
 
-            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])) {
+            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])&& !dummy.includes(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])) {
                 let n = adjacentInfo[cur[adjacentMarble][direction]].indexOf(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])
                 if(n==0) {
                     realNo= 7;
@@ -403,8 +441,14 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
 // adjacentMarble is the marble's adjacent
 //direction can be known through index of array
 
-function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble) {
-    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0']
+function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble) {    
+    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
+
+    // console.log(marble);
+    // console.log(adjacentMarble);
+    // console.log(adjacentInfo);
+    // console.log(cntCurMarble);
+    // console.log(cntOpMarble);
     if(marble.substring(0,1)=='x') {
         return null;
     }
@@ -415,12 +459,19 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
     if(cntCurMarble>3) {
         return null;
     }
+    if(cntOpMarble>4) {
+        return null;
+    }
     if(dummy.includes(adjacentMarble) && cntOpMarble==0) {
+        return null;
+    }
+    if(dummy.includes(adjacentMarble) && cntOpMarble==cntCurMarble) {
         return null;
     }
     if(cntCurMarble==1 && cntOpMarble==1 && currentMarbles.includes(adjacentMarble)) {
         return null;
     }
+
 
     if(adjacentMarble.substring(0,1)=='x'||adjacentMarble.substring(1,2)=='0') {
         
@@ -472,6 +523,10 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
     }else if(oppositeMarbles.includes(adjacentMarble)){ 
         return findingInlineSideStep(cur, next, adjacentMarble, (next[adjacentMarble])[direction],direction, cntCurMarble, cntOpMarble+=1);
     }else if(currentMarbles.includes(adjacentMarble)) {
+        console.log(marble+"marble"+adjacentMarble+"ASDF"+cntOpMarble);
+        if(cntOpMarble >0) {
+            return null;
+        }
         return findingInlineSideStep(cur, next, adjacentMarble, (cur[adjacentMarble])[direction],direction, cntCurMarble+=1, cntOpMarble);
     }
     
