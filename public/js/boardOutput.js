@@ -12,8 +12,8 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     if (!inputBoard) {
         currentBoard = getCurrentBoard2();
     } else {
+        // currentBoard = getCurrentBoardFromInput(inputBoard);
         currentBoard = getCurrentBoard2();
-        // maybe also change resultsInline
     }
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
@@ -86,14 +86,14 @@ function generateCurrentBoardLayout(boardInput) {
 
 function getCurrentBoard() {
     let currentBoard = []
-    for (let i = 0; i < marblesP1.length; i++) {
-        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+    for (let i = 0; i < 14; i++) {
+        if (marblesP1[i] && !marblesP1[i].dropped) { // if the marble has not been dropped
             let marble = marblesP1[i];
             let cellID = marble.coordinate;
             let team = marble.player;
             currentBoard.push(cellID + team);
         }
-        if (!marblesP2[i].dropped) {
+        if (marblesP2[i] && !marblesP2[i].dropped) {
             let marble = marblesP2[i];
             let cellID = marble.coordinate;
             let team = marble.player;
@@ -116,14 +116,14 @@ function getCurrentBoard2() {
     //     currentBoard[id] = color;
     // });
 
-    for (let i = 0; i < marblesP1.length; i++) {
-        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+    for (let i = 0; i < 14; i++) {
+        if (marblesP1[i] && !marblesP1[i].dropped) { // if the marble has not been dropped
             let marble = marblesP1[i];
             let cellID = marble.coordinate;
             let team = marble.player;
             currentBoard[cellID] = team;
         }
-        if (!marblesP2[i].dropped) {
+        if (marblesP2[i] && !marblesP2[i].dropped) {
             let marble = marblesP2[i];
             let cellID = marble.coordinate;
             let team = marble.player;
@@ -133,6 +133,23 @@ function getCurrentBoard2() {
 
     return currentBoard;
 }
+
+function getCurrentBoardFromInput(inputBoard) {
+    // make empty board.
+    let currentBoard = {};
+    allBoard.forEach(element => currentBoard[element] = "");
+
+    // add in marbles from inputBoard array.
+    const inputBoardLowercase = inputBoard.map(item => item.toLowerCase());
+    inputBoardLowercase.forEach(element => {
+        let id = element.substring(0, 2);
+        let color = element.substring(2);
+        currentBoard[id] = color;
+    });
+
+    return currentBoard;
+}
+
 
 /* Generate a resulting board after performing given move on current board. */
 /* IMPORTANT - This function assumes given move is legal. */

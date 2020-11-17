@@ -66,13 +66,13 @@ function emptyBoard() {
 function generateBoardWInput() {
     emptyBoard();
     for (let i = 0; i < marblesP1.length; i++) {
-        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+        if (marblesP1[i] && !marblesP1[i].dropped) { // if the marble has not been dropped
             let marble = marblesP1[i];
             newMarblesP1.push(marble.coordinate);
             marble.draw();
             marble.fixClasses();
         }
-        if (!marblesP2[i].dropped) {
+        if (marblesP2[i] && !marblesP2[i].dropped) {
             let marble = marblesP2[i];
             newMarblesP2.push(marble.coordinate);
             marble.draw();

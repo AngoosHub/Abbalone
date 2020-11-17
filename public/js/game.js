@@ -41,7 +41,6 @@ window.onload = function() {
     mammaMia = new Audio("../audio/mammamia.mp3");
     layoutInt = localStorage.getItem('layout');
     gameMode = localStorage.getItem('gameMode');
-    console.log(gameMode)
     turnLimit = localStorage.getItem('turnLimit');
     p1TimeLimit = localStorage.getItem('p1TimeLimit');
     p2TimeLimit = localStorage.getItem('p2TimeLimit');
@@ -234,6 +233,7 @@ function cellClicked(id) {
     } else { // Empty space clicked
         if (currentClickSequence.length > 0) { // Move the marbles!
             if (cell.classList.contains(clickableClass)) {
+                playerTurnRunning = false;
                 let marble = currentClickSequence[0],
                     dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
                 if (dirIndex == -1) {
@@ -291,13 +291,22 @@ function cellClicked(id) {
                             moveMarble = currentClickSequence[i]
                             moveMarble.move(adjacentInfo[moveMarble.coordinate][dirIndex])
                     }
-                    if (inline) {
+                    if (inline) { // since sumitos are possible, redraw the entire board
                         values.splice(topID, 1);
                         currentClickSequence.splice(topID, 1);
-                        moveMarble.move(adjacentInfo[moveMarble.coordinate][dirIndex]);
+                        let board = getCurrentBoard2();
+                        let inputMove = "i-" + moveMarble.coordinate + "-" + adjacentDirections[dirIndex]
+                        let newBoard = generateBoardConfigurationFromMove(board, inputMove);
+                        newBoard = transformBoardToArray(newBoard)
+                        drawBoard(newBoard);
+                        // moveMarble.move(adjacentInfo[moveMarble.coordinate][dirIndex]);
                     }
                 }
-                endTurn()
+                deselectClicks();
+                clearClickables();
+                setTimeout(function() {
+                    endTurn()
+                }, 100)
             } else {
                 deselectClicks()
                 clearClickables()
@@ -316,59 +325,76 @@ function deselectClicks() {
     currentClickSequence = []
 }
 
+let playerTurnTimeout, playerTurnRunning;
+
 function endTurn() {
-    let promise = new Promise((resolve, reject) => {
-        let board = getCurrentBoard();
-        fullHistory.push(board);
-        board = board.toString().replaceAll(',', ', ');
-        let newText = document.createElement("p");
-        newText.innerHTML = board.toString();
-        if (currentTurn == 'b') {
-            nextTurn = 'b'
-            currentTurn = 'w';
-            newText.style.background = "#3f3f4066"
-        } else {
-            newText.style.background = "#ebebeb66"
-            nextTurn = 'w'
-            currentTurn = 'b';
-        }
-        document.getElementById("fh-div").prepend(newText);
-        if (currentTurnINT == 1) {
-            currentTurnINT = 2
-            let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
-            document.getElementById("p1-tab-span").innerHTML = "";
-            document.getElementById("p2-tab-span").innerHTML = "<<<<";
-            turnsLeft--;
-            document.getElementById("p1-moves").innerHTML = turnsLeft
-        } else {
-            currentTurnINT = 1
-            let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
-            document.getElementById("p1-tab-span").innerHTML = "<<<<";
-            document.getElementById("p2-tab-span").innerHTML = "";
-            turnsLeft--;
-            document.getElementById("p2-moves").innerHTML = turnsLeft
-        }
-        deselectClicks();
-        clearClickables();
-        generateBoardWInput();
-        resolve()
-    })
-    promise.then(res => {
-        if (gameMode == 1 && currentTurnINT == 2) {
-            console.log("----------MOVING AI!!")
-            let maxDepth = 6;
-            let alphaBeta;
-            // alphaBeta = alphaBetaMiniMax(getCurrentBoard(), 6,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false)
-            for(let depth = 0; depth < maxDepth; depth++) {
-                alphaBeta = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
-                // console.log(alphaBeta);
+    clearTimeout(playerTurnTimeout);
+    let board = getCurrentBoard();
+    fullHistory.push(board);
+    board = board.toString().replaceAll(',', ', ');
+    let newText = document.createElement("p");
+    newText.innerHTML = board.toString();
+    if (currentTurn == 'b') {
+        nextTurn = 'b'
+        currentTurn = 'w';
+        newText.style.background = "#3f3f4066"
+    } else {
+        newText.style.background = "#ebebeb66"
+        nextTurn = 'w'
+        currentTurn = 'b';
+    }
+    document.getElementById("fh-div").prepend(newText);
+    if (currentTurnINT == 1) {
+        currentTurnINT = 2
+        let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
+        document.getElementById("p1-tab-span").innerHTML = "";
+        document.getElementById("p2-tab-span").innerHTML = "<<<<";
+        turnsLeft--;
+        document.getElementById("p1-moves").innerHTML = turnsLeft
+    } else {
+        currentTurnINT = 1
+        let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
+        document.getElementById("p1-tab-span").innerHTML = "<<<<";
+        document.getElementById("p2-tab-span").innerHTML = "";
+        turnsLeft--;
+        document.getElementById("p2-moves").innerHTML = turnsLeft;
+    }
+    generateBoardWInput();
+    if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
+        let maxPlayer = (blackPlayer == 2)
+        handleGameAgent(maxPlayer);
+    } else { // Player turn
+        playerTurnRunning = true;
+        playerTurnTimeout = setTimeout(() => {
+            if (playerTurnRunning) {
+                window.alert("Out of time!");
             }
-            drawBoard(alphaBeta[1]);
-            endTurn();
-            console.log("ai moved")
-        }
-    })
-    
+        }, p1TimeLimit * 1000);
+    }
+}
+
+let timeStamp, timeStampEnd;
+
+function handleGameAgent(maxPlayer) {
+    console.log("----------MOVING AI")
+    let maxDepth = 9, depth = 0;
+    let alphaBeta;
+    timeStamp = new Date().getTime();
+    timeStampEnd = timeStamp + (p2TimeLimit * 1000) - 100;
+    alphaBeta = alphaBetaMiniMax(getCurrentBoard(), maxDepth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer)
+    // while (depth < maxDepth && new Date().getTime() < timeStampEnd) {
+    //     alphaBeta = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
+    //     if (new Date().getTime() < timeStampEnd) {
+    //         alphaBeta = alphaBetaTemp;
+    //     }
+    //     depth++;
+    // }
+    // for(let depth = 0; depth < maxDepth; depth++) {
+    //     alphaBeta = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
+    // }
+    drawBoard(alphaBeta[1]);
+    endTurn();
+    console.log("ai moved");
 }
 
 function createMarble(startCoord, player, mbcolour) {
@@ -382,6 +408,7 @@ function createMarble(startCoord, player, mbcolour) {
         dropped: false,
         draw: function() {
             document.getElementById(this.coordinate).style.background = this.marbleColour;
+            if (!allBoard.includes(this.coordinate)) this.dropped = true;
         },
         move: function(newCoord) {
             this.prevCoord = this.coordinate;
@@ -447,11 +474,25 @@ function initBoard(startStyle) {
     if (gameMode == 1) { // player vs computer
         document.getElementById("player2-tab").innerHTML = "Computer  <span id='p2-tab-span'></span>";
         if (blackPlayer == 1) { // player moves first
-
+            console.log("PLAYER MOVE")
+            playerTurnRunning = true;
+            playerTurnTimeout = setTimeout(() => {
+                if (playerTurnRunning) {
+                    window.alert("Out of time!");
+                }
+            }, p1TimeLimit * 1000);
         } else { // computer moves first
-
+            randomFirstTurn();
+            console.log("COMPUTER MOVE")
         }
     }
+}
+
+function randomFirstTurn() {
+    let boardOutputArr = boardOutput(resultsInline, resultsSideStep)[1];
+    let randomMove = boardOutputArr[Math.floor(Math.random() * boardOutputArr.length)];
+    drawBoard(randomMove);
+    endTurn()
 }
 
 function playGame() {
@@ -503,7 +544,7 @@ function clearHasMarble() {
 }
 
 function drawBoard(board) {
-    console.log(board);
+    console.log(board)
     emptyBoard();
     marblesP1 = []
     marblesP2 = []
