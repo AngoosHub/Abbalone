@@ -151,16 +151,46 @@ function generateBoardConfigurationFromMove(board, inputMove) {
     let moveType = moveInfo[0];
     let direction = moveInfo[moveInfo.length-1];
     
+    console.log(adjacentInfo);
     // Side step loop will move each marble towards direction.
     if (moveType == sidestep) {
-        for (let i = 1; i < moveInfo.length - 1; i++) {
-            let marble_id = moveInfo[i];
+     if (moveInfo.length == 3) {
+            let marble_id = moveInfo[1];
             let result = calculateDirectionResultId(marble_id, direction);
 
             if (result != drop) {
                 currentBoard[result] = currentBoard[marble_id];
             }
             currentBoard[marble_id] = "";
+        }
+        else {
+            let marble_id_first = moveInfo[1];
+            let marble_id_third = moveInfo[2];
+            
+            let result1 = calculateDirectionResultId(marble_id_first, direction);
+            let result3 = calculateDirectionResultId(marble_id_third, direction);
+
+            if (result1 != drop) {
+                currentBoard[result1] = currentBoard[marble_id_first];
+            }
+            if (result3 != drop) {
+                currentBoard[result3] = currentBoard[marble_id_third];
+            }
+            currentBoard[marble_id_first] = "";
+            currentBoard[marble_id_third] = "";    
+           
+            if (!adjacentInfo[marble_id_first].includes(marble_id_third)) {
+                let marble_id_second = findMiddleMarble(marble_id_first, marble_id_third);
+                console.log("!!!!"+marble_id_first);
+                console.log("!!!!"+marble_id_third);
+                console.log("!!!!"+marble_id_second);
+                let result2 = calculateDirectionResultId(marble_id_second, direction);
+                if (result2 != drop) {
+                    currentBoard[result2] = currentBoard[marble_id_second];
+                }
+                currentBoard[marble_id_second] = "";
+            }
+           
         }
     }
     // Inline loop starts at marble furthest back in the group of the direction moving, 
@@ -194,7 +224,14 @@ function generateBoardConfigurationFromMove(board, inputMove) {
     return currentBoard;
 }
 
-
+function findMiddleMarble(firstNode, thirdNode) {
+    
+    for(let i =0; i<6;i++) {
+        if(adjacentInfo[adjacentInfo[firstNode][i]][i]==thirdNode) {
+            return adjacentInfo[firstNode][i];
+        }
+    }
+}
 /* Takes a board array and writes it into string of marbles for output file. */
 function transformBoardToOutputLine(board) {   
     let resultString = [];
