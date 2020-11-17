@@ -467,8 +467,29 @@ function playGame() {
     testResultsSideStep.push(resultsSideStep[6])
     console.log(resultsInline)
     console.log(resultsSideStep)
+
+    resultsSideStep = removeDuplicateMoveNotation(resultsSideStep);
     // boardOutput(testResultsInline, testResultsSideStep);
     boardOutput(resultsInline, resultsSideStep);
+}
+function removeDuplicateMoveNotation(sideStepRes) {
+    let idxArray = [];
+    for(let i =0; i<sideStepRes.length;i++) {
+        if(sideStepRes[i].substring(0,1)=="T") {
+            continue;
+        }
+        let startingNode = sideStepRes[i].substring(2,4);
+        let finishingNode = sideStepRes[i].substring(5,7);
+        let newNode = 's-'+startingNode+"-"+finishingNode+sideStepRes[i].substring(7, sideStepRes.length);
+        console.log(newNode);
+        if(sideStepRes.includes(newNode)) {
+            idxArray.push(sideStepRes.indexOf(newNode));
+        }
+    }
+    for(let i=0;i<idxArray.length;i++) {
+        sideStepRes.splice(idxArray[i], 1);
+    }
+    return sideStepRes;
 }
 
 function undo() {

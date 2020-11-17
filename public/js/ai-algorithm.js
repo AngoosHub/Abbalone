@@ -234,13 +234,13 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
         target1= 4;
         target2= 3;
     }
-    console.log("marble: ", marble)
-    console.log("adjacent: ", adjacentMarble)
-    console.log("target1: ", target1)
-    console.log("target2: ", target2)
-    console.log("target1 empty: ", dummy.includes(adjacentInfo[marble][target1]))
-    console.log("target2 empty: ", dummy.includes(adjacentInfo[marble][target1]))
-    console.log(emptyLocation);
+    // console.log("marble: ", marble)
+    // console.log("adjacent: ", adjacentMarble)
+    // console.log("target1: ", target1)
+    // console.log("target2: ", target2)
+    // console.log("target1 empty: ", dummy.includes(adjacentInfo[marble][target1]))
+    // console.log("target2 empty: ", dummy.includes(adjacentInfo[marble][target1]))
+    // console.log(emptyLocation);
     //This is to check target1 are empty or not
     //if not empty, it cannot move to sidestep. 
     //if empty, it checks adjacent marbles of target1 on the same direction and opposite direction 
@@ -311,7 +311,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
             // console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
             sidestepArr.push("s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
 
-            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])) {
+            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])&& !dummy.includes(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])) {
                 let n = adjacentInfo[cur[adjacentMarble][direction]].indexOf(adjacentInfo[adjacentInfo[(cur[marble])[target1]][direction]][direction])
                 if(n==0) {
                     realNo= 7;
@@ -403,7 +403,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
             // console.log("This is 3level s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
             sidestepArr.push("s-"+ marble+"-"+cur[adjacentMarble][direction] +"-"+realNo)
 
-            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])) {
+            if(emptyLocation.includes(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])&& !dummy.includes(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])) {
                 let n = adjacentInfo[cur[adjacentMarble][direction]].indexOf(adjacentInfo[adjacentInfo[(cur[marble])[target2]][direction]][direction])
                 if(n==0) {
                     realNo= 7;
