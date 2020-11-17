@@ -58,8 +58,8 @@ window.onload = function() {
     document.getElementById("p2-time").innerHTML = p2TimeLimit;
 
     initBoard(layoutInt);
-    // turn();
-    // emptyBoard()
+    turn();
+    emptyBoard()
     let cells = document.getElementsByClassName("cell");
     for (i = 0; i < cells.length; i++) {
         let cellID = cells[i].id;
@@ -457,8 +457,17 @@ function initBoard(startStyle) {
 function playGame() {
     mammaMia.currentTime = 0;
     // mammaMia.play();
-    // turn();
-    boardOutput(resultsInline, resultsSideStep);
+    turn();
+    
+    testResultsInline = [];
+    testResultsSideStep =[];
+    testResultsInline.push(resultsInline[1])
+    testResultsInline.push(resultsInline[2])
+    testResultsSideStep.push(resultsSideStep[2])
+    testResultsSideStep.push(resultsSideStep[3])
+    console.log(resultsInline)
+    console.log(resultsSideStep)
+    boardOutput(testResultsInline, testResultsSideStep);
 }
 
 function undo() {

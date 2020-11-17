@@ -29,7 +29,7 @@ const fileName = fileData["fName"];
 
 // const inputFile = ["E1b", "D1w", "C1w"];
 // const nextTurn = 'b';
-// console.log(inputFile);
+console.log(inputFile);
 // console.log(nextTurn);
 // console.log(fileName);
 
@@ -46,6 +46,8 @@ let oppositeMarbles; // depends on turn //logic --> nextTurn==='w'? newMarblesP1
 
 function turn() {
     generateBoardWInput();
+    
+    console.log("working")
 }
 
 
@@ -65,6 +67,10 @@ function emptyBoard() {
 function generateBoardWInput() {
     emptyBoard();
 
+    marblesP1=[];
+    marblesP2=[];
+    newMarblesP1=[];
+    newMarblesP2=[];
     //read "input.board" (ex, "A3b", "B2b"..) and set background to marble and 
     //push it to newMarblesP1, newMarblesP2
     for(let i =0; i<inputFile.length;i++) {
@@ -93,7 +99,8 @@ function generateBoardWInput() {
             emptyLocation.push(allBoard[i]);
         }
     }
-
+    console.log(newMarblesP1)
+    console.log(newMarblesP2)
     emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     stateGenerator()
 }
@@ -102,8 +109,8 @@ function generateBoardWInput() {
 function stateGenerator() {
     let cur = [];
     let next = [];
-    currentMarbles = nextTurn==='w'? newMarblesP1:newMarblesP2;
-    oppositeMarbles = nextTurn ==='w'?newMarblesP2:newMarblesP1;
+    currentMarbles = nextTurn==='b'? newMarblesP1:newMarblesP2;
+    oppositeMarbles = nextTurn ==='b'?newMarblesP2:newMarblesP1;
     
     for(let i =0; i<currentMarbles.length;i++) {
         cur =getAdjacent(currentMarbles[i]);
@@ -122,6 +129,8 @@ function stateGenerator() {
     move(cur, next);
     // console.log(resultsInline);
     // console.log(adjacentInfo)
+    console.log(currentMarbles)
+    console.log(oppositeMarbles)
     
 } 
 
@@ -137,13 +146,13 @@ function move(cur, next, global) {
         sidestepArr.push("This is "+currentMarbles[i]);
 
         emptyArray=[];
+        
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             if(emptyLocation.includes(cur[currentMarbles[i]][j])) {
                 emptyArray.push(j);
             }
         }
         
-    
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             temp = (cur[currentMarbles[i]])[j];
             result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0); 
@@ -415,6 +424,12 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
 
 function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble) {
     let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0']
+
+    console.log(marble);
+    console.log(adjacentMarble);
+    console.log(adjacentInfo);
+    console.log(cntCurMarble);
+    console.log(cntOpMarble);
     if(marble.substring(0,1)=='x') {
         return null;
     }
@@ -423,6 +438,9 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
     // }
     
     if(cntCurMarble>3) {
+        return null;
+    }
+    if(cntOpMarble>5) {
         return null;
     }
     if(dummy.includes(adjacentMarble) && cntOpMarble==0) {

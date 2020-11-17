@@ -17,6 +17,7 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     }
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
+    console.log(currentBoard);
     resultsI.forEach(inline_move => {
         if (inline_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, inline_move);
@@ -123,6 +124,9 @@ function getCurrentBoard2() {
             let team = marble.player;
             currentBoard[cellID] = team;
         }
+        
+    }
+    for(let i =0; i<marblesP2.length;i++) {
         if (!marblesP2[i].dropped) {
             let marble = marblesP2[i];
             let cellID = marble.coordinate;
@@ -161,8 +165,12 @@ function generateBoardConfigurationFromMove(board, inputMove) {
     // Inline loop starts at marble furthest back in the group of the direction moving, 
     // and recursively push all marbles infront of it forward.
     else if (moveType == inline) {
-        let marble_id = moveInfo[1];
-
+        console.log(inputMove);
+        console.log(adjacentInfo)
+        let marble_id = moveInfo[1]; //a3
+        console.log(moveInfo);
+        console.log(moveInfo.length);
+        console.log(currentBoard);
         if (direction == 5 || direction == 7 || direction == 9) {
             marble_id == moveInfo[moveInfo.length - 2];
         }
