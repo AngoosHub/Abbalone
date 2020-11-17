@@ -12,7 +12,7 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     if (!inputBoard) {
         currentBoard = getCurrentBoard2();
     } else {
-        currentBoard = getCurrentBoard2();
+        currentBoard = getCurrentBoardFromInput(inputBoard);
         // maybe also change resultsInline
     }
     let moveConfigOutputFile = [];
@@ -133,6 +133,23 @@ function getCurrentBoard2() {
 
     return currentBoard;
 }
+
+function getCurrentBoardFromInput(inputBoard) {
+    // make empty board.
+    let currentBoard = {};
+    allBoard.forEach(element => currentBoard[element] = "");
+
+    // add in marbles from inputBoard array.
+    const inputBoardLowercase = inputBoard.map(item => item.toLowerCase());
+    inputBoardLowercase.forEach(element => {
+        let id = element.substring(0, 2);
+        let color = element.substring(2);
+        currentBoard[id] = color;
+    });
+
+    return currentBoard;
+}
+
 
 /* Generate a resulting board after performing given move on current board. */
 /* IMPORTANT - This function assumes given move is legal. */
