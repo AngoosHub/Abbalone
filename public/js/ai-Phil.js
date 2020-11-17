@@ -108,7 +108,7 @@ function futureStateGenerator(gameBoard, maxPlayer) {
 
 let bestBoard_MIN;
 let bestBoard_MAX;
-transpositionTable = {};
+let transpositionTable = {};
 const UPPERBOUND = "UPPERBOUND";
 const LOWERBOUND = "LOWERBOUND";
 const EXACT = "EXACT";
