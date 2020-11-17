@@ -480,16 +480,13 @@ function removeDuplicateMoveNotation(sideStepRes) {
         }
         let startingNode = sideStepRes[i].substring(2,4);
         let finishingNode = sideStepRes[i].substring(5,7);
-        let newNode = 's-'+startingNode+"-"+finishingNode+sideStepRes[i].substring(7, sideStepRes.length);
+        let newNode = 's-'+finishingNode+"-"+startingNode+sideStepRes[i].substring(7, sideStepRes.length);
         console.log(newNode);
-        if(sideStepRes.includes(newNode)) {
-            idxArray.push(sideStepRes.indexOf(newNode));
+        if(!idxArray.includes(newNode)) {
+            idxArray.push(sideStepRes[i]);
         }
     }
-    for(let i=0;i<idxArray.length;i++) {
-        sideStepRes.splice(idxArray[i], 1);
-    }
-    return sideStepRes;
+    return idxArray;
 }
 
 function undo() {
