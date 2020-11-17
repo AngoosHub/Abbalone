@@ -68,9 +68,9 @@ function p2TimeLimitChange() {
 
 function setBlackPlayer() {
     $('#color-black').click(function() {
-        localStorage.setItem('gameMode', 1);
+        localStorage.setItem('blackPlayer', 1);
     });
     $('#color-white').click(function() {
-        localStorage.setItem('gameMode', 2);
+        localStorage.setItem('blackPlayer', 2);
     });
 }

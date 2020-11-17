@@ -86,14 +86,14 @@ function generateCurrentBoardLayout(boardInput) {
 
 function getCurrentBoard() {
     let currentBoard = []
-    for (let i = 0; i < marblesP1.length; i++) {
-        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+    for (let i = 0; i < 14; i++) {
+        if (marblesP1[i] && !marblesP1[i].dropped) { // if the marble has not been dropped
             let marble = marblesP1[i];
             let cellID = marble.coordinate;
             let team = marble.player;
             currentBoard.push(cellID + team);
         }
-        if (!marblesP2[i].dropped) {
+        if (marblesP2[i] && !marblesP2[i].dropped) {
             let marble = marblesP2[i];
             let cellID = marble.coordinate;
             let team = marble.player;
@@ -116,14 +116,14 @@ function getCurrentBoard2() {
     //     currentBoard[id] = color;
     // });
 
-    for (let i = 0; i < marblesP1.length; i++) {
-        if (!marblesP1[i].dropped) { // if the marble has not been dropped
+    for (let i = 0; i < 14; i++) {
+        if (marblesP1[i] && !marblesP1[i].dropped) { // if the marble has not been dropped
             let marble = marblesP1[i];
             let cellID = marble.coordinate;
             let team = marble.player;
             currentBoard[cellID] = team;
         }
-        if (!marblesP2[i].dropped) {
+        if (marblesP2[i] && !marblesP2[i].dropped) {
             let marble = marblesP2[i];
             let cellID = marble.coordinate;
             let team = marble.player;
