@@ -32,7 +32,7 @@ const fileName = fileData["fName"];
 console.log(inputFile);
 // console.log(nextTurn);
 // console.log(fileName);
-
+console.log("test")
 
 let newMarblesP1 = []; // contains user's marble(all black)
 let newMarblesP2 = []; // contains computer's marble(all white)
@@ -473,7 +473,7 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
         return null;
     }
 
-
+  
     if(adjacentMarble.substring(0,1)=='x'||adjacentMarble.substring(1,2)=='0') {
         
         if(cntCurMarble==1&&cntOpMarble==0) {
