@@ -57,8 +57,8 @@ window.onload = function() {
     document.getElementById("p2-time").innerHTML = p2TimeLimit;
 
     initBoard(layoutInt);
-    turn();
-    emptyBoard()
+    // turn();
+    // emptyBoard()
     let cells = document.getElementsByClassName("cell");
     for (i = 0; i < cells.length; i++) {
         let cellID = cells[i].id;
@@ -359,7 +359,7 @@ function endTurn() {
         turnsLeft--;
         document.getElementById("p2-moves").innerHTML = turnsLeft;
     }
-    generateBoardWInput();
+    generateBoardWInput2();
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
         let maxPlayer = (blackPlayer == 2)
         handleGameAgent(maxPlayer);

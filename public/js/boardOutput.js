@@ -110,6 +110,7 @@ function getCurrentBoard() {
             currentBoard.push(cellID + team);
         }
     }
+    console.log(currentBoard)
     return currentBoard;
 }
 

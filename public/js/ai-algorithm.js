@@ -21,15 +21,15 @@ const allBoard =
 // const inputFile = ["A3b","B2b","B3b","C3b","C4b","G7b","G8b","H7b","H8b","H9b","I8b","I9b","A4w","A5w","B4w","B5w","B6w","C5w","C6w","G4w","G5w","H4w","H5w","H6w","I5w","I6w"];
 // const nextTurn = 'w';
 
-const fileData = JSON.parse(localStorage.getItem("input"));
+// const fileData = JSON.parse(localStorage.getItem("input"));
 
-const inputFile = fileData["positions"];
-const nextTurn = fileData["turn"];
-const fileName = fileData["fName"];
+// const inputFile = fileData["positions"];
+// const nextTurn = fileData["turn"];
+// const fileName = fileData["fName"];
 
 // const inputFile = ["E1b", "D1w", "C1w"];
 // const nextTurn = 'b';
-console.log(inputFile);
+// console.log(inputFile);
 // console.log(nextTurn);
 // console.log(fileName);
 
@@ -43,7 +43,7 @@ let resultsSideStep = [];
 let adjacentInfo = {}; // key : marble, value : marble's adjacent
 let currentMarbles; // depends on turn // logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
 let oppositeMarbles; // depends on turn //logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
-// let nextTurn = 'w';
+let nextTurn = 'w';
 
 function turn() {
     generateBoardWInput();
@@ -107,6 +107,31 @@ function generateBoardWInput() {
     stateGenerator()
 }
 
+function generateBoardWInput2() {
+    emptyBoard();
+    for (let i = 0; i < marblesP1.length; i++) {
+        if (marblesP1[i] && !marblesP1[i].dropped) { // if the marble has not been dropped
+            let marble = marblesP1[i];
+            newMarblesP1.push(marble.coordinate);
+            marble.draw();
+            marble.fixClasses();
+        }
+        if (marblesP2[i] && !marblesP2[i].dropped) {
+            let marble = marblesP2[i];
+            newMarblesP2.push(marble.coordinate);
+            marble.draw();
+            marble.fixClasses();
+        }
+    }
+    // set empty location
+    for(let i =0; i<allBoard.length;i++) {
+        if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {
+            emptyLocation.push(allBoard[i]);
+        }
+    }
+    stateGenerator()
+}
+
 // This is to figure out current Marble(who's turn)'s and oppositeMarble's adjacent
 function stateGenerator() {
     let cur = [];
@@ -132,8 +157,8 @@ function stateGenerator() {
     move(cur, next);
     // console.log(resultsInline);
     // console.log(adjacentInfo)
-    console.log(currentMarbles)
-    console.log(oppositeMarbles)
+    // console.log(currentMarbles)
+    // console.log(oppositeMarbles)
     
 } 
 
@@ -175,8 +200,8 @@ function move(cur, next, global) {
         }
 
     }
-    // console.log(inlineArr)
-    // console.log(sidestepArr)
+    console.log(inlineArr)
+    console.log(sidestepArr)
     if (global) {
         return [inlineArr, sidestepArr]
     } else {
@@ -647,8 +672,8 @@ function getAdjacent(marble, justAdjacent) {
             //     adjacent[2] = adjacent[3];
             //     adjacent[3] = temp;
             // }
-            console.log(marble)
-            console.log(adjacent)
+            // console.log(marble)
+            // console.log(adjacent)
         adjacentInfo[marble] = adjacent
     }
 
