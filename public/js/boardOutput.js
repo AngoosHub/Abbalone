@@ -49,9 +49,17 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     // console.log(moveConfigOutputFile);
     // console.log(boardConfigOutputFile);
     // console.log("---- END OF BOARD OUTPUT ----");
-
+    let boardConfigOutputFileUppercase = []
+    for (let i = 0; i < boardConfigOutputFile.length; i++) {
+        let result = boardConfigOutputFile[i];
+        let resultUpper = [];
+        for( let j = 0; j < result.length; j++) {
+            resultUpper.push(result[j].substring(0,1).toUpperCase() + result[j].substring(1));
+        }
+        boardConfigOutputFileUppercase.push(resultUpper);
+    }
     downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
-    downloadFile(fileName.replace("input", "board"), boardConfigOutputFile.join("\n"));
+    downloadFile(fileName.replace("input", "board"), boardConfigOutputFileUppercase.join("\n"));
     
     return [moveConfigOutputFile, boardConfigOutputFile];
 }

@@ -116,6 +116,7 @@ function stateGenerator() {
     
     for(let i =0; i<currentMarbles.length;i++) {
         cur =getAdjacent(currentMarbles[i]);
+        
     }
     for(let i =0; i<oppositeMarbles.length;i++) {
 
@@ -187,7 +188,7 @@ function move(cur, next, global) {
 
 function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepArr) {
     
-    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
+    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4','x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
 
     let sideStepResult = [];
     if(marble.substring(0,1)=='x') {
@@ -523,7 +524,7 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
     }else if(oppositeMarbles.includes(adjacentMarble)){ 
         return findingInlineSideStep(cur, next, adjacentMarble, (next[adjacentMarble])[direction],direction, cntCurMarble, cntOpMarble+=1);
     }else if(currentMarbles.includes(adjacentMarble)) {
-        console.log(marble+"marble"+adjacentMarble+"ASDF"+cntOpMarble);
+        // console.log(marble+"marble"+adjacentMarble+"ASDF"+cntOpMarble);
         if(cntOpMarble >0) {
             return null;
         }
@@ -584,33 +585,76 @@ function getAdjacent(marble, justAdjacent) {
     }else if(number==8) {
         adjacentNumber = [7,8,9]
     }else if(number==9) {
-        adjacentNumber = [8,9,0]
+        adjacentNumber = [8,9,10]
     }
     
 
     //MAKE ADJACENT ALL 
     for(let i =0; i<adjacentAlphabet.length;i++) {
         for(let j=0;j<adjacentNumber.length;j++) {
-            let candidate = adjacentAlphabet[i]+adjacentNumber[j];
-            if(adjacentAlphabet[i]<alphabet && adjacentNumber[j]<=number) {
-                adjacent.push(candidate);
+            if(alphabet<="d") {
+                let candidate = adjacentAlphabet[i]+adjacentNumber[j];
+                if(adjacentAlphabet[i]<alphabet && adjacentNumber[j]<=number) {
+                    adjacent.push(candidate);
+                }
+                if(adjacentAlphabet[i]>alphabet && adjacentNumber[j]>=number) {
+                    adjacent.push(candidate);
+                }
+                //remove if the marble is smae with the current marble
+                if(adjacentAlphabet[i]==alphabet &&candidate!=marble) {
+                    adjacent.push(candidate);
+                }
+            }else if(alphabet>="e" && number!=9) {
+                let candidate = adjacentAlphabet[i]+adjacentNumber[j];
+                if(adjacentAlphabet[i]<alphabet && adjacentNumber[j]<=number) {
+                    adjacent.push(candidate);
+                }
+                if(adjacentAlphabet[i]>alphabet && adjacentNumber[j]>=number) {
+                    adjacent.push(candidate);
+                }
+                //remove if the marble is smae with the current marble
+                if(adjacentAlphabet[i]==alphabet &&candidate!=marble) {
+                    adjacent.push(candidate);
+                }
+            }else {
+                let candidate = adjacentAlphabet[i]+adjacentNumber[j];
+                if(adjacentAlphabet[i]<alphabet && adjacentNumber[j]<=number) {
+                    adjacent.push(candidate);
+                }
+                if(adjacentAlphabet[i]>alphabet && adjacentNumber[j]>=number) {
+                  if(adjacentNumber[j]==10) {
+                      candidate = adjacentAlphabet[i]+parseInt(adjacentNumber[j].toString().slice(1,2));
+                  }
+                    adjacent.push(candidate);
+                }
+                //remove if the marble is smae with the current marble
+                if(adjacentAlphabet[i]==alphabet &&candidate!=marble) {
+                    if(adjacentNumber[j]==10) {
+                        candidate = adjacentAlphabet[i]+parseInt(adjacentNumber[j].toString().slice(1,2));
+                    }
+                      adjacent.push(candidate);
+                }
+                
+                adjacent.push()
             }
-            if(adjacentAlphabet[i]>alphabet && adjacentNumber[j]>=number) {
-                adjacent.push(candidate);
-            }
-            //remove if the marble is smae with the current marble
-            if(adjacentAlphabet[i]==alphabet &&candidate!=marble) {
-                adjacent.push(candidate);
-            }
-            // console.log(adjacent)
             
+           
         }
+        
+         // console.log(adjacent)
+            // if(number==9) {
+            //     temp = adjacent[2];
+            //     adjacent[2] = adjacent[3];
+            //     adjacent[3] = temp;
+            // }
+            console.log(marble)
+            console.log(adjacent)
         adjacentInfo[marble] = adjacent
     }
+
     if (justAdjacent) {
         return adjacent;
-    }
-   
+    }     
     return adjacentInfo
 
 
