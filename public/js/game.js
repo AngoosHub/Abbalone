@@ -57,8 +57,8 @@ window.onload = function() {
     document.getElementById("p2-time").innerHTML = p2TimeLimit;
 
     initBoard(layoutInt);
-    turn();
-    emptyBoard()
+    // turn();
+    // emptyBoard()
     let cells = document.getElementsByClassName("cell");
     for (i = 0; i < cells.length; i++) {
         let cellID = cells[i].id;
@@ -97,6 +97,7 @@ function clearClickables() {
 
 function addClickable(id) {
     if (!clickableCells.includes(id)) {
+        console.log("faufhuiodsfhs")
         let adjCell = document.getElementById(id);
         clickableCells.push(id);
         adjCell.classList.add(clickableClass);
@@ -109,7 +110,7 @@ function setClickables(id) {
     if (!marble) {
         return;
     }
-
+    
     let adjacentArr = adjacentInfo[id],
         firstClicked = currentClickSequence[0],
         secondClicked = currentClickSequence[1],
@@ -329,6 +330,7 @@ let playerTurnTimeout, playerTurnRunning;
 
 function endTurn() {
     clearTimeout(playerTurnTimeout);
+    console.log("hello")
     let board = getCurrentBoard();
     fullHistory.push(board);
     board = board.toString().replaceAll(',', ', ');
@@ -359,11 +361,13 @@ function endTurn() {
         turnsLeft--;
         document.getElementById("p2-moves").innerHTML = turnsLeft;
     }
-    generateBoardWInput();
+    generateBoardWInput2();
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
         let maxPlayer = (blackPlayer == 2)
         handleGameAgent(maxPlayer);
+        console.log(adjacentInfo)
     } else { // Player turn
+        console.log(adjacentInfo)
         playerTurnRunning = true;
         playerTurnTimeout = setTimeout(() => {
             if (playerTurnRunning) {

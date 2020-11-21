@@ -137,7 +137,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
 
         let value;
         if (maxPlayer) {
-            // if (new Date().getTime() < timeStampEnd) {
+            if (new Date().getTime() < timeStampEnd) {
                 value = Number.MIN_SAFE_INTEGER;
                 for (let i = 0; i < resultingBoards.length; i++) {
                     if (new Date().getTime() > timeStampEnd) break;
@@ -157,9 +157,9 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                         };
                     }
                 }
-            // }
+            }
         } else {
-            // if (new Date().getTime() < timeStampEnd) {
+            if (new Date().getTime() < timeStampEnd) {
                 value = Number.MAX_SAFE_INTEGER;
                 for (let i = 0; i < resultingBoards.length; i++) {
                     if (new Date().getTime() > timeStampEnd) break;
@@ -179,7 +179,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                         };
                     }
                 }
-            // }
+            }
         };
 
         // Start Store into transposition table.
