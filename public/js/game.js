@@ -97,6 +97,7 @@ function clearClickables() {
 
 function addClickable(id) {
     if (!clickableCells.includes(id)) {
+        console.log("faufhuiodsfhs")
         let adjCell = document.getElementById(id);
         clickableCells.push(id);
         adjCell.classList.add(clickableClass);
@@ -109,7 +110,7 @@ function setClickables(id) {
     if (!marble) {
         return;
     }
-
+    
     let adjacentArr = adjacentInfo[id],
         firstClicked = currentClickSequence[0],
         secondClicked = currentClickSequence[1],
@@ -118,6 +119,9 @@ function setClickables(id) {
         firstDir;
     
     for (let i = 0; i < adjacentArr.length; i++) {
+        console.log(adjacentArr[i])
+        console.log(resultsInline)
+        console.log(resultsSideStep)
         let adjCell = document.getElementById(adjacentArr[i]),
             movDir = adjacentDirections[i],
             inlineMove = "i-" + id + "-" + movDir, 
