@@ -17,7 +17,7 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     }
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
-    console.log(currentBoard);
+    // console.log(currentBoard);
     resultsI.forEach(inline_move => {
         if (inline_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, inline_move);
@@ -35,7 +35,7 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
         if (sidestep_move.includes("-")) {
             let newBoard = generateBoardConfigurationFromMove(currentBoard, sidestep_move);
             // let resultString = transformBoardToOutputLine(newBoard);
-            console.log(newBoard);
+            // console.log(newBoard);
             let resultArray= transformBoardToArray(newBoard);
             
             if (boardConfigOutputFile.indexOf(newBoard) == -1) {
@@ -58,8 +58,8 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
         }
         boardConfigOutputFileUppercase.push(resultUpper);
     }
-    downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
-    downloadFile(fileName.replace("input", "board"), boardConfigOutputFileUppercase.join("\n"));
+    // downloadFile(fileName.replace("input", "move"), moveConfigOutputFile.join("\n"));
+    // downloadFile(fileName.replace("input", "board"), boardConfigOutputFileUppercase.join("\n"));
     
     return [moveConfigOutputFile, boardConfigOutputFile];
 }
@@ -110,7 +110,6 @@ function getCurrentBoard() {
             currentBoard.push(cellID + team);
         }
     }
-    console.log(currentBoard)
     return currentBoard;
 }
 
@@ -144,7 +143,7 @@ function getCurrentBoard2() {
             currentBoard[cellID] = team;
         }
     }
-    console.log(currentBoard)
+    // console.log(currentBoard)
     return currentBoard;
 }
 
@@ -172,12 +171,12 @@ function generateBoardConfigurationFromMove(board, inputMove) {
     const inline = "i";
     const drop = "DROP";
     let currentBoard = JSON.parse(JSON.stringify(board));
-    console.log(currentBoard);
+    // console.log(currentBoard);
     let moveInfo = inputMove.split("-");
     let moveType = moveInfo[0];
     let direction = moveInfo[moveInfo.length-1];
     
-    console.log(adjacentInfo);
+    // console.log(adjacentInfo);
     // Side step loop will move each marble towards direction.
     if (moveType == sidestep) {
      if (moveInfo.length == 3) {
@@ -207,9 +206,9 @@ function generateBoardConfigurationFromMove(board, inputMove) {
            
             if (!adjacentInfo[marble_id_first].includes(marble_id_third)) {
                 let marble_id_second = findMiddleMarble(marble_id_first, marble_id_third);
-                console.log("!!!!"+marble_id_first);
-                console.log("!!!!"+marble_id_third);
-                console.log("!!!!"+marble_id_second);
+                // console.log("!!!!"+marble_id_first);
+                // console.log("!!!!"+marble_id_third);
+                // console.log("!!!!"+marble_id_second);
                 let result2 = calculateDirectionResultId(marble_id_second, direction);
                 if (result2 != drop) {
                     currentBoard[result2] = currentBoard[marble_id_second];
@@ -222,8 +221,8 @@ function generateBoardConfigurationFromMove(board, inputMove) {
     // Inline loop starts at marble furthest back in the group of the direction moving, 
     // and recursively push all marbles infront of it forward.
     else if (moveType == inline) {
-        console.log(inputMove);
-        console.log(adjacentInfo)
+        // console.log(inputMove);
+        // console.log(adjacentInfo)
         let marble_id = moveInfo[1]; //a3
         // console.log(moveInfo);
         // console.log(moveInfo.length);
@@ -251,10 +250,15 @@ function generateBoardConfigurationFromMove(board, inputMove) {
 }
 
 function findMiddleMarble(firstNode, thirdNode) {
-    
+    let first = getAdjacent(firstNode, true)
     for(let i =0; i<6;i++) {
-        if(adjacentInfo[adjacentInfo[firstNode][i]][i]==thirdNode) {
-            return adjacentInfo[firstNode][i];
+        // console.log(adjacentInfo);
+        // console.log(firstNode)
+        let firstN = first[i], firstNNeighbour = getAdjacent(firstN, true)[i];
+        // if(adjacentInfo[adjacentInfo[firstNode][i]][i]==thirdNode) {
+        if(firstNNeighbour == thirdNode) {
+            // return adjacentInfo[firstNode][i];
+            return firstNNeighbour;
         }
     }
 }

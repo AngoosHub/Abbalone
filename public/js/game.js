@@ -119,9 +119,6 @@ function setClickables(id) {
         firstDir;
     
     for (let i = 0; i < adjacentArr.length; i++) {
-        console.log(adjacentArr[i])
-        console.log(resultsInline)
-        console.log(resultsSideStep)
         let adjCell = document.getElementById(adjacentArr[i]),
             movDir = adjacentDirections[i],
             inlineMove = "i-" + id + "-" + movDir, 
@@ -333,6 +330,7 @@ let playerTurnTimeout, playerTurnRunning;
 
 function endTurn() {
     clearTimeout(playerTurnTimeout);
+    console.log("hello")
     let board = getCurrentBoard();
     fullHistory.push(board);
     board = board.toString().replaceAll(',', ', ');
@@ -367,7 +365,9 @@ function endTurn() {
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
         let maxPlayer = (blackPlayer == 2)
         handleGameAgent(maxPlayer);
+        console.log(adjacentInfo)
     } else { // Player turn
+        console.log(adjacentInfo)
         playerTurnRunning = true;
         playerTurnTimeout = setTimeout(() => {
             if (playerTurnRunning) {

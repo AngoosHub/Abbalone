@@ -33,7 +33,6 @@ const allBoard =
 // console.log(nextTurn);
 // console.log(fileName);
 
-
 let newMarblesP1 = []; // contains user's marble(all black)
 let newMarblesP2 = []; // contains computer's marble(all white)
 let emptyLocation =["a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9"]; 
@@ -43,7 +42,7 @@ let resultsSideStep = [];
 let adjacentInfo = {}; // key : marble, value : marble's adjacent
 let currentMarbles; // depends on turn // logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
 let oppositeMarbles; // depends on turn //logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
-let nextTurn = 'w';
+let nextTurn = 'b';
 
 function turn() {
     generateBoardWInput();
@@ -106,10 +105,9 @@ function generateBoardWInput() {
     emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     stateGenerator()
 }
-
 function generateBoardWInput2() {
     emptyBoard();
-    for (let i = 0; i < marblesP1.length; i++) {
+    for (let i = 0; i < 14; i++) {
         if (marblesP1[i] && !marblesP1[i].dropped) { // if the marble has not been dropped
             let marble = marblesP1[i];
             newMarblesP1.push(marble.coordinate);
@@ -200,8 +198,8 @@ function move(cur, next, global) {
         }
 
     }
-    console.log(inlineArr)
-    console.log(sidestepArr)
+    // console.log(inlineArr)
+    // console.log(sidestepArr)
     if (global) {
         return [inlineArr, sidestepArr]
     } else {
@@ -498,7 +496,7 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
         return null;
     }
 
-
+  
     if(adjacentMarble.substring(0,1)=='x'||adjacentMarble.substring(1,2)=='0') {
         
         if(cntCurMarble==1&&cntOpMarble==0) {
