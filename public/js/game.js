@@ -29,7 +29,8 @@ let layoutInt = 0,
     turnLimit = 50,
     p1TimeLimit = 5,
     p2TimeLimit = 5,
-    blackPlayer = 1;
+    blackPlayer = 1,
+    whitePlayer = 2;
 
 // TURN-BASED VARIABLES
 let currentTurn = 'b',              // b (black) or w (white)
@@ -46,9 +47,14 @@ window.onload = function() {
     p2TimeLimit = localStorage.getItem('p2TimeLimit');
     blackPlayer = localStorage.getItem('blackPlayer');
 
-    if (blackPlayer == 1) currentTurnINT = 1;
-    else if (blackPlayer == 2) currentTurnINT = 2;
-    else currentTurnINT = 1;
+    if (blackPlayer == 1) {
+        currentTurnINT = 1;
+    } else if (blackPlayer == 2) {
+        whitePlayer == 1;
+        currentTurnINT = 2;
+    } else {
+        currentTurnINT = 1;
+    }
 
     let moveLimits = document.getElementsByClassName("move-limit");
     moveLimits[0].innerHTML = turnLimit;
@@ -275,8 +281,6 @@ function moveHandler(cell, id) {
                 clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
                 clickDirection = adjacentDirections[clickDirIndex],
                 oppClickDirection = adjOppositeDirections[clickDirIndex];
-                console.log(moveDirection)
-                console.log("--" + clickDirection + "--" + oppClickDirection)
                 inline = (clickDirection == moveDirection || oppClickDirection == moveDirection) ? true : false;
             }
 
@@ -421,8 +425,6 @@ function handleGameAgent(maxPlayer) {
     let displayTime = Math.floor((timeStampEnd - timeStamp) / 1000);
     agentsTimeTicker.innerHTML = displayTime;
     let board = getCurrentBoard();
-    console.log("CURRENT BOARD " + board)
-    console.log(boardOutput(resultsInline, resultsSideStep, board))
     while (depth < maxDepthPerm && new Date().getTime() < timeStampEnd) {
         displayTime = Math.floor((timeStampEnd - (new Date().getTime())) / 1000);
         agentsTimeTicker.innerHTML = displayTime;
@@ -434,7 +436,6 @@ function handleGameAgent(maxPlayer) {
         }
         depth++;
     }
-    console.log("ALPHABETA " + alphaBeta[1])
     drawBoard(alphaBeta[1]);
     // console.log("-------AI MOVED");
     endTurn();
@@ -643,24 +644,29 @@ function drawBoard(board) {
         }
     }
     if (p2Left > marblesP2.length) {
+        console.log("black score")
         player1Score++;
         p2Left--;
-        updateScore(1);
+        updateScore(blackPlayer);
     } else if (p1Left > marblesP1.length) {
+        console.log("white score")
+
         player2Score++;
         p1Left--;
-        updateScore(2);
+        updateScore(whitePlayer);
     }
     // console.log("DONE DRAWING");
 }
 
 function updateScore(player) {
-    let id = (player == 1) ? 'p1c-' + player1Score : 'p2c-' + player2Score
+    let scoreP1 = (blackPlayer == 1) ? player1Score : player2Score;
+    let scoreP2 = (whitePlayer == 2) ? player2Score : player1Score;
+    let id = (player == blackPlayer) ? 'p1c-' + scoreP1 : 'p2c-' + scoreP2
     document.getElementById(id).style.background = redMarbleColour;
     if (player1Score >= 6) {
-        // player 1 WINS
+        // black WINS
     } else if (player2Score >= 6) {
-        // player 2 WINS
+        // white WINS
     }
 }
 
