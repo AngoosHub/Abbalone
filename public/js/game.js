@@ -421,6 +421,8 @@ function handleGameAgent(maxPlayer) {
     let displayTime = Math.floor((timeStampEnd - timeStamp) / 1000);
     agentsTimeTicker.innerHTML = displayTime;
     let board = getCurrentBoard();
+    console.log("CURRENT BOARD " + board)
+    console.log(boardOutput(resultsInline, resultsSideStep, board))
     while (depth < maxDepthPerm && new Date().getTime() < timeStampEnd) {
         displayTime = Math.floor((timeStampEnd - (new Date().getTime())) / 1000);
         agentsTimeTicker.innerHTML = displayTime;
@@ -432,7 +434,7 @@ function handleGameAgent(maxPlayer) {
         }
         depth++;
     }
-    // console.log(alphaBeta[1])
+    console.log("ALPHABETA " + alphaBeta[1])
     drawBoard(alphaBeta[1]);
     // console.log("-------AI MOVED");
     endTurn();

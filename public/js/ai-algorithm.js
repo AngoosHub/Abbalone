@@ -128,7 +128,7 @@ function stateGenerator() {
 
     }
    
-    move(cur, next, currentMarbles, oppositeMarbles);
+    move(cur, next, currentMarbles, oppositeMarbles, emptyLocation);
     // console.log(resultsInline);
     // console.log(adjacentInfo)
     // console.log(currentMarbles)
@@ -138,7 +138,7 @@ function stateGenerator() {
 
 
 //find how it can be moves
-function move(cur, next, currentMarbles, oppositeMarbles, global) {
+function move(cur, next, currentMarbles, oppositeMarbles, emptyLocation, global) {
     let temp;
     let emptyArray =[];
     let inlineArr = [], sidestepArr = [];
@@ -157,7 +157,7 @@ function move(cur, next, currentMarbles, oppositeMarbles, global) {
         
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             temp = (cur[currentMarbles[i]])[j];
-            result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0, currentMarbles, oppositeMarbles); 
+            result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0, currentMarbles, oppositeMarbles, emptyLocation); 
 
             if(result!=null && result!=undefined) {
                 inlineArr.push("i"+"-"+currentMarbles[i]+"-"+result);
@@ -168,7 +168,7 @@ function move(cur, next, currentMarbles, oppositeMarbles, global) {
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             temp = (cur[currentMarbles[i]])[j];
             
-            sideStep(cur, currentMarbles[i], temp, j, emptyArray, sidestepArr, currentMarbles);
+            sideStep(cur, currentMarbles[i], temp, j, emptyArray, sidestepArr, currentMarbles, emptyLocation);
             
         }
 
@@ -185,7 +185,7 @@ function move(cur, next, currentMarbles, oppositeMarbles, global) {
 }
 
 
-function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepArr, currentMarbles) {
+function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepArr, currentMarbles, emptyLocation) {
     
     let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4','x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
 
@@ -441,7 +441,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
 // adjacentMarble is the marble's adjacent
 //direction can be known through index of array
 
-function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble, currentMarbles, oppositeMarbles) {
+function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble, currentMarbles, oppositeMarbles, emptyLocation) {
     let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
 
     // console.log(marble);
@@ -521,13 +521,13 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
         }
         
     }else if(oppositeMarbles.includes(adjacentMarble)){ 
-        return findingInlineSideStep(cur, next, adjacentMarble, (next[adjacentMarble])[direction],direction, cntCurMarble, cntOpMarble+=1, currentMarbles, oppositeMarbles);
+        return findingInlineSideStep(cur, next, adjacentMarble, (next[adjacentMarble])[direction],direction, cntCurMarble, cntOpMarble+=1, currentMarbles, oppositeMarbles, emptyLocation);
     }else if(currentMarbles.includes(adjacentMarble)) {
         // console.log(marble+"marble"+adjacentMarble+"ASDF"+cntOpMarble);
         if(cntOpMarble >0) {
             return null;
         }
-        return findingInlineSideStep(cur, next, adjacentMarble, (cur[adjacentMarble])[direction],direction, cntCurMarble+=1, cntOpMarble, currentMarbles, oppositeMarbles);
+        return findingInlineSideStep(cur, next, adjacentMarble, (cur[adjacentMarble])[direction],direction, cntCurMarble+=1, cntOpMarble, currentMarbles, oppositeMarbles, emptyLocation);
     }
     
 }

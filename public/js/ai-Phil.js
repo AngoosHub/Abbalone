@@ -111,7 +111,7 @@ function futureStateGenerator(gameBoard, maxPlayer) {
     for (let i = 0; i < emptyLoc.length; i++) {
         next = getAdjacent(emptyLoc[i]);
     }
-    return move(cur, next, currentMarbles, oppositeMarbles, true);
+    return move(cur, next, currentMarbles, oppositeMarbles, emptyLoc, true);
 }
 
 let transpositionTable = {};
