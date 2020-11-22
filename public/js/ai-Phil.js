@@ -123,7 +123,12 @@ const LOWERBOUND = "LOWERBOUND";
 const EXACT = "EXACT";
 
 function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
+    let agentsTimeTicker = document.getElementById("p2-time");
+    let displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));
+    agentsTimeTicker.innerHTML = displayTime;
     if (new Date().getTime() < timeStampEnd) {
+        displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));;
+        agentsTimeTicker.innerHTML = displayTime
         // Start Retrieve from transposition table.
         let TTKey = gameBoard.join(","); // assuming gameBoard in format: ["A4w","A3w", ...]
         if (transpositionTable.hasOwnProperty(TTKey) && transpositionTable[TTKey].depth >= depth) {
@@ -167,6 +172,8 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
         let sortBoards = []
         resultingBoardsUnordered.forEach(board => {
             if (new Date().getTime() < timeStampEnd) {
+                displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));
+                agentsTimeTicker.innerHTML = displayTime;
                 let score = alphaBetaMiniMax(board, 0, alpha, beta, maxPlayer);
                 sortBoards.push({
                     board: score[1],
@@ -188,9 +195,11 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
         let value;
         if (maxPlayer) {
             if (new Date().getTime() < timeStampEnd) {
+                displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));
+                agentsTimeTicker.innerHTML = displayTime;
                 value = Number.MIN_SAFE_INTEGER;
                 for (let i = 0; i < resultingBoards.length; i++) {
-                    if (new Date().getTime() > timeStampEnd) break;
+                    if (new Date().getTime() >= timeStampEnd) break;
                     let board = resultingBoards[i];
                     if (depth == maxDepth && bestBoard_MAX == undefined) {
                         bestBoard_MAX = board;
@@ -198,6 +207,8 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                     }
                     let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, false)
                     if (new Date().getTime() < timeStampEnd) {
+                        displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));
+                        agentsTimeTicker.innerHTML = displayTime;
                         if (value < t_val[0]) {
                             value = t_val[0];
                         }
@@ -215,6 +226,8 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
             }
         } else {
             if (new Date().getTime() < timeStampEnd) {
+                displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));
+                agentsTimeTicker.innerHTML = displayTime;
                 value = Number.MAX_SAFE_INTEGER;
                 for (let i = 0; i < resultingBoards.length; i++) {
                     if (new Date().getTime() > timeStampEnd) break;
@@ -225,6 +238,8 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                     }
                     let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
                     if (new Date().getTime() < timeStampEnd) {
+                        displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));
+                        agentsTimeTicker.innerHTML = displayTime;
                         if (value > t_val[0]) {
                             value = t_val[0];
                         }

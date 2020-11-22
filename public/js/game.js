@@ -214,7 +214,58 @@ function setClickables(id) {
 }
 
 function setClickables2(id) {
+    clearClickables();
+    let marble = getPlayerMarble(currentTurn, id);
+    if (!marble) {
+        return;
+    }
+    
+    let adjacentArr = adjacentInfo[id],
+        firstClicked = currentClickSequence[0],
+        secondClicked = currentClickSequence[1],
+        firstAdjArr = firstClicked ? adjacentInfo[currentClickSequence[0].coordinate] : null,
+        secondAdjArr = secondClicked ? adjacentInfo[currentClickSequence[1].coordinate] : null,
+        firstDir;
+    
+    for (let i = 0; i < adjacentArr.length; i++) {
+        let n_id = adjacentArr[i]
+        // Check inline movements that start from here
+        let moveNote = "i-" + marble.coordinate + "-" + adjacentDirections[i];
+        if (resultsInline.includes(moveNote)) {
+            addClickable(n_id);
+        }
+        // Check inline movements that start from a neighbour
+        if (document.getElementById(n_id).classList.contains(hasMarbleClass)) {
+            let n_adjacents = adjacentInfo[n_id];
+            for (let j = 0; j < n_adjacents.length; j++) {
+                let n_moveNote = "i-" + n_adjacents[j] + "-" + adjOppositeDirections[i];
+                if (resultsInline.includes(n_moveNote)) {
+                    addClickable(n_adjacents[j]);
+                }
+            }
+        }
+    }
+    for (let i = 0; i < currentClickSequence.length; i++) {
+        let marble = currentClickSequence[i];
+        if (marble == undefined) {
 
+        }
+        let adjacents = getAdjacent(marble.coordinate, true);
+        // find individual inline possibilities
+        for (let j = 0; j < adjacentDirections.length; j++) {
+            let moveNote = "i-" + marble.coordinate + "-" + adjacentDirections[j];
+            console.log(moveNote)
+            if (resultsInline.includes(moveNote)) {
+                addClickable(adjacents[j]);
+            }
+        }
+        for (let j = 0; j < adjacents.length; j++) {
+            // check inline possibilities
+
+            // check sidestep possibilities
+        }
+
+    }
 }
 
 function selectCell(id, cell) { // selects the actual marble
@@ -317,7 +368,6 @@ function moveHandler(cell, id) {
                 moveMarble = currentClickSequence[topID]
                 let board = getCurrentBoard2();
                 let inputMove = "i-" + moveMarble.coordinate + "-" + moveDirection
-                console.log(inputMove);
                 let newBoard = generateBoardConfigurationFromMove(board, inputMove);
                 newBoard = transformBoardToArray(newBoard)
                 drawBoard(newBoard);
@@ -326,7 +376,6 @@ function moveHandler(cell, id) {
                 let moveMarble2 = currentClickSequence[topID]
                 let board = getCurrentBoard2();
                 let inputMove = "s-" + moveMarble.coordinate + "-" + moveMarble2.coordinate + "-" + moveDirection
-                console.log("side")
                 let newBoard = generateBoardConfigurationFromMove(board, inputMove);
                 newBoard = transformBoardToArray(newBoard)
                 drawBoard(newBoard);
@@ -413,10 +462,12 @@ function handleGameAgent(maxPlayer) {
     let agentsTimeTicker = document.getElementById("p2-time");
     timeStamp = new Date().getTime();
     timeStampEnd = timeStamp + (p2TimeLimit * 1000) - 100;
-    agentsTimeTicker.innerHTML = Math.floor((timeStampEnd - timeStamp) / 1000);
+    let displayTime = Math.floor((timeStampEnd - timeStamp) / 1000);
+    agentsTimeTicker.innerHTML = displayTime;
     let board = getCurrentBoard();
     while (depth < maxDepthPerm && new Date().getTime() < timeStampEnd) {
-        agentsTimeTicker.innerHTML = Math.floor((timeStampEnd - (new Date().getTime())) / 1000);
+        displayTime = Math.floor((timeStampEnd - (new Date().getTime())) / 1000);
+        agentsTimeTicker.innerHTML = displayTime;
         maxDepth = depth;
         let alphaBetaTemp = alphaBetaMiniMax(board, depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
         if (new Date().getTime() < timeStampEnd && (alphaBeta == undefined || 
