@@ -378,25 +378,25 @@ function endTurn() {
 }
 
 let timeStamp, timeStampEnd;
-let maxDepth = 3
+let maxDepthPerm = 9;
+let maxDepth
 
 function handleGameAgent(maxPlayer) {
     console.log("----------MOVING AI")
-    // let maxDepth = 9, depth = 0;
+    let depth = 0;
     let alphaBeta;
     timeStamp = new Date().getTime();
     timeStampEnd = timeStamp + (p2TimeLimit * 1000) - 100;
-    alphaBeta = alphaBetaMiniMax(getCurrentBoard(), maxDepth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer)
-    // while (depth < maxDepth && new Date().getTime() < timeStampEnd) {
-    //     alphaBeta = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
-    //     if (new Date().getTime() < timeStampEnd) {
-    //         alphaBeta = alphaBetaTemp;
-    //     }
-    //     depth++;
-    // }
-    // for(let depth = 0; depth < maxDepth; depth++) {
-    //     alphaBeta = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
-    // }
+    while (depth < maxDepthPerm && new Date().getTime() < timeStampEnd) {
+        maxDepth = depth;
+        let alphaBetaTemp = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
+        if (new Date().getTime() < timeStampEnd && (alphaBeta == undefined || 
+            (((maxPlayer && alphaBetaTemp[0] >= alphaBeta[0])) || (!maxPlayer && alphaBetaTemp[0] <= alphaBeta[0])))) {
+            alphaBeta = alphaBetaTemp;
+        }
+        depth++;
+    }
+    console.log(alphaBeta)
     drawBoard(alphaBeta[1]);
     console.log("ai moved");
     endTurn();

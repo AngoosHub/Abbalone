@@ -214,7 +214,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                 for (let i = 0; i < resultingBoards.length; i++) {
                     if (new Date().getTime() > timeStampEnd) break;
                     let board = resultingBoards[i];
-                    if (depth == maxDepth - 1 && bestBoard_MIN == undefined) bestBoard_MIN = board;
+                    if (depth == maxDepth && bestBoard_MIN == undefined) bestBoard_MIN = board;
                     let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
                     if (new Date().getTime() < timeStampEnd) {
                         if (value > t_val[0]) {
