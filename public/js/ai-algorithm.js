@@ -160,7 +160,6 @@ function move(cur, next, global) {
             result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0); 
 
             if(result!=null && result!=undefined) {
-                
                 inlineArr.push("i"+"-"+currentMarbles[i]+"-"+result);
             }
 

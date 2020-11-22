@@ -361,11 +361,13 @@ function endTurn() {
         document.getElementById("p2-moves").innerHTML = turnsLeft;
     }
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
-        console.log("Starting AI!")
+        console.log("-------Starting AI!")
+        console.log(getCurrentBoard());
         let maxPlayer = (blackPlayer == 2)
         handleGameAgent(maxPlayer);
     } else { // Player turn
-        console.log("Starting PLAYER!")
+        console.log("--------Starting PLAYER!")
+        console.log(getCurrentBoard());
         playerTurnRunning = true;
         playerTurnTimeout = setTimeout(() => {
             if (playerTurnRunning) {
@@ -376,10 +378,11 @@ function endTurn() {
 }
 
 let timeStamp, timeStampEnd;
+let maxDepth = 3
 
 function handleGameAgent(maxPlayer) {
     console.log("----------MOVING AI")
-    let maxDepth = 9, depth = 0;
+    // let maxDepth = 9, depth = 0;
     let alphaBeta;
     timeStamp = new Date().getTime();
     timeStampEnd = timeStamp + (p2TimeLimit * 1000) - 100;
@@ -395,8 +398,8 @@ function handleGameAgent(maxPlayer) {
     //     alphaBeta = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
     // }
     drawBoard(alphaBeta[1]);
-    endTurn();
     console.log("ai moved");
+    endTurn();
 }
 
 function createMarble(startCoord, player, mbcolour) {
@@ -573,6 +576,9 @@ function clearHasMarble() {
     }
 }
 
+let p1Left = 14,
+    p2Left = 14;
+
 function drawBoard(board) {
     emptyBoard();
     marblesP1 = []
@@ -596,7 +602,27 @@ function drawBoard(board) {
             emptyLocation.push(allBoard[i]);
         }
     }
-    stateGenerator()
+    if (p2Left > marblesP2.length) {
+        player1Score++;
+        p2Left--;
+        updateScore(1);
+    } else if (p1Left > marblesP1.length) {
+        player2Score++;
+        p1Left--;
+        updateScore(2);
+    }
+    stateGenerator();
+    console.log("DONE DRAWING");
+}
+
+function updateScore(player) {
+    let id = (player == 1) ? 'p1c-' + player1Score : 'p2c-' + player2Score
+    document.getElementById(id).style.background = redMarbleColour;
+    if (player1Score >= 6) {
+        // player 1 WINS
+    } else if (player2Score >= 6) {
+        // player 2 WINS
+    }
 }
 
 function changeTheme() {

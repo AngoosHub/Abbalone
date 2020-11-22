@@ -48,11 +48,9 @@ body {
     height: 48px;
     margin: 2px;
     border-radius: 50%;
+    /* background: radial-gradient(circle at 12px 12px, #525252e0, #4b4b4be0); */
     background: radial-gradient(circle at 12px 12px, #525252e0, #4b4b4be0);
-    /* background: radial-gradient(circle at 12px 12px, #fffffff1, #e7e6e6f1, #8d8d8df1, #505050f1); WHITE */
-    /* background: radial-gradient(circle at 16px 16px, #a5a5a5f1, #000000f1, #000000f1); BLACK */
     /* background: radial-gradient(circle at 12px 12px, #ff0000f1, #1b0000f1); RED */
-    /* background: radial-gradient(circle at 12px 12px, #1100fff1, #06001bf1); BLUE */
 }
 
 .current-turn {

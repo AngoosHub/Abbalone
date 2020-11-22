@@ -12,8 +12,8 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     if (!inputBoard) {
         currentBoard = getCurrentBoard2();
     } else {
-        // currentBoard = getCurrentBoardFromInput(inputBoard);
-        currentBoard = getCurrentBoard2();
+        currentBoard = getCurrentBoardFromInput(inputBoard);
+        // currentBoard = getCurrentBoard2();
     }
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
