@@ -161,6 +161,13 @@ function setClickables(id) {
         }
     }
     // check the previously clicked ones
+    // sumito stuff check
+    let clickDirIndex, clickDirection, oppClickDirection;
+    if (currentClickSequence.length > 1) {
+        clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
+        clickDirection = adjacentDirections[clickDirIndex],
+        oppClickDirection = adjOppositeDirections[clickDirIndex];
+    }
     for (let z = 0; z < currentClickSequence.length; z++) {
         let adjArr = (z === 0) ? firstAdjArr : secondAdjArr;
         if (adjArr) {
@@ -180,6 +187,12 @@ function setClickables(id) {
                 }
             }
         }
+        // let possibleSumitoMove1 = "i-" + currentClickSequence[z].coordinate + "-" + clickDirection,
+        //     possibleSumitoMove2 = "i-" + currentClickSequence[z].coordinate + "-" + oppClickDirection;
+        // if (resultsInline.includes(possibleSumitoMove1)) {
+        //     // find the victim!
+        //     addClickable()
+        // }
     }
     // SIDE STEPS
     if (currentClickSequence.length > 0) {
@@ -213,83 +226,25 @@ function setClickables(id) {
     }
 }
 
-function setClickables2(id) {
-    clearClickables();
-    let marble = getPlayerMarble(currentTurn, id);
-    if (!marble) {
-        return;
-    }
-    
-    let adjacentArr = adjacentInfo[id],
-        firstClicked = currentClickSequence[0],
-        secondClicked = currentClickSequence[1],
-        firstAdjArr = firstClicked ? adjacentInfo[currentClickSequence[0].coordinate] : null,
-        secondAdjArr = secondClicked ? adjacentInfo[currentClickSequence[1].coordinate] : null,
-        firstDir;
-    
-    for (let i = 0; i < adjacentArr.length; i++) {
-        let n_id = adjacentArr[i]
-        // Check inline movements that start from here
-        let moveNote = "i-" + marble.coordinate + "-" + adjacentDirections[i];
-        if (resultsInline.includes(moveNote)) {
-            addClickable(n_id);
-        }
-        // Check inline movements that start from a neighbour
-        if (document.getElementById(n_id).classList.contains(hasMarbleClass)) {
-            let n_adjacents = adjacentInfo[n_id];
-            for (let j = 0; j < n_adjacents.length; j++) {
-                let n_moveNote = "i-" + n_adjacents[j] + "-" + adjOppositeDirections[i];
-                if (resultsInline.includes(n_moveNote)) {
-                    addClickable(n_adjacents[j]);
-                }
-            }
-        }
-    }
-    for (let i = 0; i < currentClickSequence.length; i++) {
-        let marble = currentClickSequence[i];
-        if (marble == undefined) {
-
-        }
-        let adjacents = getAdjacent(marble.coordinate, true);
-        // find individual inline possibilities
-        for (let j = 0; j < adjacentDirections.length; j++) {
-            let moveNote = "i-" + marble.coordinate + "-" + adjacentDirections[j];
-            console.log(moveNote)
-            if (resultsInline.includes(moveNote)) {
-                addClickable(adjacents[j]);
-            }
-        }
-        for (let j = 0; j < adjacents.length; j++) {
-            // check inline possibilities
-
-            // check sidestep possibilities
-        }
-
-    }
-}
-
 function selectCell(id, cell) { // selects the actual marble
     setClickables(id) 
-
     let marble = getPlayerMarble(currentTurn, id);
     if (marble) {
         currentClickSequence.push(marble);
         cell.classList.add(clickedClass);
-        return true;
-    } else {
-        return false;
     }
 }
 
 function cellClicked(id) {
     let cell = document.getElementById(id);
+    let marble = getPlayerMarble(currentTurn, id);
     if (cell.classList.contains(hasMarbleClass)) { // Marble was clicked
         if (clickableCells.length == 0 
-            || (cell.classList.contains(clickableClass)  && !cell.classList.contains(clickedClass))) { 
-            let selected = selectCell(id, cell);
-            if (!selected) {
+            || (cell.classList.contains(clickableClass) && !cell.classList.contains(clickedClass))) {
+            if (marble) {
+                selectCell(id, cell);
+            } else {
                 moveHandler(cell, id)
-                console.log("enemy marble clicked")
             }
         } 
     } else { // Empty space clicked
@@ -413,12 +368,12 @@ function endTurn() {
     let newText = document.createElement("p");
     newText.innerHTML = board.toString();
     if (currentTurn == 'b') {
-        nextTurn = 'b'
+        nextTurn = 'w'
         currentTurn = 'w';
         newText.style.background = "#3f3f4066"
     } else {
         newText.style.background = "#ebebeb66"
-        nextTurn = 'w'
+        nextTurn = 'b'
         currentTurn = 'b';
     }
     document.getElementById("fh-div").prepend(newText);
@@ -437,6 +392,7 @@ function endTurn() {
         turnsLeft--;
         document.getElementById("p2-moves").innerHTML = turnsLeft;
     }
+    stateGenerator();
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
         console.log("-------Starting AI!")
         let maxPlayer = (blackPlayer == 2)
@@ -476,9 +432,9 @@ function handleGameAgent(maxPlayer) {
         }
         depth++;
     }
-    console.log(alphaBeta[1])
+    // console.log(alphaBeta[1])
     drawBoard(alphaBeta[1]);
-    console.log("-------AI MOVED");
+    // console.log("-------AI MOVED");
     endTurn();
 }
 
@@ -515,7 +471,6 @@ function initBoard(startStyle) {
     // 1 = Belgium Daisy
     // 2 = German Daisy
     emptyBoard();
-    document.getElementById("p1-tab-span").innerHTML = "<<<<"; // change to whoever is black
     let startCoordsP1 = [],
         startCoordsP2 = [];
     if (!startStyle || startStyle == 0) {
@@ -560,6 +515,7 @@ function initBoard(startStyle) {
     if (gameMode == 1) { // player vs computer
         document.getElementById("player2-tab").innerHTML = "Computer  <span id='p2-tab-span'></span>";
         if (blackPlayer == 1) { // player moves first
+            document.getElementById("p1-tab-span").innerHTML = "<<<<";
             console.log("PLAYER MOVE")
             playerTurnRunning = true;
             playerTurnTimeout = setTimeout(() => {
@@ -568,6 +524,7 @@ function initBoard(startStyle) {
                 }
             }, p1TimeLimit * 1000);
         } else { // computer moves first
+            document.getElementById("p2-tab-span").innerHTML = "<<<<";
             randomFirstTurn();
             console.log("COMPUTER MOVE")
         }
@@ -692,8 +649,7 @@ function drawBoard(board) {
         p1Left--;
         updateScore(2);
     }
-    stateGenerator();
-    console.log("DONE DRAWING");
+    // console.log("DONE DRAWING");
 }
 
 function updateScore(player) {

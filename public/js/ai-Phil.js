@@ -175,10 +175,12 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                 displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));
                 agentsTimeTicker.innerHTML = displayTime;
                 let score = alphaBetaMiniMax(board, 0, alpha, beta, maxPlayer);
-                sortBoards.push({
-                    board: score[1],
-                    score: score[0]
-                });
+                if (score) {
+                    sortBoards.push({
+                        board: score[1],
+                        score: score[0]
+                    });
+                }
             }
         });
         // console.log(sortBoards)
@@ -203,7 +205,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                     let board = resultingBoards[i];
                     if (depth == maxDepth && bestBoard_MAX == undefined) {
                         bestBoard_MAX = board;
-                        console.log(bestBoard_MAX)
+                        // console.log(bestBoard_MAX)
                     }
                     let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, false)
                     if (new Date().getTime() < timeStampEnd) {
@@ -214,7 +216,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                         }
                         if (value > alpha && depth == maxDepth) {
                             alpha = value;
-                            console.log(bestBoard_MAX)
+                            // console.log(bestBoard_MAX)
                             bestBoard_MAX = board;
                         }
                         alpha = Math.max(alpha, value);
@@ -234,7 +236,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                     let board = resultingBoards[i];
                     if (depth == maxDepth && bestBoard_MIN == undefined) {
                         bestBoard_MIN = board;
-                        console.log(bestBoard_MIN)
+                        // console.log(bestBoard_MIN)
                     }
                     let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
                     if (new Date().getTime() < timeStampEnd) {
@@ -245,7 +247,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                         }
                         if (value < beta && depth == maxDepth) {
                             beta = value;
-                            console.log(bestBoard_MIN)
+                            // console.log(bestBoard_MIN)
                             bestBoard_MIN = board;
                         }
                         beta = Math.min(beta, value);
