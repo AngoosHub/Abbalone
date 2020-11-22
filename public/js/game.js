@@ -12,7 +12,8 @@ const   defStartP1 = ["a1", "a2", "a3", "a4", "a5", "b1", "b2",
                     "b5", "b6", "c5", "c6", "c7", "d6", "d7"],      // Array of coordinates for PLAYER 2's German Daisy layout
         adjacentDirections = [7, 5, 9, 3, 11, 1], // This array stores the corresponding clock direction according to it's index for the adjacent array
         adjOppositesHigh = [7, 9, 11],
-        adjOppositesLow = [1, 3, 5];
+        adjOppositesLow = [1, 3, 5],
+        adjOppositeDirections = [1, 11, 3, 9, 5, 7];
 
 // GAME VARIABLES
 let marblesP1 = [],
@@ -34,7 +35,6 @@ let layoutInt = 0,
 let currentTurn = 'b',              // b (black) or w (white)
     currentTurnINT = 1,             // Integer representing which players turn it is (1 or 2)
     currentClickSequence = [],      // The marbles clicked for this turn
-    currentClickDirections = [],
     clickableCells = [];
 
 window.onload = function() {
@@ -97,7 +97,6 @@ function clearClickables() {
 
 function addClickable(id) {
     if (!clickableCells.includes(id)) {
-        console.log("faufhuiodsfhs")
         let adjCell = document.getElementById(id);
         clickableCells.push(id);
         adjCell.classList.add(clickableClass);
@@ -162,6 +161,13 @@ function setClickables(id) {
         }
     }
     // check the previously clicked ones
+    // sumito stuff check
+    let clickDirIndex, clickDirection, oppClickDirection;
+    if (currentClickSequence.length > 1) {
+        clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
+        clickDirection = adjacentDirections[clickDirIndex],
+        oppClickDirection = adjOppositeDirections[clickDirIndex];
+    }
     for (let z = 0; z < currentClickSequence.length; z++) {
         let adjArr = (z === 0) ? firstAdjArr : secondAdjArr;
         if (adjArr) {
@@ -181,6 +187,12 @@ function setClickables(id) {
                 }
             }
         }
+        // let possibleSumitoMove1 = "i-" + currentClickSequence[z].coordinate + "-" + clickDirection,
+        //     possibleSumitoMove2 = "i-" + currentClickSequence[z].coordinate + "-" + oppClickDirection;
+        // if (resultsInline.includes(possibleSumitoMove1)) {
+        //     // find the victim!
+        //     addClickable()
+        // }
     }
     // SIDE STEPS
     if (currentClickSequence.length > 0) {
@@ -216,7 +228,6 @@ function setClickables(id) {
 
 function selectCell(id, cell) { // selects the actual marble
     setClickables(id) 
-
     let marble = getPlayerMarble(currentTurn, id);
     if (marble) {
         currentClickSequence.push(marble);
@@ -226,95 +237,115 @@ function selectCell(id, cell) { // selects the actual marble
 
 function cellClicked(id) {
     let cell = document.getElementById(id);
+    let marble = getPlayerMarble(currentTurn, id);
     if (cell.classList.contains(hasMarbleClass)) { // Marble was clicked
         if (clickableCells.length == 0 
-            || (cell.classList.contains(clickableClass)  && !cell.classList.contains(clickedClass))) { 
-            selectCell(id, cell);
+            || (cell.classList.contains(clickableClass) && !cell.classList.contains(clickedClass))) {
+            if (marble) {
+                selectCell(id, cell);
+            } else {
+                moveHandler(cell, id)
+            }
         } 
     } else { // Empty space clicked
-        if (currentClickSequence.length > 0) { // Move the marbles!
-            if (cell.classList.contains(clickableClass)) {
-                playerTurnRunning = false;
-                let marble = currentClickSequence[0],
-                    dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
-                if (dirIndex == -1) {
-                    marble = currentClickSequence[1];
-                    dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
-                    if (dirIndex == -1) {
-                        marble = currentClickSequence[2];
-                        dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
-                    }
-                }
+        moveHandler(cell, id);
+    }
+}
 
-                let rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
-                let toMoveRowValue = rowOrder.indexOf(id[0]), moveDir = 0;
-                let rowValues = [], colValues = [];
-                for (let i = 0; i < currentClickSequence.length; i++) {
-                    let marble = currentClickSequence[i];
-                    rowValues.push(rowOrder.indexOf(marble.coordinate[0]));
-                    colValues.push(marble.coordinate[1]);
+function moveHandler(cell, id) {
+    if (currentClickSequence.length > 0) { // Move the marbles!
+        if (cell.classList.contains(clickableClass)) {
+            playerTurnRunning = false;
+            let marble = currentClickSequence[0],
+                dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
+            if (dirIndex == -1) {
+                marble = currentClickSequence[1];
+                dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
+                if (dirIndex == -1) {
+                    marble = currentClickSequence[2];
+                    dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
                 }
-                if (rowValues.length > 0 && rowValues[1] == rowValues[0]) { // horizontal selection
-                    if (toMoveRowValue == rowValues[0]) { // inline horizontal move
-                        moveDir = toMoveRowValue > colValues[0] ? "right" : "left"
-                    } else { // side step horizontal move
-                        moveDir = 0
-                    }
-                } else {  // vertical selection
-                    moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
-                }
-                let length = currentClickSequence.length
-                for (let i = 0; i < length; i++) {
-                    let moveMarble, topID, values, inline = true;
-                    switch (moveDir) {
-                        case "up":
-                            values = rowValues;
-                            topID = values.indexOf(Math.max.apply(Math, values));
-                            moveMarble = currentClickSequence[topID];
-                            break;
-                        case "down":
-                            values = rowValues;
-                            topID = values.indexOf(Math.min.apply(Math, values));
-                            moveMarble = currentClickSequence[topID];
-                            break;
-                        case "left":
-                            values = colValues;
-                            topID = values.indexOf("" + Math.min.apply(Math, values));
-                            moveMarble = currentClickSequence[topID];
-                            break;
-                        case "right":
-                            values = colValues;
-                            topID = values.indexOf("" + Math.max.apply(Math, values));
-                            moveMarble = currentClickSequence[topID];
-                            break;
-                        default:
-                            inline = false;
-                            moveMarble = currentClickSequence[i]
-                            moveMarble.move(adjacentInfo[moveMarble.coordinate][dirIndex])
-                    }
-                    if (inline) { // since sumitos are possible, redraw the entire board
-                        values.splice(topID, 1);
-                        currentClickSequence.splice(topID, 1);
-                        let board = getCurrentBoard2();
-                        let inputMove = "i-" + moveMarble.coordinate + "-" + adjacentDirections[dirIndex]
-                        let newBoard = generateBoardConfigurationFromMove(board, inputMove);
-                        newBoard = transformBoardToArray(newBoard)
-                        drawBoard(newBoard);
-                        // moveMarble.move(adjacentInfo[moveMarble.coordinate][dirIndex]);
-                    }
-                }
-                deselectClicks();
-                clearClickables();
-                setTimeout(function() {
-                    endTurn()
-                }, 100)
-            } else {
-                deselectClicks()
-                clearClickables()
             }
-        } else {
+
+            let moveDirection = adjacentDirections[dirIndex],
+                clickDirIndex,
+                clickDirection,
+                inline = true;
+            if (currentClickSequence.length > 1) {
+                clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
+                clickDirection = adjacentDirections[clickDirIndex],
+                oppClickDirection = adjOppositeDirections[clickDirIndex];
+                console.log(moveDirection)
+                console.log("--" + clickDirection + "--" + oppClickDirection)
+                inline = (clickDirection == moveDirection || oppClickDirection == moveDirection) ? true : false;
+            }
+
+            let rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+            let toMoveRowValue = rowOrder.indexOf(id[0]), moveDir = 0, toMoveColValue = id[1];
+            let rowValues = [], colValues = [];
+            for (let i = 0; i < currentClickSequence.length; i++) {
+                let marble = currentClickSequence[i];
+                rowValues.push(rowOrder.indexOf(marble.coordinate[0]));
+                colValues.push(marble.coordinate[1]);
+            }
+            if (rowValues.length > 0 && rowValues[1] == rowValues[0]) { // horizontal selection
+                moveDir = toMoveColValue > colValues[0] ? "right" : "left"
+            } else {  // vertical selection
+                moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
+            }
+            let moveMarble, topID, botID, values;
+            switch (moveDir) {
+                case "up":
+                    values = rowValues;
+                    topID = values.indexOf(Math.min.apply(Math, values));
+                    botID = values.indexOf(Math.max.apply(Math, values));
+                    break;
+                case "down":
+                    values = rowValues;
+                    topID = values.indexOf(Math.max.apply(Math, values));
+                    botID = values.indexOf(Math.min.apply(Math, values));
+                    break;
+                case "left":
+                    values = colValues;
+                    topID = values.indexOf("" + Math.max.apply(Math, values));
+                    botID = values.indexOf("" + Math.min.apply(Math, values));
+                    break;
+                case "right":
+                    values = colValues;
+                    topID = values.indexOf("" + Math.min.apply(Math, values));
+                    botID = values.indexOf("" + Math.max.apply(Math, values));
+                    break;
+                default:
+                    console.log("FAIRY GOD PARENTS")
+                    break;
+            }
+            if (inline) {
+                moveMarble = currentClickSequence[topID]
+                let board = getCurrentBoard2();
+                let inputMove = "i-" + moveMarble.coordinate + "-" + moveDirection
+                let newBoard = generateBoardConfigurationFromMove(board, inputMove);
+                newBoard = transformBoardToArray(newBoard)
+                drawBoard(newBoard);
+            } else {
+                moveMarble = currentClickSequence[botID]
+                let moveMarble2 = currentClickSequence[topID]
+                let board = getCurrentBoard2();
+                let inputMove = "s-" + moveMarble.coordinate + "-" + moveMarble2.coordinate + "-" + moveDirection
+                let newBoard = generateBoardConfigurationFromMove(board, inputMove);
+                newBoard = transformBoardToArray(newBoard)
+                drawBoard(newBoard);
+            }
             deselectClicks();
+            clearClickables();
+            setTimeout(function() {
+                endTurn()
+            }, 100)
+        } else {
+            deselectClicks()
+            clearClickables()
         }
+    } else {
+        deselectClicks();
     }
 }
 
@@ -330,19 +361,19 @@ let playerTurnTimeout, playerTurnRunning;
 
 function endTurn() {
     clearTimeout(playerTurnTimeout);
-    console.log("hello")
+    console.log("ENDING TURN FOR " + currentTurn)
     let board = getCurrentBoard();
     fullHistory.push(board);
     board = board.toString().replaceAll(',', ', ');
     let newText = document.createElement("p");
     newText.innerHTML = board.toString();
     if (currentTurn == 'b') {
-        nextTurn = 'b'
+        nextTurn = 'w'
         currentTurn = 'w';
         newText.style.background = "#3f3f4066"
     } else {
         newText.style.background = "#ebebeb66"
-        nextTurn = 'w'
+        nextTurn = 'b'
         currentTurn = 'b';
     }
     document.getElementById("fh-div").prepend(newText);
@@ -361,13 +392,13 @@ function endTurn() {
         turnsLeft--;
         document.getElementById("p2-moves").innerHTML = turnsLeft;
     }
-    generateBoardWInput2();
+    stateGenerator();
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
+        console.log("-------Starting AI!")
         let maxPlayer = (blackPlayer == 2)
         handleGameAgent(maxPlayer);
-        console.log(adjacentInfo)
     } else { // Player turn
-        console.log(adjacentInfo)
+        console.log("--------Starting PLAYER!")
         playerTurnRunning = true;
         playerTurnTimeout = setTimeout(() => {
             if (playerTurnRunning) {
@@ -378,27 +409,35 @@ function endTurn() {
 }
 
 let timeStamp, timeStampEnd;
+const maxDepthPerm = 9;
+let maxDepth;
 
 function handleGameAgent(maxPlayer) {
-    console.log("----------MOVING AI")
-    let maxDepth = 9, depth = 0;
+    let depth = 0;
     let alphaBeta;
+    let agentsTimeTicker = document.getElementById("p2-time");
     timeStamp = new Date().getTime();
     timeStampEnd = timeStamp + (p2TimeLimit * 1000) - 100;
-    alphaBeta = alphaBetaMiniMax(getCurrentBoard(), maxDepth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer)
-    // while (depth < maxDepth && new Date().getTime() < timeStampEnd) {
-    //     alphaBeta = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
-    //     if (new Date().getTime() < timeStampEnd) {
-    //         alphaBeta = alphaBetaTemp;
-    //     }
-    //     depth++;
-    // }
-    // for(let depth = 0; depth < maxDepth; depth++) {
-    //     alphaBeta = alphaBetaMiniMax(getCurrentBoard(), depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
-    // }
+    let displayTime = Math.floor((timeStampEnd - timeStamp) / 1000);
+    agentsTimeTicker.innerHTML = displayTime;
+    let board = getCurrentBoard();
+    console.log("CURRENT BOARD " + board)
+    console.log(boardOutput(resultsInline, resultsSideStep, board))
+    while (depth < maxDepthPerm && new Date().getTime() < timeStampEnd) {
+        displayTime = Math.floor((timeStampEnd - (new Date().getTime())) / 1000);
+        agentsTimeTicker.innerHTML = displayTime;
+        maxDepth = depth;
+        let alphaBetaTemp = alphaBetaMiniMax(board, depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
+        if (new Date().getTime() < timeStampEnd && (alphaBeta == undefined || 
+            (((maxPlayer && alphaBetaTemp[0] >= alphaBeta[0])) || (!maxPlayer && alphaBetaTemp[0] <= alphaBeta[0])))) {
+            alphaBeta = alphaBetaTemp;
+        }
+        depth++;
+    }
+    console.log("ALPHABETA " + alphaBeta[1])
     drawBoard(alphaBeta[1]);
+    // console.log("-------AI MOVED");
     endTurn();
-    console.log("ai moved");
 }
 
 function createMarble(startCoord, player, mbcolour) {
@@ -434,7 +473,6 @@ function initBoard(startStyle) {
     // 1 = Belgium Daisy
     // 2 = German Daisy
     emptyBoard();
-    document.getElementById("p1-tab-span").innerHTML = "<<<<"; // change to whoever is black
     let startCoordsP1 = [],
         startCoordsP2 = [];
     if (!startStyle || startStyle == 0) {
@@ -473,11 +511,13 @@ function initBoard(startStyle) {
             emptyLocation.push(allBoard[i]);
         }
     }
+    emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     fullHistory.push(getCurrentBoard());
     stateGenerator();
     if (gameMode == 1) { // player vs computer
         document.getElementById("player2-tab").innerHTML = "Computer  <span id='p2-tab-span'></span>";
         if (blackPlayer == 1) { // player moves first
+            document.getElementById("p1-tab-span").innerHTML = "<<<<";
             console.log("PLAYER MOVE")
             playerTurnRunning = true;
             playerTurnTimeout = setTimeout(() => {
@@ -486,6 +526,7 @@ function initBoard(startStyle) {
                 }
             }, p1TimeLimit * 1000);
         } else { // computer moves first
+            document.getElementById("p2-tab-span").innerHTML = "<<<<";
             randomFirstTurn();
             console.log("COMPUTER MOVE")
         }
@@ -526,7 +567,7 @@ function removeDuplicateMoveNotation(sideStepRes) {
         let startingNode = sideStepRes[i].substring(2,4);
         let finishingNode = sideStepRes[i].substring(5,7);
         let newNode = 's-'+finishingNode+"-"+startingNode+sideStepRes[i].substring(7, sideStepRes.length);
-        console.log(newNode);
+        // console.log(newNode);
         if(!idxArray.includes(newNode)) {
             idxArray.push(sideStepRes[i]);
         }
@@ -575,8 +616,10 @@ function clearHasMarble() {
     }
 }
 
+let p1Left = 14,
+    p2Left = 14;
+
 function drawBoard(board) {
-    console.log(board)
     emptyBoard();
     marblesP1 = []
     marblesP2 = []
@@ -599,7 +642,26 @@ function drawBoard(board) {
             emptyLocation.push(allBoard[i]);
         }
     }
-    stateGenerator()
+    if (p2Left > marblesP2.length) {
+        player1Score++;
+        p2Left--;
+        updateScore(1);
+    } else if (p1Left > marblesP1.length) {
+        player2Score++;
+        p1Left--;
+        updateScore(2);
+    }
+    // console.log("DONE DRAWING");
+}
+
+function updateScore(player) {
+    let id = (player == 1) ? 'p1c-' + player1Score : 'p2c-' + player2Score
+    document.getElementById(id).style.background = redMarbleColour;
+    if (player1Score >= 6) {
+        // player 1 WINS
+    } else if (player2Score >= 6) {
+        // player 2 WINS
+    }
 }
 
 function changeTheme() {

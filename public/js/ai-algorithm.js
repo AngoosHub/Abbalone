@@ -40,8 +40,8 @@ let emptyLocation =["a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", 
 let resultsInline = [];
 let resultsSideStep = [];
 let adjacentInfo = {}; // key : marble, value : marble's adjacent
-let currentMarbles; // depends on turn // logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
-let oppositeMarbles; // depends on turn //logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
+// let currentMarbles; // depends on turn // logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
+// let oppositeMarbles; // depends on turn //logic --> nextTurn==='w'? newMarblesP1:newMarblesP2;
 let nextTurn = 'b';
 
 function turn() {
@@ -105,37 +105,13 @@ function generateBoardWInput() {
     emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     stateGenerator()
 }
-function generateBoardWInput2() {
-    emptyBoard();
-    for (let i = 0; i < 14; i++) {
-        if (marblesP1[i] && !marblesP1[i].dropped) { // if the marble has not been dropped
-            let marble = marblesP1[i];
-            newMarblesP1.push(marble.coordinate);
-            marble.draw();
-            marble.fixClasses();
-        }
-        if (marblesP2[i] && !marblesP2[i].dropped) {
-            let marble = marblesP2[i];
-            newMarblesP2.push(marble.coordinate);
-            marble.draw();
-            marble.fixClasses();
-        }
-    }
-    // set empty location
-    for(let i =0; i<allBoard.length;i++) {
-        if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {
-            emptyLocation.push(allBoard[i]);
-        }
-    }
-    stateGenerator()
-}
 
 // This is to figure out current Marble(who's turn)'s and oppositeMarble's adjacent
 function stateGenerator() {
     let cur = [];
     let next = [];
-    currentMarbles = nextTurn==='b'? newMarblesP1:newMarblesP2;
-    oppositeMarbles = nextTurn ==='b'?newMarblesP2:newMarblesP1;
+    let currentMarbles = nextTurn==='b'? newMarblesP1:newMarblesP2;
+    let oppositeMarbles = nextTurn ==='b'?newMarblesP2:newMarblesP1;
     
     for(let i =0; i<currentMarbles.length;i++) {
         cur =getAdjacent(currentMarbles[i]);
@@ -152,7 +128,7 @@ function stateGenerator() {
 
     }
    
-    move(cur, next);
+    move(cur, next, currentMarbles, oppositeMarbles, emptyLocation);
     // console.log(resultsInline);
     // console.log(adjacentInfo)
     // console.log(currentMarbles)
@@ -162,7 +138,7 @@ function stateGenerator() {
 
 
 //find how it can be moves
-function move(cur, next, global) {
+function move(cur, next, currentMarbles, oppositeMarbles, emptyLocation, global) {
     let temp;
     let emptyArray =[];
     let inlineArr = [], sidestepArr = [];
@@ -181,10 +157,9 @@ function move(cur, next, global) {
         
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             temp = (cur[currentMarbles[i]])[j];
-            result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0); 
+            result = findingInlineSideStep(cur, next, currentMarbles[i], temp, j, 1, 0, currentMarbles, oppositeMarbles, emptyLocation); 
 
             if(result!=null && result!=undefined) {
-                
                 inlineArr.push("i"+"-"+currentMarbles[i]+"-"+result);
             }
 
@@ -193,13 +168,14 @@ function move(cur, next, global) {
         for(let j=0;j<cur[currentMarbles[i]].length;j++) {
             temp = (cur[currentMarbles[i]])[j];
             
-            sideStep(cur, currentMarbles[i], temp, j, emptyArray, sidestepArr);
+            sideStep(cur, currentMarbles[i], temp, j, emptyArray, sidestepArr, currentMarbles, emptyLocation);
             
         }
 
     }
     // console.log(inlineArr)
     // console.log(sidestepArr)
+    // removeDuplicateMoveNotation(sidestepArr)
     if (global) {
         return [inlineArr, sidestepArr]
     } else {
@@ -209,7 +185,7 @@ function move(cur, next, global) {
 }
 
 
-function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepArr) {
+function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepArr, currentMarbles, emptyLocation) {
     
     let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4','x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
 
@@ -465,7 +441,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
 // adjacentMarble is the marble's adjacent
 //direction can be known through index of array
 
-function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble) {    
+function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble, currentMarbles, oppositeMarbles, emptyLocation) {
     let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f2', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
 
     // console.log(marble);
@@ -545,13 +521,13 @@ function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cnt
         }
         
     }else if(oppositeMarbles.includes(adjacentMarble)){ 
-        return findingInlineSideStep(cur, next, adjacentMarble, (next[adjacentMarble])[direction],direction, cntCurMarble, cntOpMarble+=1);
+        return findingInlineSideStep(cur, next, adjacentMarble, (next[adjacentMarble])[direction],direction, cntCurMarble, cntOpMarble+=1, currentMarbles, oppositeMarbles, emptyLocation);
     }else if(currentMarbles.includes(adjacentMarble)) {
         // console.log(marble+"marble"+adjacentMarble+"ASDF"+cntOpMarble);
         if(cntOpMarble >0) {
             return null;
         }
-        return findingInlineSideStep(cur, next, adjacentMarble, (cur[adjacentMarble])[direction],direction, cntCurMarble+=1, cntOpMarble);
+        return findingInlineSideStep(cur, next, adjacentMarble, (cur[adjacentMarble])[direction],direction, cntCurMarble+=1, cntOpMarble, currentMarbles, oppositeMarbles, emptyLocation);
     }
     
 }

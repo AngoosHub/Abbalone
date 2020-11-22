@@ -12,8 +12,8 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
     if (!inputBoard) {
         currentBoard = getCurrentBoard2();
     } else {
-        // currentBoard = getCurrentBoardFromInput(inputBoard);
-        currentBoard = getCurrentBoard2();
+        currentBoard = getCurrentBoardFromInput(inputBoard);
+        // currentBoard = getCurrentBoard2();
     }
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
@@ -203,7 +203,7 @@ function generateBoardConfigurationFromMove(board, inputMove) {
             }
             currentBoard[marble_id_first] = "";
             currentBoard[marble_id_third] = "";    
-           
+            
             if (!adjacentInfo[marble_id_first].includes(marble_id_third)) {
                 let marble_id_second = findMiddleMarble(marble_id_first, marble_id_third);
                 // console.log("!!!!"+marble_id_first);
@@ -252,13 +252,9 @@ function generateBoardConfigurationFromMove(board, inputMove) {
 function findMiddleMarble(firstNode, thirdNode) {
     let first = getAdjacent(firstNode, true)
     for(let i =0; i<6;i++) {
-        // console.log(adjacentInfo);
-        // console.log(firstNode)
         let firstN = first[i], firstNNeighbour = getAdjacent(firstN, true)[i];
-        // if(adjacentInfo[adjacentInfo[firstNode][i]][i]==thirdNode) {
         if(firstNNeighbour == thirdNode) {
-            // return adjacentInfo[firstNode][i];
-            return firstNNeighbour;
+            return firstN;
         }
     }
 }
