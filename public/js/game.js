@@ -97,7 +97,6 @@ function clearClickables() {
 
 function addClickable(id) {
     if (!clickableCells.includes(id)) {
-        console.log("faufhuiodsfhs")
         let adjCell = document.getElementById(id);
         clickableCells.push(id);
         adjCell.classList.add(clickableClass);
@@ -330,7 +329,7 @@ let playerTurnTimeout, playerTurnRunning;
 
 function endTurn() {
     clearTimeout(playerTurnTimeout);
-    console.log("hello")
+    console.log("ENDING TURN FOR " + currentTurn)
     let board = getCurrentBoard();
     fullHistory.push(board);
     board = board.toString().replaceAll(',', ', ');
@@ -361,13 +360,12 @@ function endTurn() {
         turnsLeft--;
         document.getElementById("p2-moves").innerHTML = turnsLeft;
     }
-    generateBoardWInput2();
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
+        console.log("Starting AI!")
         let maxPlayer = (blackPlayer == 2)
         handleGameAgent(maxPlayer);
-        console.log(adjacentInfo)
     } else { // Player turn
-        console.log(adjacentInfo)
+        console.log("Starting PLAYER!")
         playerTurnRunning = true;
         playerTurnTimeout = setTimeout(() => {
             if (playerTurnRunning) {
@@ -576,7 +574,6 @@ function clearHasMarble() {
 }
 
 function drawBoard(board) {
-    console.log(board)
     emptyBoard();
     marblesP1 = []
     marblesP2 = []
