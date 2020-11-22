@@ -93,14 +93,15 @@ function futureStateGenerator(gameBoard, maxPlayer) {
             wMarbles.push(cellID)
         }
     }
-    currentMarbles = turn === 'b' ? bMarbles : wMarbles;
-    oppositeMarbles = turn === 'b' ? wMarbles : bMarbles;
+    let currentMarbles = turn === 'b' ? bMarbles : wMarbles;
+    let oppositeMarbles = turn === 'b' ? wMarbles : bMarbles;
     let emptyLoc = []
     for(let i =0; i<allBoard.length;i++) {
-        if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {
+        if(!bMarbles.includes(allBoard[i]) && !wMarbles.includes(allBoard[i])) {
             emptyLoc.push(allBoard[i]);
         }
     }
+    emptyLoc.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     for (let i = 0; i < currentMarbles.length; i++) {
         cur = getAdjacent(currentMarbles[i]);
     }
@@ -110,7 +111,7 @@ function futureStateGenerator(gameBoard, maxPlayer) {
     for (let i = 0; i < emptyLoc.length; i++) {
         next = getAdjacent(emptyLoc[i]);
     }
-    return move(cur, next, true);
+    return move(cur, next, currentMarbles, oppositeMarbles, true);
 }
 
 let transpositionTable = {};
@@ -191,7 +192,10 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                 for (let i = 0; i < resultingBoards.length; i++) {
                     if (new Date().getTime() > timeStampEnd) break;
                     let board = resultingBoards[i];
-                    if (depth == maxDepth && bestBoard_MAX == undefined) bestBoard_MAX = board;
+                    if (depth == maxDepth && bestBoard_MAX == undefined) {
+                        bestBoard_MAX = board;
+                        console.log(bestBoard_MAX)
+                    }
                     let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, false)
                     if (new Date().getTime() < timeStampEnd) {
                         if (value < t_val[0]) {
@@ -199,6 +203,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                         }
                         if (value > alpha && depth == maxDepth) {
                             alpha = value;
+                            console.log(bestBoard_MAX)
                             bestBoard_MAX = board;
                         }
                         alpha = Math.max(alpha, value);
@@ -214,7 +219,10 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                 for (let i = 0; i < resultingBoards.length; i++) {
                     if (new Date().getTime() > timeStampEnd) break;
                     let board = resultingBoards[i];
-                    if (depth == maxDepth && bestBoard_MIN == undefined) bestBoard_MIN = board;
+                    if (depth == maxDepth && bestBoard_MIN == undefined) {
+                        bestBoard_MIN = board;
+                        console.log(bestBoard_MIN)
+                    }
                     let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
                     if (new Date().getTime() < timeStampEnd) {
                         if (value > t_val[0]) {
@@ -222,6 +230,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                         }
                         if (value < beta && depth == maxDepth) {
                             beta = value;
+                            console.log(bestBoard_MIN)
                             bestBoard_MIN = board;
                         }
                         beta = Math.min(beta, value);
