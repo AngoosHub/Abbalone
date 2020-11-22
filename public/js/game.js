@@ -34,7 +34,6 @@ let layoutInt = 0,
 let currentTurn = 'b',              // b (black) or w (white)
     currentTurnINT = 1,             // Integer representing which players turn it is (1 or 2)
     currentClickSequence = [],      // The marbles clicked for this turn
-    currentClickDirections = [],
     clickableCells = [];
 
 window.onload = function() {
@@ -220,6 +219,9 @@ function selectCell(id, cell) { // selects the actual marble
     if (marble) {
         currentClickSequence.push(marble);
         cell.classList.add(clickedClass);
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -228,92 +230,110 @@ function cellClicked(id) {
     if (cell.classList.contains(hasMarbleClass)) { // Marble was clicked
         if (clickableCells.length == 0 
             || (cell.classList.contains(clickableClass)  && !cell.classList.contains(clickedClass))) { 
-            selectCell(id, cell);
+            let selected = selectCell(id, cell);
+            if (!selected) {
+                moveHandler(cell, id)
+                console.log("enemy marble clicked")
+            }
         } 
     } else { // Empty space clicked
-        if (currentClickSequence.length > 0) { // Move the marbles!
-            if (cell.classList.contains(clickableClass)) {
-                playerTurnRunning = false;
-                let marble = currentClickSequence[0],
-                    dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
-                if (dirIndex == -1) {
-                    marble = currentClickSequence[1];
-                    dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
-                    if (dirIndex == -1) {
-                        marble = currentClickSequence[2];
-                        dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
-                    }
-                }
+        moveHandler(cell, id);
+    }
+}
 
-                let rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
-                let toMoveRowValue = rowOrder.indexOf(id[0]), moveDir = 0;
-                let rowValues = [], colValues = [];
-                for (let i = 0; i < currentClickSequence.length; i++) {
-                    let marble = currentClickSequence[i];
-                    rowValues.push(rowOrder.indexOf(marble.coordinate[0]));
-                    colValues.push(marble.coordinate[1]);
+function moveHandler(cell, id) {
+    if (currentClickSequence.length > 0) { // Move the marbles!
+        if (cell.classList.contains(clickableClass)) {
+            playerTurnRunning = false;
+            let marble = currentClickSequence[0],
+                dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
+            if (dirIndex == -1) {
+                marble = currentClickSequence[1];
+                dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
+                if (dirIndex == -1) {
+                    marble = currentClickSequence[2];
+                    dirIndex = adjacentInfo[marble.coordinate].indexOf(id);
                 }
-                if (rowValues.length > 0 && rowValues[1] == rowValues[0]) { // horizontal selection
-                    if (toMoveRowValue == rowValues[0]) { // inline horizontal move
-                        moveDir = toMoveRowValue > colValues[0] ? "right" : "left"
-                    } else { // side step horizontal move
-                        moveDir = 0
-                    }
-                } else {  // vertical selection
-                    moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
-                }
-                let length = currentClickSequence.length
-                for (let i = 0; i < length; i++) {
-                    let moveMarble, topID, values, inline = true;
-                    switch (moveDir) {
-                        case "up":
-                            values = rowValues;
-                            topID = values.indexOf(Math.max.apply(Math, values));
-                            moveMarble = currentClickSequence[topID];
-                            break;
-                        case "down":
-                            values = rowValues;
-                            topID = values.indexOf(Math.min.apply(Math, values));
-                            moveMarble = currentClickSequence[topID];
-                            break;
-                        case "left":
-                            values = colValues;
-                            topID = values.indexOf("" + Math.min.apply(Math, values));
-                            moveMarble = currentClickSequence[topID];
-                            break;
-                        case "right":
-                            values = colValues;
-                            topID = values.indexOf("" + Math.max.apply(Math, values));
-                            moveMarble = currentClickSequence[topID];
-                            break;
-                        default:
-                            inline = false;
-                            moveMarble = currentClickSequence[i]
-                            moveMarble.move(adjacentInfo[moveMarble.coordinate][dirIndex])
-                    }
-                    if (inline) { // since sumitos are possible, redraw the entire board
-                        values.splice(topID, 1);
-                        currentClickSequence.splice(topID, 1);
-                        let board = getCurrentBoard2();
-                        let inputMove = "i-" + moveMarble.coordinate + "-" + adjacentDirections[dirIndex]
-                        let newBoard = generateBoardConfigurationFromMove(board, inputMove);
-                        newBoard = transformBoardToArray(newBoard)
-                        drawBoard(newBoard);
-                        // moveMarble.move(adjacentInfo[moveMarble.coordinate][dirIndex]);
-                    }
-                }
-                deselectClicks();
-                clearClickables();
-                setTimeout(function() {
-                    endTurn()
-                }, 100)
-            } else {
-                deselectClicks()
-                clearClickables()
             }
-        } else {
+
+            let moveDirection = adjacentDirections[dirIndex],
+                clickDirIndex,
+                clickDirection,
+                inline = true;
+            if (currentClickSequence.length > 1) {
+                clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
+                clickDirection = adjacentDirections[clickDirIndex];
+                inline = clickDirection == moveDirection ? true : false;
+            }
+
+            let rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+            let toMoveRowValue = rowOrder.indexOf(id[0]), moveDir = 0;
+            let rowValues = [], colValues = [];
+            for (let i = 0; i < currentClickSequence.length; i++) {
+                let marble = currentClickSequence[i];
+                rowValues.push(rowOrder.indexOf(marble.coordinate[0]));
+                colValues.push(marble.coordinate[1]);
+            }
+            if (rowValues.length > 0 && rowValues[1] == rowValues[0]) { // horizontal selection
+                moveDir = toMoveRowValue > colValues[0] ? "right" : "left"
+            } else {  // vertical selection
+                moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
+            }
+            let moveMarble, topID, botID, values;
+            switch (moveDir) {
+                case "up":
+                    values = rowValues;
+                    topID = values.indexOf(Math.min.apply(Math, values));
+                    botID = values.indexOf(Math.max.apply(Math, values));
+                    break;
+                case "down":
+                    values = rowValues;
+                    topID = values.indexOf(Math.max.apply(Math, values));
+                    botID = values.indexOf(Math.min.apply(Math, values));
+                    break;
+                case "left":
+                    values = colValues;
+                    topID = values.indexOf("" + Math.max.apply(Math, values));
+                    botID = values.indexOf("" + Math.min.apply(Math, values));
+                    break;
+                case "right":
+                    values = colValues;
+                    topID = values.indexOf("" + Math.min.apply(Math, values));
+                    botID = values.indexOf("" + Math.max.apply(Math, values));
+                    break;
+                default:
+                    console.log("FAIRY GOD PARENTS")
+                    break;
+            }
+            if (inline) {
+                moveMarble = currentClickSequence[topID]
+                let board = getCurrentBoard2();
+                let inputMove = "i-" + moveMarble.coordinate + "-" + moveDirection
+                let newBoard = generateBoardConfigurationFromMove(board, inputMove);
+                newBoard = transformBoardToArray(newBoard)
+                drawBoard(newBoard);
+            } else {
+                moveMarble = currentClickSequence[botID]
+                let moveMarble2 = currentClickSequence[topID]
+                let board = getCurrentBoard2();
+                let inputMove = "s-" + moveMarble.coordinate + "-" + moveMarble2.coordinate + "-" + moveDirection
+                console.log(inputMove)
+                let newBoard = generateBoardConfigurationFromMove(board, inputMove);
+                console.log(newBoard)
+                newBoard = transformBoardToArray(newBoard)
+                drawBoard(newBoard);
+            }
             deselectClicks();
+            clearClickables();
+            setTimeout(function() {
+                endTurn()
+            }, 100)
+        } else {
+            deselectClicks()
+            clearClickables()
         }
+    } else {
+        deselectClicks();
     }
 }
 
@@ -362,7 +382,6 @@ function endTurn() {
     }
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
         console.log("-------Starting AI!")
-        console.log(getCurrentBoard());
         let maxPlayer = (blackPlayer == 2)
         handleGameAgent(maxPlayer);
     } else { // Player turn
@@ -379,10 +398,9 @@ function endTurn() {
 
 let timeStamp, timeStampEnd;
 let maxDepthPerm = 9;
-let maxDepth
+let maxDepth;
 
 function handleGameAgent(maxPlayer) {
-    console.log("----------MOVING AI")
     let depth = 0;
     let alphaBeta;
     timeStamp = new Date().getTime();
@@ -396,9 +414,8 @@ function handleGameAgent(maxPlayer) {
         }
         depth++;
     }
-    console.log(alphaBeta)
     drawBoard(alphaBeta[1]);
-    console.log("ai moved");
+    console.log("-------AI MOVED");
     endTurn();
 }
 
