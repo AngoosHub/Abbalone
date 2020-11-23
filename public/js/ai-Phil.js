@@ -167,22 +167,37 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
         }
 
         let resultingMoves = futureStateGenerator(gameBoard, maxPlayer);
-        let resultingBoardsUnordered = boardOutput(resultingMoves[0], resultingMoves[1], gameBoard)[1];
+        let resultingBoardsTemp = boardOutput(resultingMoves[0], resultingMoves[1], gameBoard);
+        let resultingBoardsUnordered = resultingBoardsTemp[1];
         // Start Dynamic Move Ordering (Attempt).
         let sortBoards = []
-        resultingBoardsUnordered.forEach(board => {
+        // resultingBoardsUnordered.forEach(board => {
+        //     if (new Date().getTime() < timeStampEnd) {
+        //         displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));
+        //         // agentsTimeTicker.innerHTML = displayTime;
+        //         let score = alphaBetaMiniMax(board, 0, alpha, beta, maxPlayer);
+        //         if (score) {
+        //             sortBoards.push({
+        //                 board: score[1],
+        //                 score: score[0]
+        //             });
+        //         }
+        //     }
+        // });
+        for (let i = 0; i < resultingBoardsUnordered.length; i++) {
             if (new Date().getTime() < timeStampEnd) {
                 displayTime = Math.floor((timeStampEnd - (new Date().getTime()) / 1000));
                 // agentsTimeTicker.innerHTML = displayTime;
-                let score = alphaBetaMiniMax(board, 0, alpha, beta, maxPlayer);
+                let score = alphaBetaMiniMax(resultingBoardsUnordered[i], 0, alpha, beta, maxPlayer);
                 if (score) {
                     sortBoards.push({
                         board: score[1],
-                        score: score[0]
+                        score: score[0],
+                        move: resultingBoardsTemp[0][i]
                     });
                 }
             }
-        });
+        }
         // console.log(sortBoards)
         if (maxPlayer && depth >= (maxDepth - 3)) {
             sortBoards.sort(compareMax);
@@ -205,6 +220,9 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                     let board = resultingBoards[i];
                     if (depth == maxDepth && bestBoard_MAX == undefined) {
                         bestBoard_MAX = board;
+                        if (chosenMoveNotation == undefined) {
+                            chosenMoveNotation = sortBoards[i].move;
+                        }
                         // console.log(bestBoard_MAX)
                     }
                     let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, false)
@@ -218,6 +236,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                             alpha = value;
                             // console.log(bestBoard_MAX)
                             bestBoard_MAX = board;
+                            chosenMoveNotation = sortBoards[i].move;
                         }
                         alpha = Math.max(alpha, value);
                         if (alpha >= beta) {
@@ -236,6 +255,9 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                     let board = resultingBoards[i];
                     if (depth == maxDepth && bestBoard_MIN == undefined) {
                         bestBoard_MIN = board;
+                        if (chosenMoveNotation == undefined) {
+                            chosenMoveNotation = sortBoards[i].move;
+                        }
                         // console.log(bestBoard_MIN)
                     }
                     let t_val = alphaBetaMiniMax(board, depth - 1, alpha, beta, true)
@@ -249,6 +271,7 @@ function alphaBetaMiniMax(gameBoard, depth, alpha, beta, maxPlayer) {
                             beta = value;
                             // console.log(bestBoard_MIN)
                             bestBoard_MIN = board;
+                            chosenMoveNotation = sortBoards[i].move;
                         }
                         beta = Math.min(beta, value);
                         if (beta <= alpha) {

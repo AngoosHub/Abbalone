@@ -447,6 +447,7 @@ function moveHandler(cell, id) {
                     let newBoard = generateBoardConfigurationFromMove(board, inputMove);
                     newBoard = transformBoardToArray(newBoard)
                     drawBoard(newBoard);
+                    chosenMoveNotation = inputMove;
                 }
             } else {
                 moveMarble = currentClickSequence[botID]
@@ -457,6 +458,7 @@ function moveHandler(cell, id) {
                     let newBoard = generateBoardConfigurationFromMove(board, inputMove);
                     newBoard = transformBoardToArray(newBoard)
                     drawBoard(newBoard);
+                    chosenMoveNotation = inputMove;
                 }
             }
             deselectClicks();
@@ -481,7 +483,7 @@ function deselectClicks() {
     currentClickSequence = []
 }
 
-let playerTurnTimeout, playerTurnRunning, turnNum = 1, tempTurnNum;
+let playerTurnTimeout, playerTurnRunning, turnNum = 1, tempTurnNum, chosenMoveNotation;
 
 function endTurn() {
     clearInterval(playerTurnTimeout);
@@ -493,7 +495,7 @@ function endTurn() {
     board = board.toString();
     let newText = document.createElement("p");
     newText.id = board + turnNum;
-    newText.innerHTML = board.replaceAll(',', ', ');
+    newText.innerHTML = "Move: " + chosenMoveNotation + "<br/>Board: " + board.replaceAll(',', ', ');
     if (currentTurn == 'b') {
         nextTurn = 'w'
         currentTurn = 'w';
