@@ -1,3 +1,4 @@
+
 const   defStartP1 = ["a1", "a2", "a3", "a4", "a5", "b1", "b2", 
                     "b3", "b4", "b5", "b6", "c3", "c4", "c5"],      // Array of coordinates for PLAYER 1's default layout
         defStartP2 = ["i5", "i6", "i7", "i8", "i9", "h4", "h5",
@@ -73,6 +74,60 @@ window.onload = function() {
     }
 }
 
+function stop() {
+    reset();
+    window.location.href="../index.html"
+}
+function reset() {
+    resetScore();
+    marblesP1 = [],
+    marblesP2 = [],
+    themeNo = 0,
+    mammaMia = null,
+    
+    fullHistory = [];  
+
+    layoutInt = 0,
+    gameMode = 0,
+    turnLimit = 50,
+    p1TimeLimit = 5,
+    p2TimeLimit = 5,
+    blackPlayer = 1;
+
+// TURN-BASED VARIABLES
+    currentTurn = 'b',              // b (black) or w (white)
+    currentTurnINT = 1,             // Integer representing which players turn it is (1 or 2)
+    currentClickSequence = [],      // The marbles clicked for this turn
+    clickableCells = [];
+    
+    console.log("reset from the beginning")
+    layoutInt = localStorage.getItem('layout');
+    gameMode = localStorage.getItem('gameMode');
+    turnLimit = localStorage.getItem('turnLimit');
+    p1TimeLimit = localStorage.getItem('p1TimeLimit');
+    p2TimeLimit = localStorage.getItem('p2TimeLimit');
+    blackPlayer = localStorage.getItem('blackPlayer');
+
+    if (blackPlayer == 1) currentTurnINT = 1;
+    else if (blackPlayer == 2) currentTurnINT = 2;
+    else currentTurnINT = 1;
+
+    let moveLimits = document.getElementsByClassName("move-limit");
+    moveLimits[0].innerHTML = turnLimit;
+    moveLimits[1].innerHTML = turnLimit;
+    document.getElementById("p1-time").innerHTML = p1TimeLimit;
+    document.getElementById("p2-time").innerHTML = p2TimeLimit;
+
+    initBoard(layoutInt);
+    let cells = document.getElementsByClassName("cell");
+    for (i = 0; i < cells.length; i++) {
+        let cellID = cells[i].id;
+        cells[i].addEventListener('click', function() { cellClicked(cellID) } );
+    }
+
+
+}
+
 function getPlayerMarble(player, id) { 
     let marbles;
     if (player) marbles = (player === 'b') ? marblesP1 : marblesP2;
@@ -123,7 +178,9 @@ function setClickables(id) {
         firstAdjArr = firstClicked ? adjacentInfo[currentClickSequence[0].coordinate] : null,
         secondAdjArr = secondClicked ? adjacentInfo[currentClickSequence[1].coordinate] : null,
         firstDir;
-    
+    if(adjacentArr==null) {
+        return;
+    }
     for (let i = 0; i < adjacentArr.length; i++) {
         let adjCell = document.getElementById(adjacentArr[i]),
             movDir = adjacentDirections[i],
@@ -733,6 +790,25 @@ function updateScore(player) {
     } else if (player2Score >= 6) {
         // white WINS
     }
+}
+function resetScore() {
+    console.log("inside     reset")
+    if(player1Score!=0) {
+        for(let i =0; i<player1Score;i++) {
+            let n = i+1;
+            let id = 'p1c-'+n
+            document.getElementById(id).style.background = resetMarbleColour
+        }
+    }
+    if(player2Score!=0) {
+        for(let i =0; i<player1Score;i++) {
+            let n = i+1;
+            let id = 'p1c-'+n
+            document.getElementById(id).style.background = resetMarbleColour
+        }
+    }
+    player1Score=0;
+    player2Score=0;
 }
 
 function changeTheme() {
