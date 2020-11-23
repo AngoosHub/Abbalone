@@ -57,6 +57,7 @@ function emptyBoard() {
     newMarblesP2 = [];
     resultsInline = [];
     resultsSideStep = [];
+    emptyLocation = [];
     adjacentInfo = {}
     for(let i =0; i<allBoard.length;i++) {
         document.getElementById(allBoard[i]).style.background=null;

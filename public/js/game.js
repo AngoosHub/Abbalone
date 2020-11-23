@@ -13,7 +13,8 @@ const   defStartP1 = ["a1", "a2", "a3", "a4", "a5", "b1", "b2",
         adjacentDirections = [7, 5, 9, 3, 11, 1], // This array stores the corresponding clock direction according to it's index for the adjacent array
         adjOppositesHigh = [7, 9, 11],
         adjOppositesLow = [1, 3, 5],
-        adjOppositeDirections = [1, 11, 3, 9, 5, 7];
+        adjOppositeDirections = [1, 11, 3, 9, 5, 7],
+        rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
 
 // GAME VARIABLES
 let marblesP1 = [],
@@ -109,7 +110,7 @@ function addClickable(id) {
     }
 }
 
-function setClickables(id) {
+function setClickables2(id) {
     clearClickables();
     let marble = getPlayerMarble(currentTurn, id);
     if (!marble) {
@@ -171,7 +172,7 @@ function setClickables(id) {
     let clickDirIndex, clickDirection, oppClickDirection;
     if (currentClickSequence.length > 1) {
         clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
-        clickDirection = adjacentDirections[clickDirIndex],
+        clickDirection = adjacentDirections[clickDirIndex];
         oppClickDirection = adjOppositeDirections[clickDirIndex];
     }
     for (let z = 0; z < currentClickSequence.length; z++) {
@@ -232,6 +233,76 @@ function setClickables(id) {
     }
 }
 
+function setClickables(id) {
+    clearClickables();
+    let marble = getPlayerMarble(currentTurn, id);
+    if (!marble) {
+        return;
+    }
+    
+    let adjacentArr = adjacentInfo[id],
+        firstClicked = currentClickSequence[0],
+        secondClicked = currentClickSequence[1],
+        thirdClicked = currentClickSequence[2],
+        firstAdjArr = firstClicked ? adjacentInfo[firstClicked.coordinate] : null,
+        secondAdjArr = secondClicked ? adjacentInfo[secondClicked.coordinate] : null,
+        thirdAdjArr = thirdClicked ? adjacentInfo[thirdClicked.coordinate] : null;
+    
+    // First selected
+    if (currentClickSequence.length == 0) {
+        for (let i = 0; i < adjacentArr.length; i++) {
+            let n_id = adjacentArr[i];
+            let inline = "i-" + id + "-" + adjacentDirections[i];
+            if (resultsInline.includes(inline)) {
+                addClickable(n_id)
+            }
+        }
+    }
+
+    let clickDirIndex,
+        clickDirection,
+        oppClickDirection;
+    if (currentClickSequence.length > 1) {
+        clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
+        clickDirection = adjacentDirections[clickDirIndex];
+        oppClickDirection = adjOppositeDirections[clickDirIndex];
+    } else if (currentClickSequence.length > 0) {
+        clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(id);
+        clickDirection = adjacentDirections[clickDirIndex];
+        oppClickDirection = adjOppositeDirections[clickDirIndex];
+    }
+
+    // First selected
+    if (firstClicked) {
+        for (let i = 0; i < firstAdjArr.length; i++) {
+            let n_id = firstAdjArr[i];
+            if (adjacentDirections[i] == clickDirection || adjacentDirections[i] == oppClickDirection) {
+                console.log("nyahallo")
+                let inline = "i-" + firstClicked.coordinate + "-" + adjacentDirections[i];
+                if (resultsInline.includes(inline)) {
+                    addClickable(n_id)
+                }
+            }
+        }
+    }
+
+    // Second selected
+    if (secondClicked) {
+        for (let i = 0; i < secondAdjArr.length; i++) {
+            let n_id = secondAdjArr[i];
+            let inline = "i-" + secondClicked.coordinate + "-" + adjacentDirections[i];
+            let res = getMaxAndMinSelections(n_id),
+                topID = res[0], botID = res[1];
+            let sideStep = "s-" + botID + "-" + topID + adjacentDirections[i]
+            if (resultsInline.includes(inline) || resultsSideStep.includes(sideStep)) {
+                addClickable(n_id)
+            }
+        }
+    }
+
+    // Third selected
+}
+
 function selectCell(id, cell) { // selects the actual marble
     setClickables(id) 
     let marble = getPlayerMarble(currentTurn, id);
@@ -258,6 +329,48 @@ function cellClicked(id) {
     }
 }
 
+function getMaxAndMinSelections(id) {
+    let toMoveRowValue = rowOrder.indexOf(id[0]), moveDir = 0, toMoveColValue = id[1];
+    let rowValues = [], colValues = [];
+    for (let i = 0; i < currentClickSequence.length; i++) {
+        let marble = currentClickSequence[i];
+        rowValues.push(rowOrder.indexOf(marble.coordinate[0]));
+        colValues.push(marble.coordinate[1]);
+    }
+    if (rowValues.length > 0 && rowValues[1] == rowValues[0]) { // horizontal selection
+        moveDir = toMoveColValue > colValues[0] ? "right" : "left"
+    } else {  // vertical selection
+        moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
+    }
+    let topID, botID, values;
+    switch (moveDir) {
+        case "up":
+            values = rowValues;
+            topID = values.indexOf(Math.min.apply(Math, values));
+            botID = values.indexOf(Math.max.apply(Math, values));
+            break;
+        case "down":
+            values = rowValues;
+            topID = values.indexOf(Math.max.apply(Math, values));
+            botID = values.indexOf(Math.min.apply(Math, values));
+            break;
+        case "left":
+            values = colValues;
+            topID = values.indexOf("" + Math.max.apply(Math, values));
+            botID = values.indexOf("" + Math.min.apply(Math, values));
+            break;
+        case "right":
+            values = colValues;
+            topID = values.indexOf("" + Math.min.apply(Math, values));
+            botID = values.indexOf("" + Math.max.apply(Math, values));
+            break;
+        default:
+            console.log("FAIRY GOD PARENTS")
+            break;
+    }
+    return [topID, botID]
+}
+
 function moveHandler(cell, id) {
     if (currentClickSequence.length > 0) { // Move the marbles!
         if (cell.classList.contains(clickableClass)) {
@@ -279,12 +392,12 @@ function moveHandler(cell, id) {
                 inline = true;
             if (currentClickSequence.length > 1) {
                 clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
-                clickDirection = adjacentDirections[clickDirIndex],
+                clickDirection = adjacentDirections[clickDirIndex];
                 oppClickDirection = adjOppositeDirections[clickDirIndex];
                 inline = (clickDirection == moveDirection || oppClickDirection == moveDirection) ? true : false;
             }
 
-            let rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+            let moveMarble;
             let toMoveRowValue = rowOrder.indexOf(id[0]), moveDir = 0, toMoveColValue = id[1];
             let rowValues = [], colValues = [];
             for (let i = 0; i < currentClickSequence.length; i++) {
@@ -297,7 +410,7 @@ function moveHandler(cell, id) {
             } else {  // vertical selection
                 moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
             }
-            let moveMarble, topID, botID, values;
+            let topID, botID, values;
             switch (moveDir) {
                 case "up":
                     values = rowValues;
@@ -323,21 +436,30 @@ function moveHandler(cell, id) {
                     console.log("FAIRY GOD PARENTS")
                     break;
             }
+            // let res = getMaxAndMinSelections(id),
+            //     topID = res[0], botID = res[1];
             if (inline) {
                 moveMarble = currentClickSequence[topID]
                 let board = getCurrentBoard2();
                 let inputMove = "i-" + moveMarble.coordinate + "-" + moveDirection
-                let newBoard = generateBoardConfigurationFromMove(board, inputMove);
-                newBoard = transformBoardToArray(newBoard)
-                drawBoard(newBoard);
+                console.log(resultsInline)
+                if (resultsInline.includes(inputMove)) {
+                    console.log(inputMove)
+                    let newBoard = generateBoardConfigurationFromMove(board, inputMove);
+                    newBoard = transformBoardToArray(newBoard)
+                    drawBoard(newBoard);
+                }
             } else {
                 moveMarble = currentClickSequence[botID]
                 let moveMarble2 = currentClickSequence[topID]
                 let board = getCurrentBoard2();
                 let inputMove = "s-" + moveMarble.coordinate + "-" + moveMarble2.coordinate + "-" + moveDirection
-                let newBoard = generateBoardConfigurationFromMove(board, inputMove);
-                newBoard = transformBoardToArray(newBoard)
-                drawBoard(newBoard);
+                if (resultsSideStep.includes(inputMove)) {
+                    console.log(inputMove)
+                    let newBoard = generateBoardConfigurationFromMove(board, inputMove);
+                    newBoard = transformBoardToArray(newBoard)
+                    drawBoard(newBoard);
+                }
             }
             deselectClicks();
             clearClickables();
@@ -365,7 +487,7 @@ let playerTurnTimeout, playerTurnRunning;
 
 function endTurn() {
     clearTimeout(playerTurnTimeout);
-    console.log("ENDING TURN FOR " + currentTurn)
+    console.log("------ENDING " + currentTurn)
     let board = getCurrentBoard();
     fullHistory.push(board);
     board = board.toString().replaceAll(',', ', ');
