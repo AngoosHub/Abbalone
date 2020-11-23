@@ -479,10 +479,15 @@ function endTurn() {
         let remainingTime = 0;
         document.getElementById("pause-btn").onclick = (function() {
             if (remainingTime == 0) {
+                remainingTime = 1;
                 clearInterval(playerTurnTimeout);
                 remainingTime = document.getElementById("p1-time").innerHTML;
                 document.getElementById("p1-time").innerHTML = remainingTime + " - PAUSED";
                 document.getElementById("pause-btn").innerText = "Paused";
+                let cells = document.getElementsByClassName("cell");
+                for (let i = 0; i < cells.length; i++) {
+                    cells.item(i).classList.add("disabledbutton");
+                }
             }
             else {
                 playerSeconds = remainingTime;
@@ -498,6 +503,10 @@ function endTurn() {
                     }
                 }, 950);
                 document.getElementById("pause-btn").innerText = "Pause";
+                let cells = document.getElementsByClassName("cell");
+                for (let i = 0; i < cells.length; i++) {
+                    cells.item(i).classList.remove("disabledbutton");
+                }
             }
         });
         let playerTurnTimeout = setInterval(() => {
