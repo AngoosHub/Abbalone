@@ -938,6 +938,11 @@ function setMoveNotation() {
         newBoard = transformBoardToArray(newBoard);
         textBox.value = "";
         drawBoard(newBoard);
+        deselectClicks();
+        clearClickables();
+        setTimeout(function() {
+            endTurn()
+        }, 100)
     } else {
         console.log("INVALID MOVE!");
     }
