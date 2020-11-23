@@ -74,7 +74,8 @@ body {
     cursor: pointer;
 }
 
-#fh-div p {
+#fh-div p,
+#aiTime-div p {
     font-size: 10pt;
     margin: 0;
 }

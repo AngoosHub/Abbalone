@@ -13,7 +13,8 @@ const   defStartP1 = ["a1", "a2", "a3", "a4", "a5", "b1", "b2",
         adjacentDirections = [7, 5, 9, 3, 11, 1], // This array stores the corresponding clock direction according to it's index for the adjacent array
         adjOppositesHigh = [7, 9, 11],
         adjOppositesLow = [1, 3, 5],
-        adjOppositeDirections = [1, 11, 3, 9, 5, 7];
+        adjOppositeDirections = [1, 11, 3, 9, 5, 7],
+        rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
 
 // GAME VARIABLES
 let marblesP1 = [],
@@ -29,7 +30,8 @@ let layoutInt = 0,
     turnLimit = 50,
     p1TimeLimit = 5,
     p2TimeLimit = 5,
-    blackPlayer = 1;
+    blackPlayer = 1,
+    whitePlayer = 2;
 
 // TURN-BASED VARIABLES
 let currentTurn = 'b',              // b (black) or w (white)
@@ -46,9 +48,14 @@ window.onload = function() {
     p2TimeLimit = localStorage.getItem('p2TimeLimit');
     blackPlayer = localStorage.getItem('blackPlayer');
 
-    if (blackPlayer == 1) currentTurnINT = 1;
-    else if (blackPlayer == 2) currentTurnINT = 2;
-    else currentTurnINT = 1;
+    if (blackPlayer == 1) {
+        currentTurnINT = 1;
+    } else if (blackPlayer == 2) {
+        whitePlayer == 1;
+        currentTurnINT = 2;
+    } else {
+        currentTurnINT = 1;
+    }
 
     let moveLimits = document.getElementsByClassName("move-limit");
     moveLimits[0].innerHTML = turnLimit;
@@ -165,7 +172,7 @@ function setClickables(id) {
     let clickDirIndex, clickDirection, oppClickDirection;
     if (currentClickSequence.length > 1) {
         clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
-        clickDirection = adjacentDirections[clickDirIndex],
+        clickDirection = adjacentDirections[clickDirIndex];
         oppClickDirection = adjOppositeDirections[clickDirIndex];
     }
     for (let z = 0; z < currentClickSequence.length; z++) {
@@ -252,6 +259,7 @@ function cellClicked(id) {
     }
 }
 
+
 function moveHandler(cell, id) {
     if (currentClickSequence.length > 0) { // Move the marbles!
         if (cell.classList.contains(clickableClass)) {
@@ -273,14 +281,12 @@ function moveHandler(cell, id) {
                 inline = true;
             if (currentClickSequence.length > 1) {
                 clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
-                clickDirection = adjacentDirections[clickDirIndex],
+                clickDirection = adjacentDirections[clickDirIndex];
                 oppClickDirection = adjOppositeDirections[clickDirIndex];
-                console.log(moveDirection)
-                console.log("--" + clickDirection + "--" + oppClickDirection)
                 inline = (clickDirection == moveDirection || oppClickDirection == moveDirection) ? true : false;
             }
 
-            let rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+            let moveMarble;
             let toMoveRowValue = rowOrder.indexOf(id[0]), moveDir = 0, toMoveColValue = id[1];
             let rowValues = [], colValues = [];
             for (let i = 0; i < currentClickSequence.length; i++) {
@@ -293,7 +299,7 @@ function moveHandler(cell, id) {
             } else {  // vertical selection
                 moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
             }
-            let moveMarble, topID, botID, values;
+            let topID, botID, values;
             switch (moveDir) {
                 case "up":
                     values = rowValues;
@@ -319,21 +325,27 @@ function moveHandler(cell, id) {
                     console.log("FAIRY GOD PARENTS")
                     break;
             }
+            // let res = getMaxAndMinSelections(id),
+            //     topID = res[0], botID = res[1];
             if (inline) {
                 moveMarble = currentClickSequence[topID]
                 let board = getCurrentBoard2();
                 let inputMove = "i-" + moveMarble.coordinate + "-" + moveDirection
-                let newBoard = generateBoardConfigurationFromMove(board, inputMove);
-                newBoard = transformBoardToArray(newBoard)
-                drawBoard(newBoard);
+                if (resultsInline.includes(inputMove)) {
+                    let newBoard = generateBoardConfigurationFromMove(board, inputMove);
+                    newBoard = transformBoardToArray(newBoard)
+                    drawBoard(newBoard);
+                }
             } else {
                 moveMarble = currentClickSequence[botID]
                 let moveMarble2 = currentClickSequence[topID]
                 let board = getCurrentBoard2();
                 let inputMove = "s-" + moveMarble.coordinate + "-" + moveMarble2.coordinate + "-" + moveDirection
-                let newBoard = generateBoardConfigurationFromMove(board, inputMove);
-                newBoard = transformBoardToArray(newBoard)
-                drawBoard(newBoard);
+                if (resultsSideStep.includes(inputMove)) {
+                    let newBoard = generateBoardConfigurationFromMove(board, inputMove);
+                    newBoard = transformBoardToArray(newBoard)
+                    drawBoard(newBoard);
+                }
             }
             deselectClicks();
             clearClickables();
@@ -357,16 +369,19 @@ function deselectClicks() {
     currentClickSequence = []
 }
 
-let playerTurnTimeout, playerTurnRunning;
+let playerTurnTimeout, playerTurnRunning, turnNum = 1, tempTurnNum;
 
 function endTurn() {
-    clearTimeout(playerTurnTimeout);
+    clearInterval(playerTurnTimeout);
     console.log("ENDING TURN FOR " + currentTurn)
     let board = getCurrentBoard();
     fullHistory.push(board);
-    board = board.toString().replaceAll(',', ', ');
+    turnNum++;
+    tempTurnNum = turnNum;
+    board = board.toString();
     let newText = document.createElement("p");
-    newText.innerHTML = board.toString();
+    newText.id = board + turnNum;
+    newText.innerHTML = board.replaceAll(',', ', ');
     if (currentTurn == 'b') {
         nextTurn = 'w'
         currentTurn = 'w';
@@ -394,17 +409,44 @@ function endTurn() {
     }
     stateGenerator();
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
-        console.log("-------Starting AI!")
-        let maxPlayer = (blackPlayer == 2)
+        console.log("-------Starting AI!");
+        let maxPlayer = (blackPlayer == 2);
         handleGameAgent(maxPlayer);
     } else { // Player turn
         console.log("--------Starting PLAYER!")
         playerTurnRunning = true;
-        playerTurnTimeout = setTimeout(() => {
-            if (playerTurnRunning) {
-                window.alert("Out of time!");
+        let playerSeconds = p1TimeLimit;
+        let remainingTime = 0;
+        document.getElementById("pause-btn").onclick = (function() {
+            if (remainingTime == 0) {
+                clearInterval(playerTurnTimeout);
+                remainingTime = document.getElementById("p1-time").innerHTML;
+                document.getElementById("p1-time").innerHTML = remainingTime + " - PAUSED";
             }
-        }, p1TimeLimit * 1000);
+            else {
+                playerSeconds = remainingTime;
+                playerTurnTimeout = setInterval(() => {
+                    console.log("Interval: " + playerSeconds);
+                    document.getElementById("p1-time").innerHTML = playerSeconds;
+                    if (playerSeconds < 1) {
+                        clearInterval(playerTurnTimeout);
+                        window.alert("Out of time!");
+                    } else {
+                        playerSeconds--;
+                    }
+                }, 950);
+            }
+        });
+        playerTurnTimeout = setInterval(() => {
+            console.log("Interval: " + playerSeconds);
+            document.getElementById("p1-time").innerHTML = playerSeconds;
+            if (playerSeconds < 1) {
+                clearInterval(playerTurnTimeout);
+                window.alert("Out of time!");
+            } else {
+                playerSeconds--;
+            }
+        }, 950);
     }
 }
 
@@ -421,8 +463,7 @@ function handleGameAgent(maxPlayer) {
     let displayTime = Math.floor((timeStampEnd - timeStamp) / 1000);
     agentsTimeTicker.innerHTML = displayTime;
     let board = getCurrentBoard();
-    console.log("CURRENT BOARD " + board)
-    console.log(boardOutput(resultsInline, resultsSideStep, board))
+    let ai_timer_start = window.performance.now();
     while (depth < maxDepthPerm && new Date().getTime() < timeStampEnd) {
         displayTime = Math.floor((timeStampEnd - (new Date().getTime())) / 1000);
         agentsTimeTicker.innerHTML = displayTime;
@@ -434,10 +475,25 @@ function handleGameAgent(maxPlayer) {
         }
         depth++;
     }
-    console.log("ALPHABETA " + alphaBeta[1])
+    let ai_timer_end = window.performance.now();
+    let ai_time = ai_timer_end - ai_timer_start;
+    writeToAiTime(ai_time)
     drawBoard(alphaBeta[1]);
     // console.log("-------AI MOVED");
     endTurn();
+}
+
+let aiTimeColor = true;
+function writeToAiTime(ai_time) {
+    let newText = document.createElement("p");
+    newText.innerHTML = ai_time;
+    if (aiTimeColor) {
+        newText.style.background = "#3f3f4066"
+    } else {
+        newText.style.background = "#ebebeb66"
+    }
+    aiTimeColor = !aiTimeColor;
+    document.getElementById("aiTime-div").prepend(newText);
 }
 
 function createMarble(startCoord, player, mbcolour) {
@@ -577,17 +633,26 @@ function removeDuplicateMoveNotation(sideStepRes) {
 
 function undo() {
     if (fullHistory.length > 1) {
-        fullHistory.pop();
+        let board = fullHistory.pop();
+        let id = board + tempTurnNum;
+        console.log(id)
+        console.log(turnNum)
+        tempTurnNum--;
+        let oldMove = document.getElementById(id);
+        oldMove.style.textDecoration = "line-through"
+
         let prevMove = fullHistory[fullHistory.length - 1]
         if (currentTurn == 'b') {
-            nextTurn = 'b'
+            nextTurn = 'w';
             currentTurn = 'w';
+            oldMove.style.background = "#dd000066";
         } else {
-            nextTurn = 'w'
+            nextTurn = 'b';
             currentTurn = 'b';
+            oldMove.style.background = "#78000066";
         }
         if (currentTurnINT == 1) {
-            currentTurnINT = 2
+            currentTurnINT = 2;
             let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
             document.getElementById("p1-tab-span").innerHTML = "";
             document.getElementById("p2-tab-span").innerHTML = "<<<<";
@@ -604,6 +669,7 @@ function undo() {
         deselectClicks();
         clearClickables();
         drawBoard(prevMove);
+        stateGenerator();
     } else {
         window.alert("This is the farthest you can go!")
     }
@@ -621,8 +687,8 @@ let p1Left = 14,
 
 function drawBoard(board) {
     emptyBoard();
-    marblesP1 = []
-    marblesP2 = []
+    marblesP1 = [];
+    marblesP2 = [];
     clearHasMarble();
     board.forEach(marbleID => {
         let id = marbleID.substring(0, 2);
@@ -643,24 +709,29 @@ function drawBoard(board) {
         }
     }
     if (p2Left > marblesP2.length) {
+        console.log("black score")
         player1Score++;
         p2Left--;
-        updateScore(1);
+        updateScore(blackPlayer);
     } else if (p1Left > marblesP1.length) {
+        console.log("white score")
+
         player2Score++;
         p1Left--;
-        updateScore(2);
+        updateScore(whitePlayer);
     }
     // console.log("DONE DRAWING");
 }
 
 function updateScore(player) {
-    let id = (player == 1) ? 'p1c-' + player1Score : 'p2c-' + player2Score
+    let scoreP1 = (blackPlayer == 1) ? player1Score : player2Score;
+    let scoreP2 = (whitePlayer == 2) ? player2Score : player1Score;
+    let id = (player == blackPlayer) ? 'p1c-' + scoreP1 : 'p2c-' + scoreP2
     document.getElementById(id).style.background = redMarbleColour;
     if (player1Score >= 6) {
-        // player 1 WINS
+        // black WINS
     } else if (player2Score >= 6) {
-        // player 2 WINS
+        // white WINS
     }
 }
 
