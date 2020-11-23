@@ -946,6 +946,8 @@ function setMoveNotation() {
     let textBox = document.getElementById("moveNoteText");
     let moveNotation = textBox.value,
         board = getCurrentBoard2();
+    console.log(moveNotation)
+    console.log(resultsInline);
     if (resultsSideStep.includes(moveNotation) || resultsInline.includes(moveNotation)) {
         let newBoard = generateBoardConfigurationFromMove(board, moveNotation);
         newBoard = transformBoardToArray(newBoard);
