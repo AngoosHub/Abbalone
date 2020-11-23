@@ -233,76 +233,6 @@ function setClickables(id) {
     }
 }
 
-function setClickables2(id) {
-    clearClickables();
-    let marble = getPlayerMarble(currentTurn, id);
-    if (!marble) {
-        return;
-    }
-    
-    let adjacentArr = adjacentInfo[id],
-        firstClicked = currentClickSequence[0],
-        secondClicked = currentClickSequence[1],
-        thirdClicked = currentClickSequence[2],
-        firstAdjArr = firstClicked ? adjacentInfo[firstClicked.coordinate] : null,
-        secondAdjArr = secondClicked ? adjacentInfo[secondClicked.coordinate] : null,
-        thirdAdjArr = thirdClicked ? adjacentInfo[thirdClicked.coordinate] : null;
-    
-    // First selected
-    if (currentClickSequence.length == 0) {
-        for (let i = 0; i < adjacentArr.length; i++) {
-            let n_id = adjacentArr[i];
-            let inline = "i-" + id + "-" + adjacentDirections[i];
-            if (resultsInline.includes(inline)) {
-                addClickable(n_id)
-            }
-        }
-    }
-
-    let clickDirIndex,
-        clickDirection,
-        oppClickDirection;
-    if (currentClickSequence.length > 1) {
-        clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(currentClickSequence[1].coordinate);
-        clickDirection = adjacentDirections[clickDirIndex];
-        oppClickDirection = adjOppositeDirections[clickDirIndex];
-    } else if (currentClickSequence.length > 0) {
-        clickDirIndex = adjacentInfo[currentClickSequence[0].coordinate].indexOf(id);
-        clickDirection = adjacentDirections[clickDirIndex];
-        oppClickDirection = adjOppositeDirections[clickDirIndex];
-    }
-
-    // First selected
-    if (firstClicked) {
-        for (let i = 0; i < firstAdjArr.length; i++) {
-            let n_id = firstAdjArr[i];
-            if (adjacentDirections[i] == clickDirection || adjacentDirections[i] == oppClickDirection) {
-                console.log("nyahallo")
-                let inline = "i-" + firstClicked.coordinate + "-" + adjacentDirections[i];
-                if (resultsInline.includes(inline)) {
-                    addClickable(n_id)
-                }
-            }
-        }
-    }
-
-    // Second selected
-    if (secondClicked) {
-        for (let i = 0; i < secondAdjArr.length; i++) {
-            let n_id = secondAdjArr[i];
-            let inline = "i-" + secondClicked.coordinate + "-" + adjacentDirections[i];
-            let res = getMaxAndMinSelections(n_id),
-                topID = res[0], botID = res[1];
-            let sideStep = "s-" + botID + "-" + topID + adjacentDirections[i]
-            if (resultsInline.includes(inline) || resultsSideStep.includes(sideStep)) {
-                addClickable(n_id)
-            }
-        }
-    }
-
-    // Third selected
-}
-
 function selectCell(id, cell) { // selects the actual marble
     setClickables(id) 
     let marble = getPlayerMarble(currentTurn, id);
@@ -329,47 +259,6 @@ function cellClicked(id) {
     }
 }
 
-function getMaxAndMinSelections(id) {
-    let toMoveRowValue = rowOrder.indexOf(id[0]), moveDir = 0, toMoveColValue = id[1];
-    let rowValues = [], colValues = [];
-    for (let i = 0; i < currentClickSequence.length; i++) {
-        let marble = currentClickSequence[i];
-        rowValues.push(rowOrder.indexOf(marble.coordinate[0]));
-        colValues.push(marble.coordinate[1]);
-    }
-    if (rowValues.length > 0 && rowValues[1] == rowValues[0]) { // horizontal selection
-        moveDir = toMoveColValue > colValues[0] ? "right" : "left"
-    } else {  // vertical selection
-        moveDir = toMoveRowValue > rowValues[0] ? "up" : "down";
-    }
-    let topID, botID, values;
-    switch (moveDir) {
-        case "up":
-            values = rowValues;
-            topID = values.indexOf(Math.min.apply(Math, values));
-            botID = values.indexOf(Math.max.apply(Math, values));
-            break;
-        case "down":
-            values = rowValues;
-            topID = values.indexOf(Math.max.apply(Math, values));
-            botID = values.indexOf(Math.min.apply(Math, values));
-            break;
-        case "left":
-            values = colValues;
-            topID = values.indexOf("" + Math.max.apply(Math, values));
-            botID = values.indexOf("" + Math.min.apply(Math, values));
-            break;
-        case "right":
-            values = colValues;
-            topID = values.indexOf("" + Math.min.apply(Math, values));
-            botID = values.indexOf("" + Math.max.apply(Math, values));
-            break;
-        default:
-            console.log("FAIRY GOD PARENTS")
-            break;
-    }
-    return [topID, botID]
-}
 
 function moveHandler(cell, id) {
     if (currentClickSequence.length > 0) { // Move the marbles!
@@ -756,7 +645,7 @@ function undo() {
         if (currentTurn == 'b') {
             nextTurn = 'w';
             currentTurn = 'w';
-            oldMove.style.background = "#ff000066";
+            oldMove.style.background = "#dd000066";
         } else {
             nextTurn = 'b';
             currentTurn = 'b';
