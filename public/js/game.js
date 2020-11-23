@@ -79,6 +79,7 @@ function stop() {
     window.location.href="../index.html"
 }
 function reset() {
+    window.location.reload();
     resetScore();
     marblesP1 = [],
     marblesP2 = [],
@@ -620,6 +621,16 @@ function writeToAiTime(ai_time) {
     }
     aiTimeColor = !aiTimeColor;
     document.getElementById("aiTime-div").prepend(newText);
+
+    let aiTimeChildren = document.getElementById("aiTime-div").children
+    let aggregate = 0;
+    let i;
+    for (i = 0; i < aiTimeChildren.length; i++) {
+        console.log(aiTimeChildren[i].innerText)
+        aggregate += +aiTimeChildren[i].innerText;
+    }
+
+    document.getElementById("aiTimeTotal-div").innerText = (aggregate/i).toFixed(3);
 }
 
 function createMarble(startCoord, player, mbcolour) {
