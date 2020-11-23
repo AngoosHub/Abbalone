@@ -581,11 +581,11 @@ let maxDepth;
 function handleGameAgent(maxPlayer) {
     let depth = 0;
     let alphaBeta;
-    let agentsTimeTicker = document.getElementById("p2-time");
+    // let agentsTimeTicker = document.getElementById("p2-time");
     timeStamp = new Date().getTime();
     timeStampEnd = timeStamp + (p2TimeLimit * 1000) - 50;
     let displayTime = Math.floor((timeStampEnd - timeStamp) / 1000);
-    agentsTimeTicker.innerHTML = displayTime;
+    // agentsTimeTicker.innerHTML = displayTime;
     let board = getCurrentBoard();
     let ai_timer_start = window.performance.now();
     let ai_timer_end;
