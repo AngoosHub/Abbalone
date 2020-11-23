@@ -486,8 +486,8 @@ function deselectClicks() {
 let playerTurnTimeout, playerTurnRunning;
 
 function endTurn() {
-    clearTimeout(playerTurnTimeout);
-    console.log("------ENDING " + currentTurn)
+    clearInterval(playerTurnTimeout);
+    console.log("ENDING TURN FOR " + currentTurn)
     let board = getCurrentBoard();
     fullHistory.push(board);
     board = board.toString().replaceAll(',', ', ');
@@ -526,11 +526,17 @@ function endTurn() {
     } else { // Player turn
         console.log("--------Starting PLAYER!")
         playerTurnRunning = true;
-        playerTurnTimeout = setTimeout(() => {
-            if (playerTurnRunning) {
+        let playerSeconds = p1TimeLimit;
+        playerTurnTimeout = setInterval(() => {
+            console.log("Interval: " + playerSeconds);
+            document.getElementById("p1-time").innerHTML = playerSeconds;
+            if (playerSeconds < 1) {
+                clearInterval(playerTurnTimeout);
                 window.alert("Out of time!");
+            } else {
+                playerSeconds--;
             }
-        }, p1TimeLimit * 1000);
+        }, 950);
     }
 }
 
