@@ -207,7 +207,7 @@ function setClickables(id) {
             sideStepMoveNot += clickedButtons[0].coordinate + "-" + clickedButtons[2].coordinate
         }
 
-        let sidestepDirections = [1, 5, 7, 11]
+        let sidestepDirections = [1, 3, 5, 7, 9, 11]
         for (let q = 0; q < 4; q++) {
             let dir = sidestepDirections[q];
             let sideStepNotation = sideStepMoveNot.slice() + "-" + dir;
