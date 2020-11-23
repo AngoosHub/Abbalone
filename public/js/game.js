@@ -603,7 +603,7 @@ function handleGameAgent(maxPlayer) {
         }
         depth++;
     }
-    let ai_time = ai_timer_end - ai_timer_start;
+    let ai_time = ((ai_timer_end - ai_timer_start) / 1000).toFixed(6);
     writeToAiTime(ai_time)
     drawBoard(alphaBeta[1]);
     // console.log("-------AI MOVED");
@@ -613,7 +613,7 @@ function handleGameAgent(maxPlayer) {
 let aiTimeColor = true;
 function writeToAiTime(ai_time) {
     let newText = document.createElement("p");
-    newText.innerHTML = ai_time;
+    newText.innerHTML = ai_time + " seconds";
     if (aiTimeColor) {
         newText.style.background = "#3f3f4066"
     } else {
