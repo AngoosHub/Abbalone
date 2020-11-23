@@ -17,6 +17,17 @@ const   defStartP1 = ["a1", "a2", "a3", "a4", "a5", "b1", "b2",
         adjOppositeDirections = [1, 11, 3, 9, 5, 7],
         rowOrder = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
 
+
+// For 'undo' button
+
+let oldMarblesP1 = [];
+let oldMarblesP2 = [];
+let oldEmptyLocation = [];
+let oldPlayer1Score;
+let oldPlayer2Score;
+let oldBoard=[];
+
+
 // GAME VARIABLES
 let marblesP1 = [],
     marblesP2 = [],
@@ -63,8 +74,16 @@ window.onload = function() {
     moveLimits[1].innerHTML = turnLimit;
     document.getElementById("p1-time").innerHTML = p1TimeLimit;
     document.getElementById("p2-time").innerHTML = p2TimeLimit;
-
+   
+ 
     initBoard(layoutInt);
+    console.log(getCurrentBoard())
+    console.log(getCurrentBoard2())
+    // oldMarblesP1 = marblesP1;
+    // oldMarblesP2 = marblesP2;
+    // oldEmptyLocation = emptyLocation;
+    // oldPlayer1Score = player1Score;
+    // oldPlayer2Score = player2Score;
     // turn();
     // emptyBoard()
     let cells = document.getElementsByClassName("cell");
@@ -72,6 +91,77 @@ window.onload = function() {
         let cellID = cells[i].id;
         cells[i].addEventListener('click', function() { cellClicked(cellID) } );
     }
+}
+// function decreaseScore() {
+    
+//     let id = (player == blackPlayer) ? 'p1c-' + scoreP1 : 'p2c-' + scoreP2;
+//     document.getElementById('p2c-1').style.background = resetMarbleColour;
+// }
+function undo() {  
+    let boards = oldBoard;
+
+    marblesP1=[];
+    marblesP2=[];
+    newMarblesP1=[];
+    newMarblesP2=[];
+    emptyLocation=[];
+    player1Score = oldPlayer1Score
+    player2Score = oldPlayer2Score
+    for(let i =0; i<boards.length;i++) {
+        let location = (boards[i].substring(0, 1)).toLowerCase()+boards[i].substring(1, 2);
+        let marbleColor = boards[i].substring(2, 3);
+        
+        if(marbleColor==='b') {
+            let marble1 = createMarble(location, 'b', blackMarbleColour);
+            marblesP1.push(marble1)
+            newMarblesP1.push(marble1.coordinate);
+            document.getElementById(location).style.background=blackMarbleColour;
+            document.getElementById(location).classList.add(hasMarbleClass);
+            // create a black marble object then add to marblesP1 array
+            
+        }else {
+            let marble1 = createMarble(location, 'w', whiteMarbleColour);
+            marblesP2.push(marble1)
+            newMarblesP2.push(marble1.coordinate);
+            document.getElementById(location).style.background=whiteMarbleColour;
+            document.getElementById(location).classList.add(hasMarbleClass);
+            // create a black marble object then add to marblesP1 array
+            
+        }
+    }
+    // set empty location
+    for(let i =0; i<allBoard.length;i++) {
+        if(!newMarblesP1.includes(allBoard[i]) && !newMarblesP2.includes(allBoard[i])) {
+            emptyLocation.push(allBoard[i]);
+
+        }
+    }
+    for(let i =0; i<emptyLocation.length;i++) {
+        let target = document.getElementById(emptyLocation[i])
+        console.log(target)
+        if(target.classList.contains(hasMarbleClass)) {
+            target.classList.remove(hasMarbleClass);
+            target.style.background = emptyCellColour
+        }        
+    }
+    for(let i=0;i<player1Score;i++) {
+        let n= i+1;
+        let id = "p1c-"+n;
+        document.getElementById(id).style.background = resetMarbleColour;
+    }
+    for(let i=0;i<player2Score;i++) {
+        let n= i+1;
+        let id = "p2c-"+n;
+        document.getElementById(id).style.background = resetMarbleColour;
+    }
+
+    
+
+    console.log(newMarblesP1)
+    console.log(newMarblesP2)
+    emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
+    stateGenerator()
+    
 }
 
 function stop() {
@@ -373,6 +463,10 @@ function cellClicked(id) {
 
 
 function moveHandler(cell, id) {
+    console.log(getCurrentBoard()) //currentBoard
+    oldBoard = getCurrentBoard();
+    oldPlayer1Score = player1Score;
+    oldPlayer2Score = player2Score;
     if (currentClickSequence.length > 0) { // Move the marbles!
         if (cell.classList.contains(clickableClass)) {
             playerTurnRunning = false;
@@ -447,6 +541,7 @@ function moveHandler(cell, id) {
                     let newBoard = generateBoardConfigurationFromMove(board, inputMove);
                     newBoard = transformBoardToArray(newBoard)
                     drawBoard(newBoard);
+                    chosenMoveNotation = inputMove;
                 }
             } else {
                 moveMarble = currentClickSequence[botID]
@@ -457,6 +552,7 @@ function moveHandler(cell, id) {
                     let newBoard = generateBoardConfigurationFromMove(board, inputMove);
                     newBoard = transformBoardToArray(newBoard)
                     drawBoard(newBoard);
+                    chosenMoveNotation = inputMove;
                 }
             }
             deselectClicks();
@@ -481,7 +577,7 @@ function deselectClicks() {
     currentClickSequence = []
 }
 
-let playerTurnTimeout, playerTurnRunning, turnNum = 1, tempTurnNum;
+let playerTurnTimeout, playerTurnRunning, turnNum = 1, tempTurnNum, chosenMoveNotation;
 
 function endTurn() {
     clearInterval(playerTurnTimeout);
@@ -496,7 +592,7 @@ function endTurn() {
         board = board.toString();
         let newText = document.createElement("p");
         newText.id = board + turnNum;
-        newText.innerHTML = board.replaceAll(',', ', ');
+        newText.innerHTML = "Move: " + chosenMoveNotation + "<br/>Board: " + board.replaceAll(',', ', ');
         if (currentTurn == 'b') {
             nextTurn = 'w'
             currentTurn = 'w';
@@ -745,9 +841,10 @@ function randomFirstTurn() {
 
 function playGame() {
     mammaMia.currentTime = 0;
+
+    
     // mammaMia.play();
     turn();
-    
     testResultsInline = [];
     testResultsSideStep =[];
     testResultsInline.push(resultsInline[0])
@@ -778,49 +875,49 @@ function removeDuplicateMoveNotation(sideStepRes) {
     return idxArray;
 }
 
-function undo() {
-    if (fullHistory.length > 1) {
-        let board = fullHistory.pop();
-        let id = board + tempTurnNum;
-        console.log(id)
-        console.log(turnNum)
-        tempTurnNum--;
-        let oldMove = document.getElementById(id);
-        oldMove.style.textDecoration = "line-through"
+// function undo() {
+//     if (fullHistory.length > 1) {
+//         let board = fullHistory.pop();
+//         let id = board + tempTurnNum;
+//         console.log(id)
+//         console.log(turnNum)
+//         tempTurnNum--;
+//         let oldMove = document.getElementById(id);
+//         oldMove.style.textDecoration = "line-through"
 
-        let prevMove = fullHistory[fullHistory.length - 1]
-        if (currentTurn == 'b') {
-            nextTurn = 'w';
-            currentTurn = 'w';
-            oldMove.style.background = "#dd000066";
-        } else {
-            nextTurn = 'b';
-            currentTurn = 'b';
-            oldMove.style.background = "#78000066";
-        }
-        if (currentTurnINT == 1) {
-            currentTurnINT = 2;
-            let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
-            document.getElementById("p1-tab-span").innerHTML = "";
-            document.getElementById("p2-tab-span").innerHTML = "<<<<";
-            turnsLeft++;
-            document.getElementById("p1-moves").innerHTML = turnsLeft
-        } else {
-            currentTurnINT = 1
-            let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
-            document.getElementById("p1-tab-span").innerHTML = "<<<<";
-            document.getElementById("p2-tab-span").innerHTML = "";
-            turnsLeft++;
-            document.getElementById("p2-moves").innerHTML = turnsLeft
-        }
-        deselectClicks();
-        clearClickables();
-        drawBoard(prevMove);
-        stateGenerator();
-    } else {
-        window.alert("This is the farthest you can go!")
-    }
-}
+//         let prevMove = fullHistory[fullHistory.length - 1]
+//         if (currentTurn == 'b') {
+//             nextTurn = 'w';
+//             currentTurn = 'w';
+//             oldMove.style.background = "#dd000066";
+//         } else {
+//             nextTurn = 'b';
+//             currentTurn = 'b';
+//             oldMove.style.background = "#78000066";
+//         }
+//         if (currentTurnINT == 1) {
+//             currentTurnINT = 2;
+//             let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
+//             document.getElementById("p1-tab-span").innerHTML = "";
+//             document.getElementById("p2-tab-span").innerHTML = "<<<<";
+//             turnsLeft++;
+//             document.getElementById("p1-moves").innerHTML = turnsLeft
+//         } else {
+//             currentTurnINT = 1
+//             let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
+//             document.getElementById("p1-tab-span").innerHTML = "<<<<";
+//             document.getElementById("p2-tab-span").innerHTML = "";
+//             turnsLeft++;
+//             document.getElementById("p2-moves").innerHTML = turnsLeft
+//         }
+//         deselectClicks();
+//         clearClickables();
+//         drawBoard(prevMove);
+//         stateGenerator();
+//     } else {
+//         window.alert("This is the farthest you can go!")
+//     }
+// }
 
 function clearHasMarble() {
     let marbles = document.querySelectorAll(".hasMarble");

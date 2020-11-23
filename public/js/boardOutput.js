@@ -8,6 +8,7 @@
 
 This function will generate an array of resulting board configurations for output file. */
 function boardOutput(resultsI, resultsSS, inputBoard) {
+
     let currentBoard;
     if (!inputBoard) {
         currentBoard = getCurrentBoard2();
@@ -15,6 +16,7 @@ function boardOutput(resultsI, resultsSS, inputBoard) {
         currentBoard = getCurrentBoardFromInput(inputBoard);
         // currentBoard = getCurrentBoard2();
     }
+    
     let moveConfigOutputFile = [];
     let boardConfigOutputFile = [];
     // console.log(currentBoard);
