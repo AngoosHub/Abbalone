@@ -144,15 +144,21 @@ function undo() {
             target.style.background = emptyCellColour
         }        
     }
+    for(let i=1;i<7;i++) {
+        let id = "p1c-"+i;
+        let id2 = "p1c-"+i;
+        document.getElementById(id).style.background = resetMarbleColour;
+        document.getElementById(id2).style.background = resetMarbleColour;
+    }
     for(let i=0;i<player1Score;i++) {
         let n= i+1;
         let id = "p1c-"+n;
-        document.getElementById(id).style.background = resetMarbleColour;
+        document.getElementById(id).style.background = redMarbleColour;
     }
     for(let i=0;i<player2Score;i++) {
         let n= i+1;
         let id = "p2c-"+n;
-        document.getElementById(id).style.background = resetMarbleColour;
+        document.getElementById(id).style.background = redMarbleColour;
     }
 
     
