@@ -110,7 +110,7 @@ function addClickable(id) {
     }
 }
 
-function setClickables2(id) {
+function setClickables(id) {
     clearClickables();
     let marble = getPlayerMarble(currentTurn, id);
     if (!marble) {
@@ -233,7 +233,7 @@ function setClickables2(id) {
     }
 }
 
-function setClickables(id) {
+function setClickables2(id) {
     clearClickables();
     let marble = getPlayerMarble(currentTurn, id);
     if (!marble) {
