@@ -855,6 +855,7 @@ function drawBoard(board) {
             emptyLocation.push(allBoard[i]);
         }
     }
+    emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
     if (p2Left > marblesP2.length) {
         console.log("black score")
         player1Score++;
@@ -962,5 +963,5 @@ function setMoveNotation() {
 
 function endGame(winner) {
     window.alert(winner + " WINS!!!!");
-    document.getElementById("game-tint").style.pointerEvents = "none"
+    document.getElementById("game-tint").style.pointerEvents = "none";
 }
