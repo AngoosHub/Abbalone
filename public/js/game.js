@@ -472,9 +472,11 @@ function endTurn() {
                 clearInterval(playerTurnTimeout);
                 remainingTime = document.getElementById("p1-time").innerHTML;
                 document.getElementById("p1-time").innerHTML = remainingTime + " - PAUSED";
+                document.getElementById("pause-btn").innerText = "Paused";
             }
             else {
                 playerSeconds = remainingTime;
+                remainingTime = 0;
                 playerTurnTimeout = setInterval(() => {
                     console.log("Interval: " + playerSeconds);
                     document.getElementById("p1-time").innerHTML = playerSeconds;
@@ -485,9 +487,10 @@ function endTurn() {
                         playerSeconds--;
                     }
                 }, 950);
+                document.getElementById("pause-btn").innerText = "Pause";
             }
         });
-        playerTurnTimeout = setInterval(() => {
+        let playerTurnTimeout = setInterval(() => {
             console.log("Interval: " + playerSeconds);
             document.getElementById("p1-time").innerHTML = playerSeconds;
             if (playerSeconds < 1) {
@@ -628,7 +631,7 @@ function initBoard(startStyle) {
             playerTurnRunning = true;
             playerTurnTimeout = setTimeout(() => {
                 if (playerTurnRunning) {
-                    window.alert("Out of time!");
+                    // window.alert("Out of time!");
                 }
             }, p1TimeLimit * 1000);
         } else { // computer moves first
