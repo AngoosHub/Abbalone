@@ -614,7 +614,7 @@ function handleGameAgent(maxPlayer) {
 let aiTimeColor = true;
 function writeToAiTime(ai_time) {
     let newText = document.createElement("p");
-    newText.innerHTML = ai_time + " seconds";
+    newText.innerHTML = ai_time;
     if (aiTimeColor) {
         newText.style.background = "#3f3f4066"
     } else {
@@ -631,7 +631,7 @@ function writeToAiTime(ai_time) {
         aggregate += +aiTimeChildren[i].innerText;
     }
 
-    document.getElementById("aiTimeTotal-div").innerText = (aggregate/i).toFixed(3);
+    document.getElementById("aiTimeTotal-div").innerText = (aggregate/i).toFixed(6);
 }
 
 function createMarble(startCoord, player, mbcolour) {
