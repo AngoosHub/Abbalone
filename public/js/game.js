@@ -553,6 +553,7 @@ function handleGameAgent(maxPlayer) {
     let displayTime = Math.floor((timeStampEnd - timeStamp) / 1000);
     agentsTimeTicker.innerHTML = displayTime;
     let board = getCurrentBoard();
+    let ai_timer_start = window.performance.now();
     while (depth < maxDepthPerm && new Date().getTime() < timeStampEnd) {
         displayTime = Math.floor((timeStampEnd - (new Date().getTime())) / 1000);
         agentsTimeTicker.innerHTML = displayTime;
@@ -564,9 +565,25 @@ function handleGameAgent(maxPlayer) {
         }
         depth++;
     }
+    let ai_timer_end = window.performance.now();
+    let ai_time = ai_timer_end - ai_timer_start;
+    writeToAiTime(ai_time)
     drawBoard(alphaBeta[1]);
     // console.log("-------AI MOVED");
     endTurn();
+}
+
+let aiTimeColor = true;
+function writeToAiTime(ai_time) {
+    let newText = document.createElement("p");
+    newText.innerHTML = ai_time;
+    if (aiTimeColor) {
+        newText.style.background = "#3f3f4066"
+    } else {
+        newText.style.background = "#ebebeb66"
+    }
+    aiTimeColor = !aiTimeColor;
+    document.getElementById("aiTime-div").prepend(newText);
 }
 
 function createMarble(startCoord, player, mbcolour) {
