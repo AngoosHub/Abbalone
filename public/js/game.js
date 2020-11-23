@@ -563,7 +563,7 @@ function endTurn() {
                 }
             }
         });
-        let playerTurnTimeout = setInterval(() => {
+        playerTurnTimeout = setInterval(() => {
             // console.log("Interval: " + playerSeconds);
             document.getElementById("p1-time").innerHTML = playerSeconds;
             if (playerSeconds < 1) {
