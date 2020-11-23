@@ -171,7 +171,7 @@ function setClickables(id) {
     if (!marble) {
         return;
     }
-    
+
     let adjacentArr = adjacentInfo[id],
         firstClicked = currentClickSequence[0],
         secondClicked = currentClickSequence[1],
@@ -208,8 +208,8 @@ function setClickables(id) {
                     }
                 } 
             }
-            if (resultsInline.includes(inlineMove) 
-                || resultsInline.includes(inlineAdjMove)) {
+            if (resultsInline.includes(inlineMove) || resultsInline.includes(inlineAdjMove)) {
+                console.log(n_id)
                 if (allBoard.includes(n_id)) addClickable(n_id)
             }
         }
@@ -233,6 +233,9 @@ function setClickables(id) {
                 let n_id = adjacentArr[i],
                     n_id2 = firstAdjArr[i],
                     n_id3 = secondAdjArr[i];
+                let p_enemy1 = getPlayerMarble(currentTurn, n_id),
+                    p_enemy2 = getPlayerMarble(currentTurn, n_id2),
+                    p_enemy3 = getPlayerMarble(currentTurn, n_id3);
                     movDir = adjacentDirections[i];
                 if (movDir == clickDirection || movDir == oppClickDirection) { // inline
                     let inlineMove1 = "i-" + id + "-" + movDir,
@@ -243,15 +246,15 @@ function setClickables(id) {
                         adjCell2 = document.getElementById(n_id2),
                         adjCell3 = document.getElementById(n_id3),
                         inlineAdjMove1 = null, inlineAdjMove2 = null, inlineAdjMove3 = null; 
-                    if (adjCell && !adjCell.classList.contains(hasMarbleClass) 
+                    if (adjCell && (!adjCell.classList.contains(hasMarbleClass) || !p_enemy1) 
                         && resultsInline.includes(inlineMove1) || resultsInline.includes(inlineAdjMove1)) {
                         if (allBoard.includes(n_id)) addClickable(n_id)
                     }
-                    if (adjCell2 && !adjCell2.classList.contains(hasMarbleClass) 
+                    if (adjCell2 && (!adjCell2.classList.contains(hasMarbleClass) || !p_enemy2)
                         && resultsInline.includes(inlineMove2) || resultsInline.includes(inlineAdjMove2)) {
                         if (allBoard.includes(n_id2)) addClickable(n_id2)
                     }
-                    if (adjCell3 && !adjCell3.classList.contains(hasMarbleClass) 
+                    if (adjCell3 && (!adjCell3.classList.contains(hasMarbleClass) || !p_enemy3)
                         && resultsInline.includes(inlineMove3) || resultsInline.includes(inlineAdjMove3)) {
                         if (allBoard.includes(n_id3)) addClickable(n_id3)
                     }
