@@ -586,24 +586,25 @@ function handleGameAgent(maxPlayer) {
     let alphaBeta;
     let agentsTimeTicker = document.getElementById("p2-time");
     timeStamp = new Date().getTime();
-    timeStampEnd = timeStamp + (p2TimeLimit * 1000) - 100;
+    timeStampEnd = timeStamp + (p2TimeLimit * 1000) - 50;
     let displayTime = Math.floor((timeStampEnd - timeStamp) / 1000);
     agentsTimeTicker.innerHTML = displayTime;
     let board = getCurrentBoard();
     let ai_timer_start = window.performance.now();
+    let ai_timer_end;
     while (depth < maxDepthPerm && new Date().getTime() < timeStampEnd) {
         displayTime = Math.floor((timeStampEnd - (new Date().getTime())) / 1000);
-        agentsTimeTicker.innerHTML = displayTime;
+        // agentsTimeTicker.innerHTML = displayTime;
         maxDepth = depth;
         let alphaBetaTemp = alphaBetaMiniMax(board, depth,  Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, maxPlayer);
         if (new Date().getTime() < timeStampEnd && (alphaBeta == undefined || 
             (((maxPlayer && alphaBetaTemp[0] >= alphaBeta[0])) || (!maxPlayer && alphaBetaTemp[0] <= alphaBeta[0])))) {
             alphaBeta = alphaBetaTemp;
+            ai_timer_end = window.performance.now();
         }
         depth++;
     }
-    let ai_timer_end = window.performance.now();
-    let ai_time = ai_timer_end - ai_timer_start;
+    let ai_time = ((ai_timer_end - ai_timer_start) / 1000).toFixed(6);
     writeToAiTime(ai_time)
     drawBoard(alphaBeta[1]);
     // console.log("-------AI MOVED");
@@ -613,7 +614,7 @@ function handleGameAgent(maxPlayer) {
 let aiTimeColor = true;
 function writeToAiTime(ai_time) {
     let newText = document.createElement("p");
-    newText.innerHTML = ai_time;
+    newText.innerHTML = ai_time + " seconds";
     if (aiTimeColor) {
         newText.style.background = "#3f3f4066"
     } else {
