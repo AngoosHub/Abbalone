@@ -485,93 +485,105 @@ let playerTurnTimeout, playerTurnRunning, turnNum = 1, tempTurnNum;
 
 function endTurn() {
     clearInterval(playerTurnTimeout);
-    console.log("ENDING TURN FOR " + currentTurn)
-    let board = getCurrentBoard();
-    fullHistory.push(board);
-    turnNum++;
-    tempTurnNum = turnNum;
-    board = board.toString();
-    let newText = document.createElement("p");
-    newText.id = board + turnNum;
-    newText.innerHTML = board.replaceAll(',', ', ');
-    if (currentTurn == 'b') {
-        nextTurn = 'w'
-        currentTurn = 'w';
-        newText.style.background = "#3f3f4066"
-    } else {
-        newText.style.background = "#ebebeb66"
-        nextTurn = 'b'
-        currentTurn = 'b';
-    }
-    document.getElementById("fh-div").prepend(newText);
-    if (currentTurnINT == 1) {
-        currentTurnINT = 2
-        let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
-        document.getElementById("p1-tab-span").innerHTML = "";
-        document.getElementById("p2-tab-span").innerHTML = "<<<<";
-        turnsLeft--;
-        document.getElementById("p1-moves").innerHTML = turnsLeft
-    } else {
-        currentTurnINT = 1
-        let turnsLeft = parseInt(document.getElementById("p2-moves").innerHTML)
-        document.getElementById("p1-tab-span").innerHTML = "<<<<";
-        document.getElementById("p2-tab-span").innerHTML = "";
-        turnsLeft--;
-        document.getElementById("p2-moves").innerHTML = turnsLeft;
-    }
-    stateGenerator();
-    if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
-        console.log("-------Starting AI!");
-        let maxPlayer = (blackPlayer == 2);
-        handleGameAgent(maxPlayer);
-    } else { // Player turn
-        console.log("--------Starting PLAYER!")
-        playerTurnRunning = true;
-        let playerSeconds = p1TimeLimit;
-        let remainingTime = 0;
-        document.getElementById("pause-btn").onclick = (function() {
-            if (remainingTime == 0) {
-                remainingTime = 1;
-                clearInterval(playerTurnTimeout);
-                remainingTime = document.getElementById("p1-time").innerHTML;
-                document.getElementById("p1-time").innerHTML = remainingTime + " - PAUSED";
-                document.getElementById("pause-btn").innerText = "Paused";
-                let cells = document.getElementsByClassName("cell");
-                for (let i = 0; i < cells.length; i++) {
-                    cells.item(i).classList.add("disabledbutton");
-                }
-            }
-            else {
-                playerSeconds = remainingTime;
-                remainingTime = 0;
-                playerTurnTimeout = setInterval(() => {
-                    console.log("Interval: " + playerSeconds);
-                    document.getElementById("p1-time").innerHTML = playerSeconds;
-                    if (playerSeconds < 1) {
-                        clearInterval(playerTurnTimeout);
-                        window.alert("Out of time!");
-                    } else {
-                        playerSeconds--;
+    let turnsLeft1 = parseInt(document.getElementById("p1-moves").innerHTML),
+        turnsLeft2 = parseInt(document.getElementById("p2-moves").innerHTML);
+    if (turnsLeft1 > 0 || turnsLeft2 > 0) {
+        console.log("ENDING TURN FOR " + currentTurn)
+        let board = getCurrentBoard();
+        fullHistory.push(board);
+        turnNum++;
+        tempTurnNum = turnNum;
+        board = board.toString();
+        let newText = document.createElement("p");
+        newText.id = board + turnNum;
+        newText.innerHTML = board.replaceAll(',', ', ');
+        if (currentTurn == 'b') {
+            nextTurn = 'w'
+            currentTurn = 'w';
+            newText.style.background = "#3f3f4066"
+        } else {
+            newText.style.background = "#ebebeb66"
+            nextTurn = 'b'
+            currentTurn = 'b';
+        }
+        document.getElementById("fh-div").prepend(newText);
+        if (currentTurnINT == 1) {
+            currentTurnINT = 2
+            document.getElementById("p1-tab-span").innerHTML = "";
+            document.getElementById("p2-tab-span").innerHTML = "<<<<";
+            turnsLeft1--;
+            document.getElementById("p1-moves").innerHTML = turnsLeft1
+        } else {
+            currentTurnINT = 1
+            document.getElementById("p1-tab-span").innerHTML = "<<<<";
+            document.getElementById("p2-tab-span").innerHTML = "";
+            turnsLeft2--;
+            document.getElementById("p2-moves").innerHTML = turnsLeft2;
+        }
+        stateGenerator();
+        if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
+            console.log("-------Starting AI!");
+            let maxPlayer = (blackPlayer == 2);
+            handleGameAgent(maxPlayer);
+        } else { // Player turn
+            console.log("--------Starting PLAYER!")
+            playerTurnRunning = true;
+            let playerSeconds = p1TimeLimit;
+            let remainingTime = 0;
+            document.getElementById("pause-btn").onclick = (function() {
+                if (remainingTime == 0) {
+                    remainingTime = 1;
+                    clearInterval(playerTurnTimeout);
+                    remainingTime = document.getElementById("p1-time").innerHTML;
+                    document.getElementById("p1-time").innerHTML = remainingTime + " - PAUSED";
+                    document.getElementById("pause-btn").innerText = "Paused";
+                    let cells = document.getElementsByClassName("cell");
+                    for (let i = 0; i < cells.length; i++) {
+                        cells.item(i).classList.add("disabledbutton");
                     }
-                }, 950);
-                document.getElementById("pause-btn").innerText = "Pause";
-                let cells = document.getElementsByClassName("cell");
-                for (let i = 0; i < cells.length; i++) {
-                    cells.item(i).classList.remove("disabledbutton");
                 }
-            }
-        });
-        playerTurnTimeout = setInterval(() => {
-            // console.log("Interval: " + playerSeconds);
-            document.getElementById("p1-time").innerHTML = playerSeconds;
-            if (playerSeconds < 1) {
-                clearInterval(playerTurnTimeout);
-                window.alert("Out of time!");
-            } else {
-                playerSeconds--;
-            }
-        }, 950);
+                else {
+                    playerSeconds = remainingTime;
+                    remainingTime = 0;
+                    playerTurnTimeout = setInterval(() => {
+                        console.log("Interval: " + playerSeconds);
+                        document.getElementById("p1-time").innerHTML = playerSeconds;
+                        if (playerSeconds < 1) {
+                            clearInterval(playerTurnTimeout);
+                            window.alert("Out of time!");
+                        } else {
+                            playerSeconds--;
+                        }
+                    }, 950);
+                    document.getElementById("pause-btn").innerText = "Pause";
+                    let cells = document.getElementsByClassName("cell");
+                    for (let i = 0; i < cells.length; i++) {
+                        cells.item(i).classList.remove("disabledbutton");
+                    }
+                }
+            });
+            playerTurnTimeout = setInterval(() => {
+                // console.log("Interval: " + playerSeconds);
+                document.getElementById("p1-time").innerHTML = playerSeconds;
+                if (playerSeconds < 1) {
+                    clearInterval(playerTurnTimeout);
+                    window.alert("Out of time!");
+                } else {
+                    playerSeconds--;
+                }
+            }, 950);
+        }
+    } else {
+        // compare score...
+        if (player1Score > player2Score) {
+            endGame("BLACK");
+        } else if (player2Score > player1Score) {
+            endGame("WHITE");
+        } else {
+            endGame("NOBODY")
+        }
     }
+    
 }
 
 let timeStamp, timeStampEnd;
@@ -864,9 +876,9 @@ function updateScore(player) {
     let id = (player == blackPlayer) ? 'p1c-' + scoreP1 : 'p2c-' + scoreP2
     document.getElementById(id).style.background = redMarbleColour;
     if (player1Score >= 6) {
-        // black WINS
+        endGame("BLACK")
     } else if (player2Score >= 6) {
-        // white WINS
+        endGame("WHITE")
     }
 }
 function resetScore() {
@@ -946,4 +958,9 @@ function setMoveNotation() {
     } else {
         console.log("INVALID MOVE!");
     }
+}
+
+function endGame(winner) {
+    window.alert(winner + " WINS!!!!");
+    document.getElementById("game-tint").style.pointerEvents = "none"
 }
