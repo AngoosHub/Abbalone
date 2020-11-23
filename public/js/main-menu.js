@@ -3,7 +3,8 @@ $( document ).ready(function() {
     localStorage.setItem('layout', 0);
     localStorage.setItem('gameMode', 0);
     localStorage.setItem('turnLimit', 50);
-    localStorage.setItem('p1TimeLimit', 5);
+    localStorage.setItem('p1TimeLimit', 999999);
+    // localStorage.setItem('p1TimeLimit', 5);
     localStorage.setItem('p2TimeLimit', 5);
     localStorage.setItem('blackPlayer', 1);
     setup_radio_selection_clicks();
