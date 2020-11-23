@@ -1,3 +1,4 @@
+
 const   defStartP1 = ["a1", "a2", "a3", "a4", "a5", "b1", "b2", 
                     "b3", "b4", "b5", "b6", "c3", "c4", "c5"],      // Array of coordinates for PLAYER 1's default layout
         defStartP2 = ["i5", "i6", "i7", "i8", "i9", "h4", "h5",
@@ -73,6 +74,60 @@ window.onload = function() {
     }
 }
 
+function stop() {
+    reset();
+    window.location.href="../index.html"
+}
+function reset() {
+    resetScore();
+    marblesP1 = [],
+    marblesP2 = [],
+    themeNo = 0,
+    mammaMia = null,
+    
+    fullHistory = [];  
+
+    layoutInt = 0,
+    gameMode = 0,
+    turnLimit = 50,
+    p1TimeLimit = 5,
+    p2TimeLimit = 5,
+    blackPlayer = 1;
+
+// TURN-BASED VARIABLES
+    currentTurn = 'b',              // b (black) or w (white)
+    currentTurnINT = 1,             // Integer representing which players turn it is (1 or 2)
+    currentClickSequence = [],      // The marbles clicked for this turn
+    clickableCells = [];
+    
+    console.log("reset from the beginning")
+    layoutInt = localStorage.getItem('layout');
+    gameMode = localStorage.getItem('gameMode');
+    turnLimit = localStorage.getItem('turnLimit');
+    p1TimeLimit = localStorage.getItem('p1TimeLimit');
+    p2TimeLimit = localStorage.getItem('p2TimeLimit');
+    blackPlayer = localStorage.getItem('blackPlayer');
+
+    if (blackPlayer == 1) currentTurnINT = 1;
+    else if (blackPlayer == 2) currentTurnINT = 2;
+    else currentTurnINT = 1;
+
+    let moveLimits = document.getElementsByClassName("move-limit");
+    moveLimits[0].innerHTML = turnLimit;
+    moveLimits[1].innerHTML = turnLimit;
+    document.getElementById("p1-time").innerHTML = p1TimeLimit;
+    document.getElementById("p2-time").innerHTML = p2TimeLimit;
+
+    initBoard(layoutInt);
+    let cells = document.getElementsByClassName("cell");
+    for (i = 0; i < cells.length; i++) {
+        let cellID = cells[i].id;
+        cells[i].addEventListener('click', function() { cellClicked(cellID) } );
+    }
+
+
+}
+
 function getPlayerMarble(player, id) { 
     let marbles;
     if (player) marbles = (player === 'b') ? marblesP1 : marblesP2;
@@ -132,17 +187,30 @@ function setClickables(id) {
 
             let adjCell = document.getElementById(n_id),
                 adjDir,
-                inlineAdjMove = null; 
+                inlineAdjMove = null,
+                potentialSideStep = null,
+                potentialSideStep2 = null; 
             if (adjCell != null) {
                 if (adjCell && adjCell.classList.contains(hasMarbleClass)) { 
                     // Set the direction for potential adjacent moves
                     adjDir = adjOppositesHigh.includes(movDir) ? adjOppositesLow[adjOppositesHigh.indexOf(movDir)] 
                                                                 : adjOppositesHigh[adjOppositesLow.indexOf(movDir)]
                     inlineAdjMove = "i-" + n_id + "-" + adjDir;
+
+                    for (let j = 0; j < adjacentDirections.length; j++) {
+                        potentialSideStep = "s-" + id + "-" + n_id + "-" + adjacentDirections[j]; 
+                        potentialSideStep2 = "s-" + n_id + "-" + id + "-" + adjacentDirections[j];
+                        if (resultsSideStep.includes(potentialSideStep) 
+                            || resultsSideStep.includes(potentialSideStep2)) {
+                                if (allBoard.includes(n_id)) addClickable(n_id)
+                                break;
+                        }
+                    }
                 } 
             }
-            if (resultsInline.includes(inlineMove) || resultsInline.includes(inlineAdjMove)) {
-                addClickable(n_id)
+            if (resultsInline.includes(inlineMove) 
+                || resultsInline.includes(inlineAdjMove)) {
+                if (allBoard.includes(n_id)) addClickable(n_id)
             }
         }
     } else {
@@ -159,55 +227,7 @@ function setClickables(id) {
             oppClickDirection = adjOppositeDirections[clickDirIndex];
         }
 
-        // 2 cells selected
-        if (firstClicked) {
-            for (let i = 0; i < firstAdjArr.length; i++) {
-                let n_id = adjacentArr[i],
-                    n_id2 = firstAdjArr[i],
-                    movDir = adjacentDirections[i];
-                if (movDir == clickDirection || movDir == oppClickDirection) { // inline
-                    let inlineMove1 = "i-" + id + "-" + movDir,
-                        inlineMove2 = "i-" + firstClicked.coordinate + "-" + movDir;
-                    
-                    let adjCell = document.getElementById(n_id),
-                        adjCell2 = document.getElementById(n_id2),
-                        adjDir,
-                        inlineAdjMove1 = null,
-                        inlineAdjMove2 = null; 
-                    if (adjCell != null) {
-                        if (adjCell && adjCell.classList.contains(hasMarbleClass)) { 
-                            // Set the direction for potential adjacent moves
-                            adjDir = adjOppositesHigh.includes(movDir) ? adjOppositesLow[adjOppositesHigh.indexOf(movDir)] 
-                                                                        : adjOppositesHigh[adjOppositesLow.indexOf(movDir)]
-                            inlineAdjMove1 = "i-" + n_id + "-" + adjDir;
-                        } 
-                        if (adjCell2 && adjCell2.classList.contains(hasMarbleClass)) { 
-                            // Set the direction for potential adjacent moves
-                            adjDir = adjOppositesHigh.includes(movDir) ? adjOppositesLow[adjOppositesHigh.indexOf(movDir)] 
-                                                                        : adjOppositesHigh[adjOppositesLow.indexOf(movDir)]
-                            inlineAdjMove2 = "i-" + n_id2 + "-" + adjDir;
-                        } 
-                    }
-
-                    if (resultsInline.includes(inlineMove1) || resultsInline.includes(inlineAdjMove1)) {
-                        addClickable(n_id)
-                    }
-                    if (resultsInline.includes(inlineMove2) || resultsInline.includes(inlineAdjMove2)) {
-                        addClickable(n_id2)
-                    }
-                } else { // sidestep /// Sidestep clickable will be in reference to the first clicked marble
-                    let sideStep1 = "s-" + id + "-" + firstClicked.coordinate + "-" + movDir,
-                        sideStep2 = "s-" + firstClicked.coordinate + "-" + id + "-" + movDir,
-                        ss_clickable = firstAdjArr[i];
-                    
-                    if (resultsSideStep.includes(sideStep1) || resultsSideStep.includes(sideStep2)) {
-                        addClickable(ss_clickable);
-                    }
-                }
-            }
-        }
-
-        // three cells selected
+        // 3 cells selected
         if (secondClicked) {
             for (let i = 0; i < secondAdjArr.length; i++) {
                 let n_id = adjacentArr[i],
@@ -222,37 +242,18 @@ function setClickables(id) {
                     let adjCell = document.getElementById(n_id),
                         adjCell2 = document.getElementById(n_id2),
                         adjCell3 = document.getElementById(n_id3),
-                        adjDir,
                         inlineAdjMove1 = null, inlineAdjMove2 = null, inlineAdjMove3 = null; 
-                    if (adjCell != null) {
-                        if (adjCell && adjCell.classList.contains(hasMarbleClass)) { 
-                            // Set the direction for potential adjacent moves
-                            adjDir = adjOppositesHigh.includes(movDir) ? adjOppositesLow[adjOppositesHigh.indexOf(movDir)] 
-                                                                        : adjOppositesHigh[adjOppositesLow.indexOf(movDir)]
-                            inlineAdjMove1 = "i-" + n_id + "-" + adjDir;
-                        } 
-                        if (adjCell2 && adjCell2.classList.contains(hasMarbleClass)) { 
-                            // Set the direction for potential adjacent moves
-                            adjDir = adjOppositesHigh.includes(movDir) ? adjOppositesLow[adjOppositesHigh.indexOf(movDir)] 
-                                                                        : adjOppositesHigh[adjOppositesLow.indexOf(movDir)]
-                            inlineAdjMove2 = "i-" + n_id2 + "-" + adjDir;
-                        } 
-                        if (adjCell3 && adjCell3.classList.contains(hasMarbleClass)) { 
-                            // Set the direction for potential adjacent moves
-                            adjDir = adjOppositesHigh.includes(movDir) ? adjOppositesLow[adjOppositesHigh.indexOf(movDir)] 
-                                                                        : adjOppositesHigh[adjOppositesLow.indexOf(movDir)]
-                            inlineAdjMove3 = "i-" + n_id3 + "-" + adjDir;
-                        } 
+                    if (adjCell && !adjCell.classList.contains(hasMarbleClass) 
+                        && resultsInline.includes(inlineMove1) || resultsInline.includes(inlineAdjMove1)) {
+                        if (allBoard.includes(n_id)) addClickable(n_id)
                     }
-
-                    if (resultsInline.includes(inlineMove1) || resultsInline.includes(inlineAdjMove1)) {
-                        addClickable(n_id)
+                    if (adjCell2 && !adjCell2.classList.contains(hasMarbleClass) 
+                        && resultsInline.includes(inlineMove2) || resultsInline.includes(inlineAdjMove2)) {
+                        if (allBoard.includes(n_id2)) addClickable(n_id2)
                     }
-                    if (resultsInline.includes(inlineMove2) || resultsInline.includes(inlineAdjMove2)) {
-                        addClickable(n_id2)
-                    }
-                    if (resultsInline.includes(inlineMove3) || resultsInline.includes(inlineAdjMove3)) {
-                        addClickable(n_id3)
+                    if (adjCell3 && !adjCell3.classList.contains(hasMarbleClass) 
+                        && resultsInline.includes(inlineMove3) || resultsInline.includes(inlineAdjMove3)) {
+                        if (allBoard.includes(n_id3)) addClickable(n_id3)
                     }
                 } else { // sidestep /// Sidestep clickable will be in reference to the first clicked marble
                     let firstRow = firstClicked.coordinate[0],
@@ -272,9 +273,72 @@ function setClickables(id) {
                     let sideStep1 = "s-" + clicked[botID] + "-" + clicked[topID] + "-" + movDir,
                         sideStep2 = "s-" + clicked[topID] + "-" + clicked[botID] + "-" + movDir,
                         ss_clickable = firstAdjArr[i];
-                    
-                    if (resultsSideStep.includes(sideStep1) 
+                    let ss_cell = document.getElementById(ss_clickable)
+                    if (ss_cell && !ss_cell.classList.contains(hasMarbleClass)
+                        && resultsSideStep.includes(sideStep1) 
                         || resultsSideStep.includes(sideStep2)) {
+                        if (allBoard.includes(ss_clickable)) addClickable(ss_clickable);
+                    }
+                }
+            }
+        } // 2 cells selected
+        else if (firstClicked) { 
+            for (let i = 0; i < firstAdjArr.length; i++) {
+                let n_id = adjacentArr[i],
+                    n_id2 = firstAdjArr[i],
+                    movDir = adjacentDirections[i];
+                if (movDir == clickDirection || movDir == oppClickDirection) { // inline
+                    let inlineMove1 = "i-" + id + "-" + movDir,
+                        inlineMove2 = "i-" + firstClicked.coordinate + "-" + movDir;
+                    
+                    let adjCell = document.getElementById(n_id),
+                        adjCell2 = document.getElementById(n_id2),
+                        adjDir,
+                        inlineAdjMove1 = null,
+                        inlineAdjMove2 = null,
+                        potentialSideStep = null,
+                        potentialSideStep2 = null;
+                    if (adjCell != null) {
+                        if (adjCell && adjCell.classList.contains(hasMarbleClass)) { 
+                            // Set the direction for potential adjacent moves
+                            adjDir = adjOppositesHigh.includes(movDir) ? adjOppositesLow[adjOppositesHigh.indexOf(movDir)] 
+                                                                        : adjOppositesHigh[adjOppositesLow.indexOf(movDir)]
+                            inlineAdjMove1 = "i-" + n_id + "-" + adjDir;
+    
+                            for (let j = 0; j < adjacentDirections.length; j++) {
+                                potentialSideStep = "s-" + id + "-" + n_id + "-" + adjacentDirections[j]; 
+                                potentialSideStep2 = "s-" + n_id + "-" + id + "-" + adjacentDirections[j];
+                                potentialSideStep3 = "s-" + id + "-" + n_id2 + "-" + adjacentDirections[j]; 
+                                potentialSideStep4 = "s-" + n_id2 + "-" + id + "-" + adjacentDirections[j];
+                                
+                                if (resultsSideStep.includes(potentialSideStep) 
+                                    || resultsSideStep.includes(potentialSideStep2)
+                                    || resultsSideStep.includes(potentialSideStep3)
+                                    || resultsSideStep.includes(potentialSideStep4)) {
+                                        if (allBoard.includes(n_id)) addClickable(n_id)
+                                        break;
+                                }
+                            }
+                        } 
+                        if (adjCell2 && adjCell2.classList.contains(hasMarbleClass)) { 
+                            // Set the direction for potential adjacent moves
+                            adjDir = adjOppositesHigh.includes(movDir) ? adjOppositesLow[adjOppositesHigh.indexOf(movDir)] 
+                                                                        : adjOppositesHigh[adjOppositesLow.indexOf(movDir)]
+                            inlineAdjMove2 = "i-" + n_id2 + "-" + adjDir;
+                        } 
+                    }
+                    if (resultsInline.includes(inlineMove1) || resultsInline.includes(inlineAdjMove1)) {
+                        addClickable(n_id)
+                    }
+                    if (resultsInline.includes(inlineMove2) || resultsInline.includes(inlineAdjMove2)) {
+                        addClickable(n_id2)
+                    }
+                } else { // sidestep /// Sidestep clickable will be in reference to the first clicked marble
+                    let sideStep1 = "s-" + id + "-" + firstClicked.coordinate + "-" + movDir,
+                        sideStep2 = "s-" + firstClicked.coordinate + "-" + id + "-" + movDir,
+                        ss_clickable = firstAdjArr[i];
+                        
+                    if (resultsSideStep.includes(sideStep1) || resultsSideStep.includes(sideStep2)) {
                         if (allBoard.includes(ss_clickable)) addClickable(ss_clickable);
                     }
                 }
@@ -469,12 +533,19 @@ function endTurn() {
         let remainingTime = 0;
         document.getElementById("pause-btn").onclick = (function() {
             if (remainingTime == 0) {
+                remainingTime = 1;
                 clearInterval(playerTurnTimeout);
                 remainingTime = document.getElementById("p1-time").innerHTML;
                 document.getElementById("p1-time").innerHTML = remainingTime + " - PAUSED";
+                document.getElementById("pause-btn").innerText = "Paused";
+                let cells = document.getElementsByClassName("cell");
+                for (let i = 0; i < cells.length; i++) {
+                    cells.item(i).classList.add("disabledbutton");
+                }
             }
             else {
                 playerSeconds = remainingTime;
+                remainingTime = 0;
                 playerTurnTimeout = setInterval(() => {
                     console.log("Interval: " + playerSeconds);
                     document.getElementById("p1-time").innerHTML = playerSeconds;
@@ -485,10 +556,15 @@ function endTurn() {
                         playerSeconds--;
                     }
                 }, 950);
+                document.getElementById("pause-btn").innerText = "Pause";
+                let cells = document.getElementsByClassName("cell");
+                for (let i = 0; i < cells.length; i++) {
+                    cells.item(i).classList.remove("disabledbutton");
+                }
             }
         });
-        playerTurnTimeout = setInterval(() => {
-            console.log("Interval: " + playerSeconds);
+        let playerTurnTimeout = setInterval(() => {
+            // console.log("Interval: " + playerSeconds);
             document.getElementById("p1-time").innerHTML = playerSeconds;
             if (playerSeconds < 1) {
                 clearInterval(playerTurnTimeout);
@@ -628,7 +704,7 @@ function initBoard(startStyle) {
             playerTurnRunning = true;
             playerTurnTimeout = setTimeout(() => {
                 if (playerTurnRunning) {
-                    window.alert("Out of time!");
+                    // window.alert("Out of time!");
                 }
             }, p1TimeLimit * 1000);
         } else { // computer moves first
@@ -783,6 +859,25 @@ function updateScore(player) {
     } else if (player2Score >= 6) {
         // white WINS
     }
+}
+function resetScore() {
+    console.log("inside     reset")
+    if(player1Score!=0) {
+        for(let i =0; i<player1Score;i++) {
+            let n = i+1;
+            let id = 'p1c-'+n
+            document.getElementById(id).style.background = resetMarbleColour
+        }
+    }
+    if(player2Score!=0) {
+        for(let i =0; i<player1Score;i++) {
+            let n = i+1;
+            let id = 'p1c-'+n
+            document.getElementById(id).style.background = resetMarbleColour
+        }
+    }
+    player1Score=0;
+    player2Score=0;
 }
 
 function changeTheme() {
