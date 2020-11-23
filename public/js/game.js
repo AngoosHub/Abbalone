@@ -63,12 +63,11 @@ window.onload = function() {
     if (blackPlayer == 1) {
         currentTurnINT = 1;
     } else if (blackPlayer == 2) {
-        whitePlayer == 1;
+        whitePlayer = 1;
         currentTurnINT = 2;
     } else {
         currentTurnINT = 1;
     }
-
     let moveLimits = document.getElementsByClassName("move-limit");
     moveLimits[0].innerHTML = turnLimit;
     moveLimits[1].innerHTML = turnLimit;
@@ -548,11 +547,17 @@ function moveHandler(cell, id) {
                 let moveMarble2 = currentClickSequence[topID]
                 let board = getCurrentBoard2();
                 let inputMove = "s-" + moveMarble.coordinate + "-" + moveMarble2.coordinate + "-" + moveDirection
+                let inputMove2 = "s-" + moveMarble2.coordinate + "-" + moveMarble.coordinate + "-" + moveDirection
                 if (resultsSideStep.includes(inputMove)) {
                     let newBoard = generateBoardConfigurationFromMove(board, inputMove);
                     newBoard = transformBoardToArray(newBoard)
                     drawBoard(newBoard);
                     chosenMoveNotation = inputMove;
+                } else if (resultsSideStep.includes(inputMove2)) {
+                    let newBoard = generateBoardConfigurationFromMove(board, inputMove2);
+                    newBoard = transformBoardToArray(newBoard)
+                    drawBoard(newBoard);
+                    chosenMoveNotation = inputMove2;
                 }
             }
             deselectClicks();
@@ -971,7 +976,12 @@ function drawBoard(board) {
 function updateScore(player) {
     let scoreP1 = (blackPlayer == 1) ? player1Score : player2Score;
     let scoreP2 = (whitePlayer == 2) ? player2Score : player1Score;
-    let id = (player == blackPlayer) ? 'p1c-' + scoreP1 : 'p2c-' + scoreP2
+    console.log("black " + blackPlayer)
+    console.log("white " + whitePlayer)
+    console.log(player1Score)
+    console.log(player2Score)
+    let id = (player == 1) ? 'p1c-' + scoreP1 : 'p2c-' + scoreP2
+    console.log(id)
     document.getElementById(id).style.background = redMarbleColour;
     if (player1Score >= 6) {
         endGame("BLACK")
@@ -1043,9 +1053,13 @@ function setMoveNotation() {
     let textBox = document.getElementById("moveNoteText");
     let moveNotation = textBox.value,
         board = getCurrentBoard2();
-    console.log(moveNotation)
+    console.log(moveNotation);
     console.log(resultsInline);
+    console.log(resultsSideStep);
     if (resultsSideStep.includes(moveNotation) || resultsInline.includes(moveNotation)) {
+        oldBoard = getCurrentBoard();
+        oldPlayer1Score = player1Score;
+        oldPlayer2Score = player2Score;
         let newBoard = generateBoardConfigurationFromMove(board, moveNotation);
         newBoard = transformBoardToArray(newBoard);
         textBox.value = "";
