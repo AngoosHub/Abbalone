@@ -83,3 +83,7 @@ body {
 #p1-tab-span, #p2-tab-span {
     color: #3f3f3fb6;
 }
+
+.disabledbutton {
+    pointer-events: none;
+}
