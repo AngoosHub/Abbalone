@@ -35,6 +35,9 @@ body {
     display: flex;
     flex-direction: column;
 }
+#manualMoveNoteDiv {
+    margin: 0 auto;
+}
 
 .row {
     display: flex;
