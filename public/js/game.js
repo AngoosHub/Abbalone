@@ -442,9 +442,7 @@ function moveHandler(cell, id) {
                 moveMarble = currentClickSequence[topID]
                 let board = getCurrentBoard2();
                 let inputMove = "i-" + moveMarble.coordinate + "-" + moveDirection
-                console.log(resultsInline)
                 if (resultsInline.includes(inputMove)) {
-                    console.log(inputMove)
                     let newBoard = generateBoardConfigurationFromMove(board, inputMove);
                     newBoard = transformBoardToArray(newBoard)
                     drawBoard(newBoard);
@@ -455,7 +453,6 @@ function moveHandler(cell, id) {
                 let board = getCurrentBoard2();
                 let inputMove = "s-" + moveMarble.coordinate + "-" + moveMarble2.coordinate + "-" + moveDirection
                 if (resultsSideStep.includes(inputMove)) {
-                    console.log(inputMove)
                     let newBoard = generateBoardConfigurationFromMove(board, inputMove);
                     newBoard = transformBoardToArray(newBoard)
                     drawBoard(newBoard);
@@ -483,16 +480,19 @@ function deselectClicks() {
     currentClickSequence = []
 }
 
-let playerTurnTimeout, playerTurnRunning;
+let playerTurnTimeout, playerTurnRunning, turnNum = 1, tempTurnNum;
 
 function endTurn() {
     clearInterval(playerTurnTimeout);
     console.log("ENDING TURN FOR " + currentTurn)
     let board = getCurrentBoard();
     fullHistory.push(board);
-    board = board.toString().replaceAll(',', ', ');
+    turnNum++;
+    tempTurnNum = turnNum;
+    board = board.toString();
     let newText = document.createElement("p");
-    newText.innerHTML = board.toString();
+    newText.id = board + turnNum;
+    newText.innerHTML = board.replaceAll(',', ', ');
     if (currentTurn == 'b') {
         nextTurn = 'w'
         currentTurn = 'w';
@@ -520,13 +520,34 @@ function endTurn() {
     }
     stateGenerator();
     if (gameMode == 1 && currentTurnINT == 2) { // Computer turn
-        console.log("-------Starting AI!")
-        let maxPlayer = (blackPlayer == 2)
+        console.log("-------Starting AI!");
+        let maxPlayer = (blackPlayer == 2);
         handleGameAgent(maxPlayer);
     } else { // Player turn
         console.log("--------Starting PLAYER!")
         playerTurnRunning = true;
         let playerSeconds = p1TimeLimit;
+        let remainingTime = 0;
+        document.getElementById("pause-btn").onclick = (function() {
+            if (remainingTime == 0) {
+                clearInterval(playerTurnTimeout);
+                remainingTime = document.getElementById("p1-time").innerHTML;
+                document.getElementById("p1-time").innerHTML = remainingTime + " - PAUSED";
+            }
+            else {
+                playerSeconds = remainingTime;
+                playerTurnTimeout = setInterval(() => {
+                    console.log("Interval: " + playerSeconds);
+                    document.getElementById("p1-time").innerHTML = playerSeconds;
+                    if (playerSeconds < 1) {
+                        clearInterval(playerTurnTimeout);
+                        window.alert("Out of time!");
+                    } else {
+                        playerSeconds--;
+                    }
+                }, 950);
+            }
+        });
         playerTurnTimeout = setInterval(() => {
             console.log("Interval: " + playerSeconds);
             document.getElementById("p1-time").innerHTML = playerSeconds;
@@ -706,17 +727,26 @@ function removeDuplicateMoveNotation(sideStepRes) {
 
 function undo() {
     if (fullHistory.length > 1) {
-        fullHistory.pop();
+        let board = fullHistory.pop();
+        let id = board + tempTurnNum;
+        console.log(id)
+        console.log(turnNum)
+        tempTurnNum--;
+        let oldMove = document.getElementById(id);
+        oldMove.style.textDecoration = "line-through"
+
         let prevMove = fullHistory[fullHistory.length - 1]
         if (currentTurn == 'b') {
-            nextTurn = 'b'
+            nextTurn = 'w';
             currentTurn = 'w';
+            oldMove.style.background = "#ff000066";
         } else {
-            nextTurn = 'w'
+            nextTurn = 'b';
             currentTurn = 'b';
+            oldMove.style.background = "#78000066";
         }
         if (currentTurnINT == 1) {
-            currentTurnINT = 2
+            currentTurnINT = 2;
             let turnsLeft = parseInt(document.getElementById("p1-moves").innerHTML)
             document.getElementById("p1-tab-span").innerHTML = "";
             document.getElementById("p2-tab-span").innerHTML = "<<<<";
@@ -733,6 +763,7 @@ function undo() {
         deselectClicks();
         clearClickables();
         drawBoard(prevMove);
+        stateGenerator();
     } else {
         window.alert("This is the farthest you can go!")
     }
@@ -750,8 +781,8 @@ let p1Left = 14,
 
 function drawBoard(board) {
     emptyBoard();
-    marblesP1 = []
-    marblesP2 = []
+    marblesP1 = [];
+    marblesP2 = [];
     clearHasMarble();
     board.forEach(marbleID => {
         let id = marbleID.substring(0, 2);
