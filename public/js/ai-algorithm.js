@@ -188,7 +188,7 @@ function move(cur, next, currentMarbles, oppositeMarbles, emptyLocation, global)
 
 function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepArr, currentMarbles, emptyLocation) {
     
-    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f1', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4','x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
+    let dummy = ['a0', 'a6', 'b0','c0', 'd0', 'e0', 'b7', 'c8', 'd9', 'e0', 'f0', 'f1', 'g0', 'g1', 'h0','h1', 'i0', 'f1', 'g2', 'h2', 'h3','i1', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9', 'x0', 'e10']
 
     let sideStepResult = [];
     if(marble.substring(0,1)=='x') {
@@ -443,7 +443,7 @@ function sideStep(cur, marble, adjacentMarble, direction, emptyArray, sidestepAr
 //direction can be known through index of array
 
 function findingInlineSideStep(cur, next, marble, adjacentMarble, direction, cntCurMarble, cntOpMarble, currentMarbles, oppositeMarbles, emptyLocation) {
-    let dummy = ['a6', 'b7', 'c8', 'd9', 'e0', 'f0', 'g0', 'h0', 'i0', 'f1', 'g2', 'h2', 'h3', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9']
+    let dummy = ['a0', 'a6', 'b0','c0', 'd0', 'e0', 'b7', 'c8', 'd9', 'e0', 'f0', 'f1', 'g0', 'g1', 'h0','h1', 'i0', 'f1', 'g2', 'h2', 'h3','i1', 'i2', 'i3', 'i4', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9', 'x0', 'e10']
 
     // console.log(marble);
     // console.log(adjacentMarble);

@@ -1,3 +1,4 @@
+
 const positionValues = {
     "A1": 2,
     "A2": 2,
@@ -60,6 +61,132 @@ const positionValues = {
     "I7": 2,
     "I8": 2,
     "I9": 2
+}
+const positionValues2 = {
+    "A1": 0,
+    "A2": 0,
+    "A3": 0,
+    "A4": 0,
+    "A5": 0,
+    "B1": 0,
+    "B2": 4,
+    "B3": 4,
+    "B4": 4,
+    "B5": 4,
+    "B6": 0,
+    "C1": 0,
+    "C2": 4,
+    "C3": 6,
+    "C4": 6,
+    "C5": 6,
+    "C6": 4,
+    "C7": 0,
+    "D1": 0,
+    "D2": 4,
+    "D3": 6,
+    "D4": 8,
+    "D5": 8,
+    "D6": 6,
+    "D7": 4,
+    "D8": 0,
+    "E1": 0,
+    "E2": 4,
+    "E3": 6,
+    "E4": 8,
+    "E5": 8,
+    "E6": 8,
+    "E7": 6,
+    "E8": 4,
+    "E9": 0,
+    "F2": 0,
+    "F3": 4,
+    "F4": 6,
+    "F5": 8,
+    "F6": 8,
+    "F7": 6,
+    "F8": 4,
+    "F9": 0,
+    "G3": 0,
+    "G4": 4,
+    "G5": 6,
+    "G6": 6,
+    "G7": 6,
+    "G8": 4,
+    "G9": 0,
+    "H4": 0,
+    "H5": 4,
+    "H6": 4,
+    "H7": 4,
+    "H8": 4,
+    "H9": 0,
+    "I5": 0,
+    "I6": 0,
+    "I7": 0,
+    "I8": 0,
+    "I9": 0
+}
+const positionValues3 = {
+    "A1": 5,
+    "A2": 5,
+    "A3": 5,
+    "A4": 5,
+    "A5": 5,
+    "B1": 5,
+    "B2": 4,
+    "B3": 4,
+    "B4": 4,
+    "B5": 4,
+    "B6": 5,
+    "C1": 5,
+    "C2": 4,
+    "C3": 6,
+    "C4": 6,
+    "C5": 6,
+    "C6": 4,
+    "C7": 5,
+    "D1": 5,
+    "D2": 4,
+    "D3": 6,
+    "D4": 8,
+    "D5": 8,
+    "D6": 6,
+    "D7": 4,
+    "D8": 5,
+    "E1": 5,
+    "E2": 4,
+    "E3": 6,
+    "E4": 8,
+    "E5": 8,
+    "E6": 8,
+    "E7": 6,
+    "E8": 4,
+    "E9": 5,
+    "F2": 5,
+    "F3": 4,
+    "F4": 6,
+    "F5": 8,
+    "F6": 8,
+    "F7": 6,
+    "F8": 4,
+    "F9": 5,
+    "G3": 5,
+    "G4": 4,
+    "G5": 6,
+    "G6": 6,
+    "G7": 6,
+    "G8": 4,
+    "G9": 5,
+    "H4": 5,
+    "H5": 4,
+    "H6": 4,
+    "H7": 4,
+    "H8": 4,
+    "H9": 5,
+    "I5": 5,
+    "I6": 5,
+    "I7": 5,
+    "I8": 5,
+    "I9": 5
 }
 const board2DArray = [
     ['a1', 'a2', 'a3', 'a4', 'a5'],
@@ -321,10 +448,14 @@ function heuristicHandler(board) {
     return boardScore(board);
 }
 
-
+// let blackPlayer = localStorage.getItem('blackPlayer');
 // black is MAX, white is MIN
 function boardScore(board) {
     let nodeScore = 0;
+    let numberOfBlackMarble = 0;
+    let numberOfWhiteMarble = 0;
+    let blackScore = 0;
+    let whiteScore = 0;
     for (let i = 0; i < board.length; i++) {
         let cell = board[i].substring(0, 2);
         let team = board[i].substring(2, 3);
@@ -333,8 +464,9 @@ function boardScore(board) {
         // Heuristic 2: 2/3 in a row (horizontal)
         let h_count = 0;
         if (team == 'b') {
+            blackScore+=positionValues[cell.toUpperCase()];
             nodeScore += positionValues[cell.toUpperCase()];
-
+            numberOfBlackMarble+=1;
             if (h_count < 0) h_count = 0;
             h_count++;
             if (h_count > 2) {
@@ -343,7 +475,9 @@ function boardScore(board) {
                 nodeScore += 1;
             }
         } else {
+            whiteScore+=positionValues[cell.toUpperCase()];
             nodeScore -= positionValues[cell.toUpperCase()];
+            numberOfWhiteMarble+=1;
             if (h_count > 0) h_count = 0;
             h_count--;
             if (h_count < -2) {
@@ -361,7 +495,35 @@ function boardScore(board) {
                 else nodeScore -= 1;
             }
         }
+
     }
+
+    //Black is MAX White is MIN
+    if(blackPlayer==1) {// if whitePlayer
+        let numberOfopponentMarble = (numberOfBlackMarble)
+        let bonus = 14-numberOfopponentMarble
+        let numberOfcurrentMarble = (numberOfWhiteMarble)
+        // console.log(numberOfopponentMarble)
+        let minusBonus = 14-numberOfcurrentMarble
+        nodeScore -=bonus * 3000;
+        nodeScore +=minusBonus * 1000;
+        nodeScore-=(whiteScore-blackScore) *50;
+        
+    }else {
+        let numberOfopponentMarble = (numberOfWhiteMarble)
+        let bonus = 14-numberOfopponentMarble
+        let numberOfcurrentMarble = (numberOfBlackMarble)
+        // console.log(numberOfopponentMarble)
+        let minusBonus = 14-numberOfcurrentMarble
+        nodeScore +=bonus * 3000;
+        nodeScore -=minusBonus * 1000;
+        
+        nodeScore+=(blackScore-whiteScore) *50;
+    
+    }
+    
+   
+
     return nodeScore
 }
 
