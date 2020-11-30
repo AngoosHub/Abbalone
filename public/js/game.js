@@ -76,8 +76,8 @@ window.onload = function() {
    
  
     initBoard(layoutInt);
-    console.log(getCurrentBoard())
-    console.log(getCurrentBoard2())
+    // console.log(getCurrentBoard())
+    // console.log(getCurrentBoard2())
     // oldMarblesP1 = marblesP1;
     // oldMarblesP2 = marblesP2;
     // oldEmptyLocation = emptyLocation;
@@ -104,6 +104,8 @@ function undo() {
     newMarblesP1=[];
     newMarblesP2=[];
     emptyLocation=[];
+    console.log(oldPlayer1Score)
+    console.log(oldPlayer2Score)
     player1Score = oldPlayer1Score
     player2Score = oldPlayer2Score
     for(let i =0; i<boards.length;i++) {
@@ -137,7 +139,6 @@ function undo() {
     }
     for(let i =0; i<emptyLocation.length;i++) {
         let target = document.getElementById(emptyLocation[i])
-        console.log(target)
         if(target.classList.contains(hasMarbleClass)) {
             target.classList.remove(hasMarbleClass);
             target.style.background = emptyCellColour
@@ -145,7 +146,7 @@ function undo() {
     }
     for(let i=1;i<7;i++) {
         let id = "p1c-"+i;
-        let id2 = "p1c-"+i;
+        let id2 = "p2c-"+i;
         document.getElementById(id).style.background = resetMarbleColour;
         document.getElementById(id2).style.background = resetMarbleColour;
     }
@@ -160,11 +161,11 @@ function undo() {
         document.getElementById(id).style.background = redMarbleColour;
     }
 
-    
-
+    // endTurn();
     console.log(newMarblesP1)
     console.log(newMarblesP2)
     emptyLocation.push("a0", "a6", "b0", "b7", "c0", "d0", "e0", "f1", "g1", "g2", "h1", "h2", "h3", "i1", "i2", "i3", "i4", "c8", "d9")
+
     stateGenerator()
     
 }
@@ -472,6 +473,7 @@ function moveHandler(cell, id) {
     oldBoard = getCurrentBoard();
     oldPlayer1Score = player1Score;
     oldPlayer2Score = player2Score;
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     if (currentClickSequence.length > 0) { // Move the marbles!
         if (cell.classList.contains(clickableClass)) {
             playerTurnRunning = false;
@@ -592,6 +594,7 @@ let playerTurnTimeout, playerTurnRunning, turnNum = 1, tempTurnNum, chosenMoveNo
 
 function endTurn() {
     clearInterval(playerTurnTimeout);
+    
     let turnsLeft1 = parseInt(document.getElementById("p1-moves").innerHTML),
         turnsLeft2 = parseInt(document.getElementById("p2-moves").innerHTML);
     if (turnsLeft1 > 0 || turnsLeft2 > 0) {
@@ -984,8 +987,11 @@ function updateScore(player) {
     let scoreP2 = (whitePlayer == 2) ? player2Score : player1Score;
     console.log("black " + blackPlayer)
     console.log("white " + whitePlayer)
-    console.log(player1Score)
-    console.log(player2Score)
+
+    console.log("Important old1", oldPlayer1Score)
+    console.log("Important old2", oldPlayer2Score)
+    console.log("Important cur1", player1Score)
+    console.log("Important cur2", player2Score)
     let id = (player == 1) ? 'p1c-' + scoreP1 : 'p2c-' + scoreP2
     console.log(id)
     document.getElementById(id).style.background = redMarbleColour;
@@ -1062,7 +1068,26 @@ function setMoveNotation() {
     console.log(moveNotation);
     console.log(resultsInline);
     console.log(resultsSideStep);
-    if (resultsSideStep.includes(moveNotation) || resultsInline.includes(moveNotation)) {
+    let prefix = moveNotation.substring(0,1);
+    console.log(prefix);
+    if (prefix == 'f') {
+        moveNotation = moveNotation.substring(1);
+        console.log(moveNotation);
+        if (moveNotation.substring(0,2) == 's-' || moveNotation.substring(0,2) == 'i-') {
+            oldBoard = getCurrentBoard();
+            oldPlayer1Score = player1Score;
+            oldPlayer2Score = player2Score;
+            let newBoard = generateBoardConfigurationFromMove(board, moveNotation);
+            newBoard = transformBoardToArray(newBoard);
+            textBox.value = "";
+            drawBoard(newBoard);
+            deselectClicks();
+            clearClickables();
+            setTimeout(function() {
+                endTurn()
+            }, 100)
+        }
+    } else if (resultsSideStep.includes(moveNotation) || resultsInline.includes(moveNotation)) {
         oldBoard = getCurrentBoard();
         oldPlayer1Score = player1Score;
         oldPlayer2Score = player2Score;
@@ -1078,6 +1103,60 @@ function setMoveNotation() {
     } else {
         console.log("INVALID MOVE!");
     }
+}
+// black is MAX, white is MIN
+function boardScore(board) {
+    let nodeScore = 0;
+    let numberOfBlackMarble = 0;
+    let numberOfWhiteMarble = 0;
+    for (let i = 0; i < board.length; i++) {
+        let cell = board[i].substring(0, 2);
+        let team = board[i].substring(2, 3);
+
+        // Heuristic 1: board score
+        // Heuristic 2: 2/3 in a row (horizontal)
+        let h_count = 0;
+        if (team == 'b') {
+            nodeScore += positionValues[cell.toUpperCase()];
+            numberOfBlackMarble+=1;
+            if (h_count < 0) h_count = 0;
+            h_count++;
+            if (h_count > 2) {
+                nodeScore += 1;
+            } else if (h_count > 1) {
+                nodeScore += 1;
+            }
+        } else {
+            nodeScore -= positionValues[cell.toUpperCase()];
+            numberOfWhiteMarble+=1;
+            if (h_count > 0) h_count = 0;
+            h_count--;
+            if (h_count < -2) {
+                nodeScore -= 1;
+            } else if (h_count < -1) {
+                nodeScore -= 1;
+            }
+        }
+
+        // Heuristic 3: 2/3 in a row + number of neighbours
+        let neighbours = getAdjacent(cell.toLowerCase(), true);
+        for (let j = 0; j < neighbours.length; j++) {
+            if (board.includes(neighbours[j] + 'b') || board.includes(neighbours[j] + 'w')) {
+                if (team == 'b') nodeScore += 1;
+                else nodeScore -= 1;
+            }
+        }
+
+    }
+    let numberOfopponentMarble = (numberOfBlackMarble)
+    let bonus = 14-numberOfopponentMarble
+    let numberOfcurrentMarblle = (numberOfWhiteMarble)
+    // console.log(numberOfopponentMarble)
+    let minusBonus = 14-numberOfcurrentMarblle
+    nodeScore -=bonus * 100;
+    nodeScore +=minusBonus * 100;
+
+    return nodeScore
 }
 
 function endGame(winner) {
