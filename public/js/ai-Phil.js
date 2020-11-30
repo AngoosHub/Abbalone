@@ -506,7 +506,7 @@ function boardScore(board) {
         // console.log(numberOfopponentMarble)
         let minusBonus = 14-numberOfcurrentMarble
         nodeScore -=bonus * 3000;
-        nodeScore +=minusBonus * 1000;
+        nodeScore +=minusBonus * 3000;
         nodeScore-=(whiteScore-blackScore) *50;
         
     }else {
@@ -516,7 +516,7 @@ function boardScore(board) {
         // console.log(numberOfopponentMarble)
         let minusBonus = 14-numberOfcurrentMarble
         nodeScore +=bonus * 3000;
-        nodeScore -=minusBonus * 1000;
+        nodeScore -=minusBonus * 3000;
         
         nodeScore+=(blackScore-whiteScore) *50;
     
