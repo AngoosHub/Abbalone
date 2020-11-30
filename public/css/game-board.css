@@ -54,6 +54,11 @@ body {
     /* background: radial-gradient(circle at 12px 12px, #525252e0, #4b4b4be0); */
     background: radial-gradient(circle at 12px 12px, #525252e0, #4b4b4be0);
     /* background: radial-gradient(circle at 12px 12px, #ff0000f1, #1b0000f1); RED */
+    color: #ff0000a9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
 }
 
 .current-turn {

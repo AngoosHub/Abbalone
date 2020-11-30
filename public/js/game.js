@@ -1066,21 +1066,33 @@ function setMoveNotation() {
     let moveNotation = textBox.value,
         board = getCurrentBoard2();
     console.log(moveNotation);
-    
-    console.log("Important old1", oldPlayer1Score)
-    console.log("Important old2", oldPlayer2Score)
-    console.log("Important cur1", player1Score)
-    console.log("Important cur2", player2Score)
     console.log(resultsInline);
     console.log(resultsSideStep);
-    if (resultsSideStep.includes(moveNotation) || resultsInline.includes(moveNotation)) {
+    let prefix = moveNotation.substring(0,1);
+    console.log(prefix);
+    if (prefix == 'f') {
+        moveNotation = moveNotation.substring(1);
+        console.log(moveNotation);
+        if (moveNotation.substring(0,2) == 's-' || moveNotation.substring(0,2) == 'i-') {
+            oldBoard = getCurrentBoard();
+            oldPlayer1Score = player1Score;
+            oldPlayer2Score = player2Score;
+            let newBoard = generateBoardConfigurationFromMove(board, moveNotation);
+            newBoard = transformBoardToArray(newBoard);
+            textBox.value = "";
+            drawBoard(newBoard);
+            deselectClicks();
+            clearClickables();
+            setTimeout(function() {
+                endTurn()
+            }, 100)
+        }
+    } else if (resultsSideStep.includes(moveNotation) || resultsInline.includes(moveNotation)) {
         oldBoard = getCurrentBoard();
         oldPlayer1Score = player1Score;
         oldPlayer2Score = player2Score;
         let newBoard = generateBoardConfigurationFromMove(board, moveNotation);
         newBoard = transformBoardToArray(newBoard);
-        console.log("####", player1Score)
-        console.log("####", player2Score)
         textBox.value = "";
         drawBoard(newBoard);
         deselectClicks();
@@ -1091,6 +1103,60 @@ function setMoveNotation() {
     } else {
         console.log("INVALID MOVE!");
     }
+}
+// black is MAX, white is MIN
+function boardScore(board) {
+    let nodeScore = 0;
+    let numberOfBlackMarble = 0;
+    let numberOfWhiteMarble = 0;
+    for (let i = 0; i < board.length; i++) {
+        let cell = board[i].substring(0, 2);
+        let team = board[i].substring(2, 3);
+
+        // Heuristic 1: board score
+        // Heuristic 2: 2/3 in a row (horizontal)
+        let h_count = 0;
+        if (team == 'b') {
+            nodeScore += positionValues[cell.toUpperCase()];
+            numberOfBlackMarble+=1;
+            if (h_count < 0) h_count = 0;
+            h_count++;
+            if (h_count > 2) {
+                nodeScore += 1;
+            } else if (h_count > 1) {
+                nodeScore += 1;
+            }
+        } else {
+            nodeScore -= positionValues[cell.toUpperCase()];
+            numberOfWhiteMarble+=1;
+            if (h_count > 0) h_count = 0;
+            h_count--;
+            if (h_count < -2) {
+                nodeScore -= 1;
+            } else if (h_count < -1) {
+                nodeScore -= 1;
+            }
+        }
+
+        // Heuristic 3: 2/3 in a row + number of neighbours
+        let neighbours = getAdjacent(cell.toLowerCase(), true);
+        for (let j = 0; j < neighbours.length; j++) {
+            if (board.includes(neighbours[j] + 'b') || board.includes(neighbours[j] + 'w')) {
+                if (team == 'b') nodeScore += 1;
+                else nodeScore -= 1;
+            }
+        }
+
+    }
+    let numberOfopponentMarble = (numberOfBlackMarble)
+    let bonus = 14-numberOfopponentMarble
+    let numberOfcurrentMarblle = (numberOfWhiteMarble)
+    // console.log(numberOfopponentMarble)
+    let minusBonus = 14-numberOfcurrentMarblle
+    nodeScore -=bonus * 100;
+    nodeScore +=minusBonus * 100;
+
+    return nodeScore
 }
 
 function endGame(winner) {
