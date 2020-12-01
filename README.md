@@ -16,6 +16,7 @@ Set Up Instructions
 6) Type into the text box below the board the move you want to make.
    The move notation for inline moves is "i-An-d", where "i" denotes inline move, "An" is the coordinates of trailing marble, and "d" is direction. (Ex: "i-a4-1")
    The move notation for side-step moves is "s-An-Am-d", where "s" denotes side-step move, "An" and "Am" is the coordinate of the 2 extremity marbles on the line of marbles performing the side-step, and the "d" is the direction. (EX: "s-a1-b1-3")
+      -NOTE: If at first the sidestep move is rendered invalid but there are no errors in your input, try switching the order of the 2 marbles.
 
 6) There is also option to select your marbles and move them using the GUI, but this is currently bugged for certain movements like Sumito moves, so using the text box for movement is recommended. To move with GUI, click a marble, then choose a highlight space to move or another nearby ally marble to move together with up to a total of 3 ally marbles, then choice a move direction. To deselect, simply click on an unhighlighted tile.
 
