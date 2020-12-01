@@ -48,9 +48,7 @@ function gameModeSetup() {
         localStorage.setItem('gameMode', 1)
         console.log(localStorage.getItem('gameMode'))
     });
-    $('#game-mode-cpu-cpu').click(function() {
-        localStorage.setItem('gameMode', 2)
-    });
+    
 }
 
 function turnLimitOnChange() {
