@@ -4,6 +4,7 @@ body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-image: linear-gradient(45deg,  #8b7e52, #3279a5);
     /* background-image: linear-gradient(45deg, #3279a5, #8b7e52); */
+    user-select: none;
 }
 
 #main {
