@@ -321,18 +321,22 @@ function heuristicHandler(board) {
     return boardScore(board);
 }
 
-
 // black is MAX, white is MIN
 function boardScore(board) {
-    let nodeScore = 0;
+    let nodeScore = 0,
+        bMarbles = marblesP1.length,
+        wMarbles = marblesP2.length; 
     for (let i = 0; i < board.length; i++) {
         let cell = board[i].substring(0, 2);
         let team = board[i].substring(2, 3);
+        let bCount = 0;
+        let wCount = 0;
 
         // Heuristic 1: board score
         // Heuristic 2: 2/3 in a row (horizontal)
         let h_count = 0;
         if (team == 'b') {
+            bCount++;
             nodeScore += positionValues[cell.toUpperCase()];
 
             if (h_count < 0) h_count = 0;
@@ -343,6 +347,7 @@ function boardScore(board) {
                 nodeScore += 1;
             }
         } else {
+            wCount++;
             nodeScore -= positionValues[cell.toUpperCase()];
             if (h_count > 0) h_count = 0;
             h_count--;
@@ -353,7 +358,14 @@ function boardScore(board) {
             }
         }
 
-        // Heuristic 3: 2/3 in a row + number of neighbours
+        // Heuristic 3: Num marbles per team, in order to increase aggression slightly
+        if (wCount < wMarbles) {
+            nodeScore += 10;
+        } else if (bCount < bMarbles) {
+            nodeScore -= 10;
+        }
+
+        // Heuristic 4: 2/3 in a row + number of neighbours
         let neighbours = getAdjacent(cell.toLowerCase(), true);
         for (let j = 0; j < neighbours.length; j++) {
             if (board.includes(neighbours[j] + 'b') || board.includes(neighbours[j] + 'w')) {

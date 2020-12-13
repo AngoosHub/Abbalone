@@ -3,6 +3,7 @@ body {
     overflow: hidden;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-image: linear-gradient(45deg,  #8b7e52, #3279a5);
+    user-select: none;
     /* background-image: linear-gradient(45deg, #3279a5, #8b7e52); */
 }
 
@@ -51,6 +52,12 @@ body {
     height: 48px;
     margin: 2px;
     border-radius: 50%;
+    color: #d199d186;
+    font-size: 10pt;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
     /* background: radial-gradient(circle at 12px 12px, #525252e0, #4b4b4be0); */
     background: radial-gradient(circle at 12px 12px, #525252e0, #4b4b4be0);
     /* background: radial-gradient(circle at 12px 12px, #ff0000f1, #1b0000f1); RED */

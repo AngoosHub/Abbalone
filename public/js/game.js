@@ -995,6 +995,7 @@ function updateScore(player) {
         endGame("WHITE")
     }
 }
+
 function resetScore() {
     console.log("inside     reset")
     if(player1Score!=0) {
@@ -1062,7 +1063,26 @@ function setMoveNotation() {
     console.log(moveNotation);
     console.log(resultsInline);
     console.log(resultsSideStep);
-    if (resultsSideStep.includes(moveNotation) || resultsInline.includes(moveNotation)) {
+    let prefix = moveNotation.substring(0,1);
+    console.log(prefix);
+    if (prefix == 'f') {
+        moveNotation = moveNotation.substring(1);
+        console.log(moveNotation);
+        if (moveNotation.substring(0,2) == 's-' || moveNotation.substring(0,2) == 'i-') {
+            oldBoard = getCurrentBoard();
+            oldPlayer1Score = player1Score;
+            oldPlayer2Score = player2Score;
+            let newBoard = generateBoardConfigurationFromMove(board, moveNotation);
+            newBoard = transformBoardToArray(newBoard);
+            textBox.value = "";
+            drawBoard(newBoard);
+            deselectClicks();
+            clearClickables();
+            setTimeout(function() {
+                endTurn()
+            }, 100)
+        }
+    } else if (resultsSideStep.includes(moveNotation) || resultsInline.includes(moveNotation)) {
         oldBoard = getCurrentBoard();
         oldPlayer1Score = player1Score;
         oldPlayer2Score = player2Score;
