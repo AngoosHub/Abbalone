@@ -60,6 +60,9 @@ window.onload = function() {
     p2TimeLimit = localStorage.getItem('p2TimeLimit');
     blackPlayer = localStorage.getItem('blackPlayer');
 
+    document.getElementById('help-hover').addEventListener('mouseover', () => { helpHover() })
+    document.getElementById('help-hover').addEventListener('mouseout', () => { helpHoverOut() })
+
     if (blackPlayer == 1) {
         currentTurnINT = 1;
     } else if (blackPlayer == 2) {
@@ -1162,4 +1165,12 @@ function boardScore(board) {
 function endGame(winner) {
     window.alert(winner + " WINS!!!!");
     document.getElementById("game-tint").style.pointerEvents = "none";
+}
+
+function helpHover() {
+    document.getElementById('help').style.display = 'block';
+}
+
+function helpHoverOut() {
+    document.getElementById('help').style.display = 'none';
 }

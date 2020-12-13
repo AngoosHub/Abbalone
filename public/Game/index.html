@@ -99,6 +99,13 @@
                 <div id="manualMoveNoteDiv">
                     <input type="text" id="moveNoteText">
                     <input type="button" value="move" onclick="setMoveNotation()">
+                    <h4 id="help-hover">HELP</h4>
+                </div>
+                <div id="help">
+                    <p>Type into the text box below the board the move you want to make.</p>
+                    <p>The move notation for inline moves is "i-An-d", where "i" denotes inline move, "An" is the coordinates of trailing marble, and "d" is direction.</p>
+                    <p>(Ex: "i-a4-1") The move notation for side-step moves is "s-An-Am-d", where "s" denotes side-step move, "An" and "Am" is the coordinate of the 2 extremity marbles on the line of marbles performing the side-step, and the "d" is the direction. (EX: "s-a1-b1-3")</p>
+                    <p>-NOTE: If at first the sidestep move is rendered invalid but there are no errors in your input, try switching the order of the 2 marbles.</p>
                 </div>
             </div>
         </div>

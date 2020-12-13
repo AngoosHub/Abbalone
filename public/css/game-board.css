@@ -7,6 +7,22 @@ body {
     user-select: none;
 }
 
+#help {
+    display: none;
+    background-color: #7b858bc4;
+    position: absolute;
+    width: 75vw;
+    left: 12.5%;
+    border-radius: 12px;
+}
+#help p {
+    padding: 1em;
+}
+#help-hover:hover {
+    cursor: help;
+    color: white;
+}
+
 #main {
     height: 100vh;
     width: 100vw;
@@ -55,7 +71,8 @@ body {
     /* background: radial-gradient(circle at 12px 12px, #525252e0, #4b4b4be0); */
     background: radial-gradient(circle at 12px 12px, #525252e0, #4b4b4be0);
     /* background: radial-gradient(circle at 12px 12px, #ff0000f1, #1b0000f1); RED */
-    color: #ff0000a9;
+    color: #d199d186;
+    font-size: 10pt;
     display: flex;
     flex-direction: column;
     justify-content: center;
